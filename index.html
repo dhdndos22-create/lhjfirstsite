@@ -1,10 +1,293 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <title>효종의 첫 사이트</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>점프 장애물 피하기 게임</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #222;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    #gameWrap {
+      text-align: center;
+    }
+
+    canvas {
+      background: linear-gradient(#87ceeb, #dff6ff);
+      border: 4px solid white;
+      border-radius: 12px;
+      display: block;
+    }
+
+    #startScreen,
+    #gameOverScreen {
+      position: absolute;
+      width: 800px;
+      height: 400px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.65);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 12px;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: #ffcc00;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #ffe066;
+    }
+
+    .hide {
+      display: none !important;
+    }
+  </style>
 </head>
+
 <body>
-    <h1>안녕!</h1>
-    <p>야르한 첫 홈페이지다 😎</p>
+  <div id="gameWrap">
+    <canvas id="game" width="800" height="400"></canvas>
+
+    <div id="startScreen">
+      <h1>점프 장애물 피하기</h1>
+      <p>스페이스바 또는 ↑ 방향키로 점프</p>
+      <button onclick="startGame()">게임 시작</button>
+    </div>
+
+    <div id="gameOverScreen" class="hide">
+      <h1>Game Over</h1>
+      <p id="finalScore"></p>
+      <button onclick="startGame()">다시하기</button>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    const startScreen = document.getElementById("startScreen");
+    const gameOverScreen = document.getElementById("gameOverScreen");
+    const finalScore = document.getElementById("finalScore");
+
+    const groundY = 330;
+
+    let player;
+    let obstacles;
+    let score;
+    let bestScore = localStorage.getItem("bestScore") || 0;
+    let gameRunning = false;
+    let gameOver = false;
+    let frame;
+    let obstacleTimer;
+    let speed;
+
+    function resetGame() {
+      player = {
+        x: 90,
+        y: groundY - 50,
+        width: 45,
+        height: 50,
+        velocityY: 0,
+        gravity: 0.75,
+        jumpPower: -15,
+        onGround: true
+      };
+
+      obstacles = [];
+      score = 0;
+      frame = 0;
+      obstacleTimer = 0;
+      speed = 6;
+      gameOver = false;
+    }
+
+    function startGame() {
+      resetGame();
+      gameRunning = true;
+
+      startScreen.classList.add("hide");
+      gameOverScreen.classList.add("hide");
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    function jump() {
+      if (gameRunning && player.onGround) {
+        player.velocityY = player.jumpPower;
+        player.onGround = false;
+      }
+    }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.code === "Space" || e.code === "ArrowUp") {
+        e.preventDefault();
+        jump();
+      }
+    });
+
+    canvas.addEventListener("click", jump);
+
+    function createObstacle() {
+      const height = Math.floor(Math.random() * 35) + 35;
+
+      obstacles.push({
+        x: canvas.width,
+        y: groundY - height,
+        width: 30,
+        height: height
+      });
+    }
+
+    function updatePlayer() {
+      player.velocityY += player.gravity;
+      player.y += player.velocityY;
+
+      if (player.y + player.height >= groundY) {
+        player.y = groundY - player.height;
+        player.velocityY = 0;
+        player.onGround = true;
+      }
+    }
+
+    function updateObstacles() {
+      obstacleTimer++;
+
+      if (obstacleTimer > 80 + Math.random() * 50) {
+        createObstacle();
+        obstacleTimer = 0;
+      }
+
+      for (let i = obstacles.length - 1; i >= 0; i--) {
+        obstacles[i].x -= speed;
+
+        if (obstacles[i].x + obstacles[i].width < 0) {
+          obstacles.splice(i, 1);
+          score += 10;
+        }
+      }
+    }
+
+    function checkCollision(a, b) {
+      return (
+        a.x < b.x + b.width &&
+        a.x + a.width > b.x &&
+        a.y < b.y + b.height &&
+        a.y + a.height > b.y
+      );
+    }
+
+    function checkGameOver() {
+      for (let obs of obstacles) {
+        if (checkCollision(player, obs)) {
+          endGame();
+        }
+      }
+    }
+
+    function endGame() {
+      gameRunning = false;
+      gameOver = true;
+
+      if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem("bestScore", bestScore);
+      }
+
+      finalScore.innerHTML = `
+        점수: ${score}<br>
+        최고기록: ${bestScore}
+      `;
+
+      gameOverScreen.classList.remove("hide");
+    }
+
+    function drawBackground() {
+      ctx.fillStyle = "#87ceeb";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(680, 70, 35, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#63b35d";
+      ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
+
+      ctx.fillStyle = "#3b7a35";
+      ctx.fillRect(0, groundY, canvas.width, 8);
+    }
+
+    function drawPlayer() {
+      ctx.fillStyle = "#ff4d4d";
+      ctx.fillRect(player.x, player.y, player.width, player.height);
+
+      ctx.fillStyle = "white";
+      ctx.fillRect(player.x + 28, player.y + 10, 8, 8);
+    }
+
+    function drawObstacles() {
+      ctx.fillStyle = "#333";
+
+      for (let obs of obstacles) {
+        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+      }
+    }
+
+    function drawScore() {
+      ctx.fillStyle = "#111";
+      ctx.font = "22px Arial";
+      ctx.fillText("Score: " + score, 20, 35);
+      ctx.fillText("Best: " + bestScore, 20, 65);
+    }
+
+    function gameLoop() {
+      if (!gameRunning) return;
+
+      frame++;
+
+      updatePlayer();
+      updateObstacles();
+      checkGameOver();
+
+      if (frame % 300 === 0) {
+        speed += 0.5;
+      }
+
+      drawBackground();
+      drawPlayer();
+      drawObstacles();
+      drawScore();
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    resetGame();
+    drawBackground();
+    drawPlayer();
+    drawScore();
+  </script>
 </body>
 </html>
