@@ -5,116 +5,129 @@ const player = document.getElementById("player");
 const obstacle = document.getElementById("obstacle");
 const scoreText = document.getElementById("score");
 
+let gameRunning = false;
 let score = 0;
-let scoreInterval;
-let collisionInterval;
-let obstacleInterval;
-let obstacleStartTimeout;
 
-let isStarted = false;
-let obstacleActive = false;
+let playerBaseBottom = 58;
+let obstacleX = -100;
+let obstacleSpeed = 6;
+let jumpTime = 550;
 
-let obstacleSpeed = 1700;
-let jumpSpeed = 550;
-let obstacleX = -80;
+let scoreTimer = null;
+let obstacleTimer = null;
+let collisionTimer = null;
+let firstObstacleTimer = null;
 
-startBtn.onclick = function () {
-  if (isStarted) return;
+startBtn.addEventListener("click", startGame);
 
-  isStarted = true;
-  obstacleActive = false;
+function startGame() {
+  if (gameRunning) return;
+
+  gameRunning = true;
   score = 0;
 
-  obstacleSpeed = 1700;
-  jumpSpeed = 550;
-  obstacleX = -80;
+  obstacleX = -100;
+  obstacleSpeed = 6;
+  jumpTime = 550;
 
   startScreen.style.display = "none";
   game.style.display = "block";
-  scoreText.innerHTML = "점수 : 0";
 
+  scoreText.textContent = "점수 : 0";
   obstacle.style.right = obstacleX + "px";
+  player.style.setProperty("--jump-time", jumpTime + "ms");
 
-  scoreInterval = setInterval(function () {
-    score++;
-    scoreText.innerHTML = "점수 : " + score;
-  }, 100);
+  scoreTimer = setInterval(updateScore, 100);
 
-  obstacleStartTimeout = setTimeout(function () {
-    obstacleActive = true;
-    obstacleX = -80;
-    moveObstacle();
+  firstObstacleTimer = setTimeout(() => {
+    startObstacle();
   }, 3000);
 
-  collisionInterval = setInterval(function () {
-    if (!obstacleActive) return;
-
-    const p = player.getBoundingClientRect();
-    const o = obstacle.getBoundingClientRect();
-
-    const playerHitbox = {
-      left: p.left + 15,
-      right: p.right - 15,
-      top: p.top + 15,
-      bottom: p.bottom - 10
-    };
-
-    const obstacleHitbox = {
-      left: o.left + 3,
-      right: o.right - 3,
-      top: o.top + 3,
-      bottom: o.bottom - 3
-    };
-
-    if (
-      playerHitbox.left < obstacleHitbox.right &&
-      playerHitbox.right > obstacleHitbox.left &&
-      playerHitbox.bottom > obstacleHitbox.top &&
-      playerHitbox.top < obstacleHitbox.bottom
-    ) {
-      gameOver();
-    }
-  }, 10);
-};
-
-function moveObstacle() {
-  clearInterval(obstacleInterval);
-
-  obstacleInterval = setInterval(function () {
-    obstacleX += 8;
-    obstacle.style.right = obstacleX + "px";
-
-    if (obstacleX > 950) {
-      obstacleX = -80;
-
-      obstacleSpeed = Math.max(700, obstacleSpeed - 40);
-      jumpSpeed = Math.max(350, jumpSpeed - 8);
-
-      clearInterval(obstacleInterval);
-      moveObstacle();
-    }
-  }, obstacleSpeed / 100);
+  collisionTimer = setInterval(checkCollision, 10);
 }
 
-function jump() {
-  if (!isStarted) return;
+function updateScore() {
+  if (!gameRunning) return;
 
-  if (!player.classList.contains("jump")) {
-    player.classList.add("jump");
+  score++;
+  scoreText.textContent = "점수 : " + score;
+}
 
-    setTimeout(function () {
-      player.classList.remove("jump");
-    }, jumpSpeed);
+function startObstacle() {
+  obstacleTimer = setInterval(moveObstacle, 16);
+}
+
+function moveObstacle() {
+  if (!gameRunning) return;
+
+  obstacleX += obstacleSpeed;
+  obstacle.style.right = obstacleX + "px";
+
+  const gameWidth = game.clientWidth;
+
+  if (obstacleX > gameWidth + 100) {
+    obstacleX = -100;
+
+    obstacleSpeed = Math.min(obstacleSpeed + 0.35, 15);
+    jumpTime = Math.max(jumpTime - 10, 360);
+
+    player.style.setProperty("--jump-time", jumpTime + "ms");
   }
 }
 
-function gameOver() {
-  clearInterval(scoreInterval);
-  clearInterval(collisionInterval);
-  clearInterval(obstacleInterval);
-  clearTimeout(obstacleStartTimeout);
+function jump() {
+  if (!gameRunning) return;
+
+  if (player.classList.contains("jump")) return;
+
+  player.classList.add("jump");
+
+  setTimeout(() => {
+    player.classList.remove("jump");
+  }, jumpTime);
+}
+
+function checkCollision() {
+  if (!gameRunning) return;
+
+  const p = player.getBoundingClientRect();
+  const o = obstacle.getBoundingClientRect();
+
+  const playerHitbox = {
+    left: p.left + 18,
+    right: p.right - 18,
+    top: p.top + 18,
+    bottom: p.bottom - 12
+  };
+
+  const obstacleHitbox = {
+    left: o.left + 4,
+    right: o.right - 4,
+    top: o.top + 4,
+    bottom: o.bottom - 4
+  };
+
+  const isCollision =
+    playerHitbox.left < obstacleHitbox.right &&
+    playerHitbox.right > obstacleHitbox.left &&
+    playerHitbox.top < obstacleHitbox.bottom &&
+    playerHitbox.bottom > obstacleHitbox.top;
+
+  if (isCollision) {
+    endGame();
+  }
+}
+
+function endGame() {
+  gameRunning = false;
+
+  clearInterval(scoreTimer);
+  clearInterval(obstacleTimer);
+  clearInterval(collisionTimer);
+  clearTimeout(firstObstacleTimer);
 
   alert("게임오버!\n점수 : " + score);
+
   location.reload();
 }
 
