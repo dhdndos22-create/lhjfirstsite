@@ -68,8 +68,10 @@ function moveObstacle() {
   if (obstacleX > gameWidth + 100) {
     obstacleX = -100;
 
-    obstacleSpeed = Math.min(obstacleSpeed + 0.35, 15);
-    jumpTime = Math.max(jumpTime - 10, 360);
+    if (score < 300) {
+        obstacleSpeed = Math.min(obstacleSpeed + 0.18, 10.5);
+        jumpTime = Math.max(jumpTime - 5, 430);
+    }
 
     player.style.setProperty("--jump-time", jumpTime + "ms");
   }
