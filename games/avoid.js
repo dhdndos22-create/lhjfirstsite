@@ -70,7 +70,7 @@ function moveObstacle() {
     clearInterval(obstacleTimer);
 
     // 1000점 전까지만 난이도 증가
-    if (score < 1000) {
+    if (score < 1500) {
       // 기존 0.18의 1.25배 = 0.225
 
       obstacleSpeed = Math.min(obstacleSpeed + 0.27, 12);
