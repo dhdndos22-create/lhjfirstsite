@@ -33,6 +33,7 @@ startBtn.onclick = function () {
   game.style.setProperty("--jump-speed", jumpSpeed + "s");
 
   obstacle.classList.remove("obstacleMove");
+  obstacle.style.right = "-80px";
 
   scoreInterval = setInterval(function () {
     score++;
