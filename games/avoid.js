@@ -8,13 +8,15 @@ const scoreText = document.getElementById("score");
 let score = 0;
 let scoreInterval;
 let collisionInterval;
+let obstacleInterval;
 let obstacleStartTimeout;
+
 let isStarted = false;
 let obstacleActive = false;
 
-let obstacleSpeed = 1.7;
-let jumpSpeed = 0.55;
-
+let obstacleSpeed = 1700;
+let jumpSpeed = 550;
+let obstacleX = -80;
 
 startBtn.onclick = function () {
   if (isStarted) return;
@@ -22,30 +24,25 @@ startBtn.onclick = function () {
   isStarted = true;
   obstacleActive = false;
   score = 0;
-
-  obstacleSpeed = 1.7;
-  jumpSpeed = 0.55;
+  obstacleSpeed = 1700;
+  jumpSpeed = 550;
+  obstacleX = -80;
 
   startScreen.style.display = "none";
   game.style.display = "block";
   scoreText.innerHTML = "점수 : 0";
 
-  game.style.setProperty("--obstacle-speed", obstacleSpeed + "s");
-  game.style.setProperty("--jump-speed", jumpSpeed + "s");
-
-  obstacle.classList.remove("obstacleMove");
-  obstacle.style.right = "-80px";
+  obstacle.style.right = obstacleX + "px";
 
   scoreInterval = setInterval(function () {
     score++;
     scoreText.innerHTML = "점수 : " + score;
-    increaseDifficulty();
   }, 100);
 
   obstacleStartTimeout = setTimeout(function () {
     obstacleActive = true;
-    obstacle.style.right = "";
-    obstacle.classList.add("obstacleMove");
+    obstacleX = -80;
+    moveObstacle();
   }, 3000);
 
   collisionInterval = setInterval(function () {
@@ -65,20 +62,24 @@ startBtn.onclick = function () {
   }, 10);
 };
 
-function increaseDifficulty() {
-  if (score % 50 === 0 && score > 0) {
-    obstacleSpeed = Math.max(0.75, obstacleSpeed - 0.08);
-    jumpSpeed = Math.max(0.35, jumpSpeed - 0.02);
+function moveObstacle() {
+  clearInterval(obstacleInterval);
 
-    game.style.setProperty("--obstacle-speed", obstacleSpeed + "s");
-    game.style.setProperty("--jump-speed", jumpSpeed + "s");
+  obstacleInterval = setInterval(function () {
+    obstacleX += 8;
 
-    if (obstacleActive) {
-      obstacle.classList.remove("obstacleMove");
-      void obstacle.offsetWidth;
-      obstacle.classList.add("obstacleMove");
+    obstacle.style.right = obstacleX + "px";
+
+    if (obstacleX > 950) {
+      obstacleX = -80;
+
+      obstacleSpeed = Math.max(700, obstacleSpeed - 40);
+      jumpSpeed = Math.max(350, jumpSpeed - 8);
+
+      clearInterval(obstacleInterval);
+      moveObstacle();
     }
-  }
+  }, obstacleSpeed / 100);
 }
 
 function jump() {
@@ -89,13 +90,14 @@ function jump() {
 
     setTimeout(function () {
       player.classList.remove("jump");
-    }, jumpSpeed * 1000);
+    }, jumpSpeed);
   }
 }
 
 function gameOver() {
   clearInterval(scoreInterval);
   clearInterval(collisionInterval);
+  clearInterval(obstacleInterval);
   clearTimeout(obstacleStartTimeout);
 
   alert("게임오버!\n점수 : " + score);
