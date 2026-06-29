@@ -1,3 +1,4 @@
+alert("JS 실행됨");
 const startScreen = document.getElementById("startScreen");
 const startBtn = document.getElementById("startBtn");
 const game = document.getElementById("game");
