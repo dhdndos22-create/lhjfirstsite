@@ -106,16 +106,66 @@ h1 {
 }
 
 #obstacle {
+  position: absolute;
+  right: -120px;
+  z-index: 9;
+}
+
+/* 바닥 장애물 */
+#obstacle.groundObstacle {
   width: 24px;
   height: 42px;
-  position: absolute;
-  right: -100px;
   bottom: 70px;
   background: linear-gradient(#ff5a4f, #d82121);
   border: 3px solid #8b1717;
   border-radius: 8px 8px 4px 4px;
   box-shadow: inset -4px 0 rgba(0, 0, 0, 0.15);
-  z-index: 9;
+}
+
+/* 공중 야구공 */
+#obstacle.ballObstacle {
+  width: 34px;
+  height: 34px;
+  bottom: 160px;
+  background:
+    radial-gradient(circle at 35% 30%, #ffffff 0%, #ffffff 45%, #f1f1f1 100%);
+  border: 3px solid #222;
+  border-radius: 50%;
+  box-shadow: inset -3px -3px rgba(0, 0, 0, 0.12);
+  animation: ballSpin 0.35s linear infinite;
+}
+
+#obstacle.ballObstacle::before,
+#obstacle.ballObstacle::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 24px;
+  border: 2px solid #d62828;
+  border-left: none;
+  border-bottom: none;
+  border-radius: 50%;
+  top: 4px;
+}
+
+#obstacle.ballObstacle::before {
+  left: 3px;
+  transform: rotate(-25deg);
+}
+
+#obstacle.ballObstacle::after {
+  right: 3px;
+  transform: rotate(155deg);
+}
+
+@keyframes ballSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .jump {
@@ -162,8 +212,14 @@ h1 {
     bottom: 52px;
   }
 
-  #obstacle {
+  #obstacle.groundObstacle {
     bottom: 62px;
+  }
+
+  #obstacle.ballObstacle {
+    width: 30px;
+    height: 30px;
+    bottom: 135px;
   }
 
   @keyframes jump {
