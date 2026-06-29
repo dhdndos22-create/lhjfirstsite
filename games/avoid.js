@@ -81,7 +81,7 @@ function moveObstacle() {
     obstacleX = -100;
 
     // 랜덤 대기시간 (1.2초 ~ 2.2초)
-    const delay = 1200 + Math.random() * 1000;
+    const delay = 1300 + Math.random() * 700;
 
     nextObstacleTimeout = setTimeout(function () {
 
