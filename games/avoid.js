@@ -10,21 +10,32 @@ let scoreInterval;
 let collisionInterval;
 let isStarted = false;
 
+let obstacleSpeed = 1.7;
+let jumpSpeed = 0.55;
+
 startBtn.onclick = function () {
   if (isStarted) return;
 
   isStarted = true;
   score = 0;
 
+  obstacleSpeed = 1.7;
+  jumpSpeed = 0.55;
+
   startScreen.style.display = "none";
   game.style.display = "block";
   scoreText.innerHTML = "점수 : 0";
+
+  game.style.setProperty("--obstacle-speed", obstacleSpeed + "s");
+  game.style.setProperty("--jump-speed", jumpSpeed + "s");
 
   obstacle.classList.add("obstacleMove");
 
   scoreInterval = setInterval(function () {
     score++;
     scoreText.innerHTML = "점수 : " + score;
+
+    increaseDifficulty();
   }, 100);
 
   collisionInterval = setInterval(function () {
@@ -46,6 +57,22 @@ startBtn.onclick = function () {
   }, 10);
 };
 
+function increaseDifficulty() {
+  if (score % 50 === 0) {
+    obstacleSpeed = Math.max(0.75, obstacleSpeed - 0.08);
+    jumpSpeed = Math.max(0.35, jumpSpeed - 0.02);
+
+    game.style.setProperty("--obstacle-speed", obstacleSpeed + "s");
+    game.style.setProperty("--jump-speed", jumpSpeed + "s");
+
+    obstacle.classList.remove("obstacleMove");
+
+    void obstacle.offsetWidth;
+
+    obstacle.classList.add("obstacleMove");
+  }
+}
+
 function jump() {
   if (!isStarted) return;
 
@@ -54,7 +81,7 @@ function jump() {
 
     setTimeout(function () {
       player.classList.remove("jump");
-    }, 550);
+    }, jumpSpeed * 1000);
   }
 }
 
