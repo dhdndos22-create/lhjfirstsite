@@ -46,16 +46,24 @@ startBtn.onclick = function () {
   }, 10);
 };
 
-document.addEventListener("keydown", function (e) {
+function jump() {
   if (!isStarted) return;
 
-  if (e.code === "Space") {
-    if (!player.classList.contains("jump")) {
-      player.classList.add("jump");
+  if (!player.classList.contains("jump")) {
+    player.classList.add("jump");
 
-      setTimeout(function () {
-        player.classList.remove("jump");
-      }, 550);
-    }
+    setTimeout(function () {
+      player.classList.remove("jump");
+    }, 550);
   }
+}
+
+document.addEventListener("keydown", function (e) {
+  if (e.code === "Space") {
+    jump();
+  }
+});
+
+document.addEventListener("touchstart", function () {
+  jump();
 });

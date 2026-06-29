@@ -3,6 +3,8 @@ body {
   text-align: center;
   background: linear-gradient(#8fd3ff, #dff6ff);
   font-family: Arial, sans-serif;
+  touch-action: manipulation;
+  user-select: none;
 }
 
 h1 {
