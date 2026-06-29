@@ -72,10 +72,10 @@ function moveObstacle() {
     // 1000점 전까지만 난이도 증가
     if (score < 1000) {
       // 기존 0.18의 1.25배 = 0.225
-      obstacleSpeed = Math.min(obstacleSpeed + 0.225, 10.5);
 
-      // 기존 5의 1.25배 = 6.25
-      jumpTime = Math.max(jumpTime - 6.25, 430);
+      obstacleSpeed = Math.min(obstacleSpeed + 0.27, 12);
+      jumpTime = Math.max(jumpTime - 7.5, 400);
+      
 
       player.style.setProperty("--jump-time", jumpTime + "ms");
     }
@@ -83,7 +83,7 @@ function moveObstacle() {
     obstacleX = -100;
 
     // 장애물 텀 살짝 빠르게: 0.9초 ~ 1.6초
-    const delay = 900 + Math.random() * 700;
+    const delay = 600 + Math.random() * 500;
 
     nextObstacleTimeout = setTimeout(function () {
       obstacle.style.right = obstacleX + "px";
