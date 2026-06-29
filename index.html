@@ -19,11 +19,18 @@
 
       <button class="menu-main-btn" onclick="toggleMenu()">MENU</button>
 
-      <div id="menuBox" class="menu-box">
-        <a href="games/avoid.html" class="menu-card">🎮 게임</a>
+      <div id="mainMenu" class="menu-box">
+        <button class="menu-card" onclick="openGameMenu()">🎮 게임</button>
         <a href="gallery.html" class="menu-card">📷 효종갤러리</a>
         <a href="#" class="menu-card preparing">📝 준비중</a>
         <a href="#" class="menu-card preparing">👤 준비중</a>
+      </div>
+
+      <div id="gameMenu" class="menu-box">
+        <a href="games/avoid.html" class="menu-card">🏃 장애물 피하기</a>
+        <a href="#" class="menu-card preparing">🎲 준비중</a>
+        <a href="#" class="menu-card preparing">🕹️ 준비중</a>
+        <button class="menu-card back-card" onclick="backToMainMenu()">◀ 뒤로가기</button>
       </div>
     </main>
 

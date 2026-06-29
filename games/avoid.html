@@ -1,39 +1,30 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>장애물 피하기</title>
-
-    <link rel="stylesheet" href="avoid.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>장애물 피하기 - 효종월드</title>
+  <link rel="stylesheet" href="avoid.css">
 </head>
-
 <body>
+  <h1>🎮 장애물 피하기</h1>
 
-<h1>🎮 장애물 피하기</h1>
-
-<div id="startScreen">
+  <div id="startScreen">
     <h2>게임을 시작하시겠습니까?</h2>
     <p>스페이스바를 눌러 점프하세요!</p>
-
     <button id="startBtn">게임 시작</button>
-</div>
+  </div>
 
-<div id="game">
-
+  <div id="game">
     <div id="player"></div>
-
     <div id="obstacle"></div>
+  </div>
 
-</div>
+  <h2 id="score">점수 : 0</h2>
+  <p class="info">스페이스바로 점프!</p>
 
-<h2 id="score">점수 : 0</h2>
+  <a class="back-btn" href="../index.html">← 메인으로</a>
 
-<p>스페이스바로 점프!</p>
-
-<a class="back-btn" href="../index.html">← 메인으로</a>
-
-<script src="avoid.js"></script>
-
+  <script src="avoid.js"></script>
 </body>
 </html>
