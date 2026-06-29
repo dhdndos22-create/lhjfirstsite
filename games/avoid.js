@@ -8,7 +8,9 @@ const scoreText = document.getElementById("score");
 let score = 0;
 let scoreInterval;
 let collisionInterval;
+let obstacleStartTimeout;
 let isStarted = false;
+let obstacleActive = false;
 
 let obstacleSpeed = 1.7;
 let jumpSpeed = 0.55;
@@ -17,6 +19,7 @@ startBtn.onclick = function () {
   if (isStarted) return;
 
   isStarted = true;
+  obstacleActive = false;
   score = 0;
 
   obstacleSpeed = 1.7;
@@ -29,8 +32,6 @@ startBtn.onclick = function () {
   game.style.setProperty("--obstacle-speed", obstacleSpeed + "s");
   game.style.setProperty("--jump-speed", jumpSpeed + "s");
 
-  obstacle.classList.add("obstacleMove");
-
   scoreInterval = setInterval(function () {
     score++;
     scoreText.innerHTML = "점수 : " + score;
@@ -38,7 +39,14 @@ startBtn.onclick = function () {
     increaseDifficulty();
   }, 100);
 
+  obstacleStartTimeout = setTimeout(function () {
+    obstacleActive = true;
+    obstacle.classList.add("obstacleMove");
+  }, 3000);
+
   collisionInterval = setInterval(function () {
+    if (!obstacleActive) return;
+
     const p = player.getBoundingClientRect();
     const o = obstacle.getBoundingClientRect();
 
@@ -48,11 +56,7 @@ startBtn.onclick = function () {
       p.bottom > o.top &&
       p.top < o.bottom
     ) {
-      clearInterval(scoreInterval);
-      clearInterval(collisionInterval);
-
-      alert("게임오버!\n점수 : " + score);
-      location.reload();
+      gameOver();
     }
   }, 10);
 };
@@ -65,11 +69,11 @@ function increaseDifficulty() {
     game.style.setProperty("--obstacle-speed", obstacleSpeed + "s");
     game.style.setProperty("--jump-speed", jumpSpeed + "s");
 
-    obstacle.classList.remove("obstacleMove");
-
-    void obstacle.offsetWidth;
-
-    obstacle.classList.add("obstacleMove");
+    if (obstacleActive) {
+      obstacle.classList.remove("obstacleMove");
+      void obstacle.offsetWidth;
+      obstacle.classList.add("obstacleMove");
+    }
   }
 }
 
@@ -83,6 +87,15 @@ function jump() {
       player.classList.remove("jump");
     }, jumpSpeed * 1000);
   }
+}
+
+function gameOver() {
+  clearInterval(scoreInterval);
+  clearInterval(collisionInterval);
+  clearTimeout(obstacleStartTimeout);
+
+  alert("게임오버!\n점수 : " + score);
+  location.reload();
 }
 
 document.addEventListener("keydown", function (e) {
