@@ -5,6 +5,7 @@ const player = document.getElementById("player");
 const obstacle = document.getElementById("obstacle");
 const scoreText = document.getElementById("score");
 
+let nextObstacleTimeout = null;
 let gameRunning = false;
 let score = 0;
 
@@ -66,14 +67,29 @@ function moveObstacle() {
   const gameWidth = game.clientWidth;
 
   if (obstacleX > gameWidth + 100) {
-    obstacleX = -100;
 
-    if (score < 500) {
-        obstacleSpeed = Math.min(obstacleSpeed + 0.18, 10.5);
-        jumpTime = Math.max(jumpTime - 5, 430);
+    clearInterval(obstacleTimer);
+
+    // 30초 전까지만 난이도 증가
+    if (score < 300) {
+      obstacleSpeed = Math.min(obstacleSpeed + 0.18, 10.5);
+      jumpTime = Math.max(jumpTime - 5, 430);
+
+      player.style.setProperty("--jump-time", jumpTime + "ms");
     }
 
-    player.style.setProperty("--jump-time", jumpTime + "ms");
+    obstacleX = -100;
+
+    // 랜덤 대기시간 (1.2초 ~ 2.2초)
+    const delay = 1200 + Math.random() * 1000;
+
+    nextObstacleTimeout = setTimeout(function () {
+
+      obstacle.style.right = obstacleX + "px";
+
+      obstacleTimer = setInterval(moveObstacle, 16);
+
+    }, delay);
   }
 }
 
@@ -127,6 +143,7 @@ function endGame() {
   clearInterval(obstacleTimer);
   clearInterval(collisionTimer);
   clearTimeout(firstObstacleTimer);
+  clearTimeout(nextObstacleTimeout);
 
   alert("게임오버!\n점수 : " + score);
 
