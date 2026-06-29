@@ -92,7 +92,7 @@ h1 {
   display: none;
 }
 
-.obstacleMove {
+#obstacle.obstacleMove {
   display: block;
   animation: obstacle var(--obstacle-speed, 1.7s) linear infinite;
 }

@@ -32,10 +32,11 @@ startBtn.onclick = function () {
   game.style.setProperty("--obstacle-speed", obstacleSpeed + "s");
   game.style.setProperty("--jump-speed", jumpSpeed + "s");
 
+  obstacle.classList.remove("obstacleMove");
+
   scoreInterval = setInterval(function () {
     score++;
     scoreText.innerHTML = "점수 : " + score;
-
     increaseDifficulty();
   }, 100);
 
@@ -62,7 +63,7 @@ startBtn.onclick = function () {
 };
 
 function increaseDifficulty() {
-  if (score % 50 === 0) {
+  if (score % 50 === 0 && score > 0) {
     obstacleSpeed = Math.max(0.75, obstacleSpeed - 0.08);
     jumpSpeed = Math.max(0.35, jumpSpeed - 0.02);
 
