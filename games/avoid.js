@@ -9,10 +9,10 @@ let nextObstacleTimeout = null;
 let gameRunning = false;
 let score = 0;
 
-let playerBaseBottom = 58;
-let obstacleX = -100;
+let obstacleX = -120;
 let obstacleSpeed = 6;
 let jumpTime = 550;
+let obstacleType = "ground";
 
 let scoreTimer = null;
 let obstacleTimer = null;
@@ -27,9 +27,10 @@ function startGame() {
   gameRunning = true;
   score = 0;
 
-  obstacleX = -100;
+  obstacleX = -120;
   obstacleSpeed = 6;
   jumpTime = 550;
+  obstacleType = "ground";
 
   startScreen.style.display = "none";
   game.style.display = "block";
@@ -37,6 +38,8 @@ function startGame() {
   scoreText.textContent = "점수 : 0";
   obstacle.style.right = obstacleX + "px";
   player.style.setProperty("--jump-time", jumpTime + "ms");
+
+  prepareNextObstacle();
 
   scoreTimer = setInterval(updateScore, 100);
 
@@ -54,6 +57,21 @@ function updateScore() {
   scoreText.textContent = "점수 : " + score;
 }
 
+function prepareNextObstacle() {
+  obstacleType = Math.random() < 0.5 ? "ground" : "ball";
+
+  obstacle.classList.remove("groundObstacle", "ballObstacle");
+
+  if (obstacleType === "ground") {
+    obstacle.classList.add("groundObstacle");
+  } else {
+    obstacle.classList.add("ballObstacle");
+  }
+
+  obstacleX = -120;
+  obstacle.style.right = obstacleX + "px";
+}
+
 function startObstacle() {
   obstacleTimer = setInterval(moveObstacle, 16);
 }
@@ -66,28 +84,22 @@ function moveObstacle() {
 
   const gameWidth = game.clientWidth;
 
-  if (obstacleX > gameWidth + 100) {
+  if (obstacleX > gameWidth + 120) {
     clearInterval(obstacleTimer);
 
-    // 1000점 전까지만 난이도 증가
     if (score < 1500) {
-      // 기존 0.18의 1.25배 = 0.225
-
       obstacleSpeed = Math.min(obstacleSpeed + 0.27, 12);
       jumpTime = Math.max(jumpTime - 7.5, 400);
-      
 
       player.style.setProperty("--jump-time", jumpTime + "ms");
     }
 
-    obstacleX = -100;
+    prepareNextObstacle();
 
-    // 장애물 텀 살짝 빠르게: 0.9초 ~ 1.6초
     const delay = 600 + Math.random() * 500;
 
     nextObstacleTimeout = setTimeout(function () {
-      obstacle.style.right = obstacleX + "px";
-      obstacleTimer = setInterval(moveObstacle, 16);
+      startObstacle();
     }, delay);
   }
 }
@@ -117,12 +129,23 @@ function checkCollision() {
     bottom: p.bottom - 12
   };
 
-  const obstacleHitbox = {
-    left: o.left + 4,
-    right: o.right - 4,
-    top: o.top + 4,
-    bottom: o.bottom - 4
-  };
+  let obstacleHitbox;
+
+  if (obstacleType === "ground") {
+    obstacleHitbox = {
+      left: o.left + 4,
+      right: o.right - 4,
+      top: o.top + 4,
+      bottom: o.bottom - 4
+    };
+  } else {
+    obstacleHitbox = {
+      left: o.left + 5,
+      right: o.right - 5,
+      top: o.top + 5,
+      bottom: o.bottom - 5
+    };
+  }
 
   const isCollision =
     playerHitbox.left < obstacleHitbox.right &&
