@@ -45,22 +45,33 @@ startBtn.onclick = function () {
     moveObstacle();
   }, 3000);
 
-  collisionInterval = setInterval(function () {
-    if (!obstacleActive) return;
+const p = player.getBoundingClientRect();
+const o = obstacle.getBoundingClientRect();
 
-    const p = player.getBoundingClientRect();
-    const o = obstacle.getBoundingClientRect();
-
-    if (
-      p.left < o.right &&
-      p.right > o.left &&
-      p.bottom > o.top &&
-      p.top < o.bottom
-    ) {
-      gameOver();
-    }
-  }, 10);
+// 플레이어 충돌 영역을 살짝 줄임
+const playerHitbox = {
+    left: p.left + 12,
+    right: p.right - 12,
+    top: p.top + 10,
+    bottom: p.bottom - 8
 };
+
+// 장애물도 살짝 줄임
+const obstacleHitbox = {
+    left: o.left + 3,
+    right: o.right - 3,
+    top: o.top + 3,
+    bottom: o.bottom - 3
+};
+
+if (
+    playerHitbox.left < obstacleHitbox.right &&
+    playerHitbox.right > obstacleHitbox.left &&
+    playerHitbox.bottom > obstacleHitbox.top &&
+    playerHitbox.top < obstacleHitbox.bottom
+){
+    gameOver();
+}
 
 function moveObstacle() {
   clearInterval(obstacleInterval);
