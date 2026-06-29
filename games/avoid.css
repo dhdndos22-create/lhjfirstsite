@@ -1,127 +1,181 @@
-body {
-  margin: 0;
-  text-align: center;
-  background: linear-gradient(#8fd3ff, #dff6ff);
-  font-family: Arial, sans-serif;
+body{
+
+    margin:0;
+    text-align:center;
+    background:linear-gradient(#8fd3ff,#dff6ff);
+    font-family:Arial;
+
 }
 
-h1 {
-  margin-top: 30px;
+h1{
+
+    margin-top:30px;
+
 }
 
-#startScreen {
-  width: 700px;
-  height: 300px;
-  border: 4px solid #333;
-  margin: 30px auto;
-  background: #dff6ff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+#startScreen{
+
+    width:700px;
+    height:300px;
+
+    margin:30px auto;
+
+    border:4px solid black;
+
+    background:white;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
 }
 
-#startBtn {
-  padding: 12px 24px;
-  font-size: 18px;
-  border: none;
-  border-radius: 20px;
-  background: #4a90e2;
-  color: white;
-  cursor: pointer;
-  transition: 0.2s;
+#startBtn{
+
+    padding:12px 25px;
+
+    font-size:20px;
+
+    cursor:pointer;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:#4a90e2;
+
+    color:white;
+
 }
 
-#startBtn:hover {
-  transform: scale(1.05);
-  background: #357abd;
+#startBtn:hover{
+
+    background:#2d73c7;
+
 }
 
-#game {
-  width: 700px;
-  height: 300px;
-  border: 4px solid #333;
-  margin: 30px auto;
-  background: #b7f7a3;
-  position: relative;
-  overflow: hidden;
+#game{
 
-  /* 처음에는 게임을 숨김 */
-  display: none;
+    width:700px;
+
+    height:300px;
+
+    margin:30px auto;
+
+    border:4px solid black;
+
+    background:#9cff92;
+
+    position:relative;
+
+    overflow:hidden;
+
+    display:none;
+
 }
 
-#player {
-  width: 45px;
-  height: 45px;
-  background: #ffcc00;
-  position: absolute;
-  bottom: 0;
-  left: 80px;
-  border-radius: 10px;
+#player{
+
+    width:45px;
+
+    height:45px;
+
+    background:gold;
+
+    border-radius:10px;
+
+    position:absolute;
+
+    left:80px;
+
+    bottom:0;
+
 }
 
-#obstacle {
-  width: 35px;
-  height: 60px;
-  background: #ff5555;
-  position: absolute;
-  bottom: 0;
-  right: -40px;
+#obstacle{
+
+    width:35px;
+
+    height:60px;
+
+    background:red;
+
+    position:absolute;
+
+    bottom:0;
+
+    right:-40px;
+
 }
 
-/* 시작 버튼을 눌렀을 때만 추가되는 클래스 */
-.obstacle-move {
-  animation: moveObstacle 1.7s linear infinite;
+.obstacleMove{
+
+    animation:obstacle 1.7s linear infinite;
+
 }
 
-@keyframes moveObstacle {
-  from {
-    right: -40px;
-  }
+@keyframes obstacle{
 
-  to {
-    right: 740px;
-  }
+    from{
+
+        right:-40px;
+
+    }
+
+    to{
+
+        right:740px;
+
+    }
+
 }
 
-.jump {
-  animation: jump 0.55s ease;
+.jump{
+
+    animation:jump .55s;
+
 }
 
-@keyframes jump {
-  0% {
-    bottom: 0;
-  }
+@keyframes jump{
 
-  50% {
-    bottom: 120px;
-  }
+    0%{
 
-  100% {
-    bottom: 0;
-  }
+        bottom:0;
+
+    }
+
+    50%{
+
+        bottom:120px;
+
+    }
+
+    100%{
+
+        bottom:0;
+
+    }
+
 }
 
-#score {
-  font-size: 24px;
-  font-weight: bold;
-}
+.back-btn{
 
-.info {
-  font-size: 16px;
-}
+    display:inline-block;
 
-.back-btn {
-  display: inline-block;
-  margin-top: 20px;
-  text-decoration: none;
-  color: white;
-  background: #4a90e2;
-  padding: 12px 20px;
-  border-radius: 20px;
-  transition: 0.2s;
-}
+    margin-top:20px;
 
-.back-btn:hover {
-  background: #357abd;
+    text-decoration:none;
+
+    background:#4a90e2;
+
+    color:white;
+
+    padding:12px 20px;
+
+    border-radius:20px;
+
 }
