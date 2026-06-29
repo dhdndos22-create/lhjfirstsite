@@ -64,14 +64,23 @@ const obstacleHitbox = {
     bottom: o.bottom - 3
 };
 
-if (
+  if (
+
     playerHitbox.left < obstacleHitbox.right &&
+
     playerHitbox.right > obstacleHitbox.left &&
+
     playerHitbox.bottom > obstacleHitbox.top &&
+
     playerHitbox.top < obstacleHitbox.bottom
-){
+
+  ) {
+
     gameOver();
-}
+
+  }
+
+}, 10);
 
 function moveObstacle() {
   clearInterval(obstacleInterval);
