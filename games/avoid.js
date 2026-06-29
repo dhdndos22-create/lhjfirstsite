@@ -15,6 +15,7 @@ let obstacleActive = false;
 let obstacleSpeed = 1.7;
 let jumpSpeed = 0.55;
 
+
 startBtn.onclick = function () {
   if (isStarted) return;
 
@@ -43,6 +44,7 @@ startBtn.onclick = function () {
 
   obstacleStartTimeout = setTimeout(function () {
     obstacleActive = true;
+    obstacle.style.right = "";
     obstacle.classList.add("obstacleMove");
   }, 3000);
 
