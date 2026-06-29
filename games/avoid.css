@@ -1,156 +1,182 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   text-align: center;
   background: linear-gradient(#8fd3ff, #dff6ff);
   font-family: Arial, sans-serif;
-  touch-action: manipulation;
   user-select: none;
+  touch-action: manipulation;
 }
 
 h1 {
-  margin-top: 25px;
+  margin-top: 24px;
+}
+
+#gameWrap {
+  width: 900px;
+  max-width: 94vw;
+  height: 360px;
+  margin: 30px auto;
+  position: relative;
 }
 
 #startScreen {
-  width: 900px;
-  height: 360px;
-  margin: 30px auto;
-  border: 4px solid black;
-  background: linear-gradient(#79d8ff, #dffaff);
-  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  border: 4px solid #111;
+  border-radius: 12px;
+  background: linear-gradient(#7fdcff, #e2fbff);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 7px 0 rgba(0, 0, 0, 0.2);
+}
+
+#startScreen h2 {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+
+#startScreen p {
+  font-size: 18px;
+  margin-bottom: 20px;
 }
 
 #startBtn {
-  padding: 12px 28px;
-  font-size: 20px;
-  cursor: pointer;
   border: none;
-  border-radius: 18px;
   background: #4a90e2;
   color: white;
+  font-size: 22px;
   font-weight: bold;
+  padding: 14px 34px;
+  border-radius: 24px;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #2d73c7;
+}
+
+#startBtn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #2d73c7;
 }
 
 #game {
-  width: 900px;
-  height: 360px;
-  margin: 30px auto;
-  border: 4px solid black;
-  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  border: 4px solid #111;
+  border-radius: 12px;
   position: relative;
   overflow: hidden;
   display: none;
-  background: linear-gradient(#6ed6ff 0%, #bff4ff 58%, #9be94b 59%, #67c934 100%);
+  background: linear-gradient(
+    #6ed6ff 0%,
+    #bff4ff 58%,
+    #99e85a 59%,
+    #60c83c 100%
+  );
 }
 
 #score {
   position: absolute;
-  top: 18px;
-  left: 20px;
-  font-size: 30px;
+  top: 16px;
+  left: 18px;
+  font-size: 28px;
   font-weight: bold;
+  z-index: 20;
+}
+
+#player {
+  width: 86px;
+  height: 86px;
+  position: absolute;
+  left: 140px;
+  bottom: 58px;
   z-index: 10;
 }
 
-#player{
-
-    width:90px;
-    height:90px;
-
-    position:absolute;
-
-    left:150px;
-
-    bottom:58px;
-
-}
-
-#player img{
-
-    width:100%;
-    height:100%;
-
-    object-fit:contain;
-
+#player img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
 }
 
 #obstacle {
   width: 24px;
   height: 42px;
+  position: absolute;
+  right: -100px;
+  bottom: 70px;
   background: linear-gradient(#ff5a4f, #d82121);
   border: 3px solid #8b1717;
   border-radius: 8px 8px 4px 4px;
-  position: absolute;
-  bottom: 70px;
-  right: -80px;
   box-shadow: inset -4px 0 rgba(0, 0, 0, 0.15);
-}
-
-#obstacle.obstacleMove {
-
-  animation: obstacle var(--obstacle-speed, 1.7s) linear infinite;
-
-}
-
-@keyframes obstacle {
-
-  from {
-
-    right: -80px;
-
-  }
-
-  to {
-
-    right: 950px;
-
-  }
-
+  z-index: 9;
 }
 
 .jump {
-  animation: jump var(--jump-speed, 0.55s);
+  animation: jump var(--jump-time, 550ms) ease-out;
 }
 
-@keyframes jump{
+@keyframes jump {
+  0% {
+    bottom: 58px;
+  }
 
-    0%{
-        bottom:58px;
-    }
+  50% {
+    bottom: 190px;
+  }
 
-    50%{
-        bottom:200px;
-    }
-
-    100%{
-        bottom:58px;
-    }
-
+  100% {
+    bottom: 58px;
+  }
 }
 
 .back-btn {
   display: inline-block;
-  margin-top: 10px;
   text-decoration: none;
   background: #4a90e2;
   color: white;
-  padding: 12px 20px;
-  border-radius: 20px;
   font-weight: bold;
+  padding: 12px 22px;
+  border-radius: 22px;
 }
 
-@media (max-width: 950px) {
-  #game,
-  #startScreen {
-    width: 94vw;
+@media (max-width: 700px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  #gameWrap {
+    height: 300px;
   }
 
   #player {
+    width: 70px;
+    height: 70px;
     left: 70px;
+    bottom: 52px;
+  }
+
+  #obstacle {
+    bottom: 62px;
+  }
+
+  @keyframes jump {
+    0% {
+      bottom: 52px;
+    }
+
+    50% {
+      bottom: 165px;
+    }
+
+    100% {
+      bottom: 52px;
+    }
   }
 }
