@@ -67,28 +67,27 @@ function moveObstacle() {
   const gameWidth = game.clientWidth;
 
   if (obstacleX > gameWidth + 100) {
-
     clearInterval(obstacleTimer);
 
-    // 30초 전까지만 난이도 증가
-    if (score < 300) {
-      obstacleSpeed = Math.min(obstacleSpeed + 0.18, 10.5);
-      jumpTime = Math.max(jumpTime - 5, 430);
+    // 1000점 전까지만 난이도 증가
+    if (score < 1000) {
+      // 기존 0.18의 1.25배 = 0.225
+      obstacleSpeed = Math.min(obstacleSpeed + 0.225, 10.5);
+
+      // 기존 5의 1.25배 = 6.25
+      jumpTime = Math.max(jumpTime - 6.25, 430);
 
       player.style.setProperty("--jump-time", jumpTime + "ms");
     }
 
     obstacleX = -100;
 
-    // 랜덤 대기시간 (1.2초 ~ 2.2초)
-    const delay = 1300 + Math.random() * 700;
+    // 장애물 텀 살짝 빠르게: 0.9초 ~ 1.6초
+    const delay = 900 + Math.random() * 700;
 
     nextObstacleTimeout = setTimeout(function () {
-
       obstacle.style.right = obstacleX + "px";
-
       obstacleTimer = setInterval(moveObstacle, 16);
-
     }, delay);
   }
 }
