@@ -80,31 +80,47 @@ h1 {
 }
 
 #obstacle {
+
   width: 24px;
+
   height: 42px;
+
   background: linear-gradient(#ff5a4f, #d82121);
+
   border: 3px solid #8b1717;
+
   border-radius: 8px 8px 4px 4px;
+
   position: absolute;
+
   bottom: 70px;
-  right: -50px;
+
+  right: -80px;
+
   box-shadow: inset -4px 0 rgba(0, 0, 0, 0.15);
-  display: none;
+
 }
 
 #obstacle.obstacleMove {
-  display: block;
+
   animation: obstacle var(--obstacle-speed, 1.7s) linear infinite;
+
 }
 
 @keyframes obstacle {
+
   from {
-    right: -50px;
+
+    right: -80px;
+
   }
 
   to {
+
     right: 950px;
+
   }
+
 }
 
 .jump {
