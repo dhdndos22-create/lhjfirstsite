@@ -149,7 +149,7 @@ function checkCollision() {
     obstacleHitbox = {
       left: o.left + 4,
       right: o.right - 4,
-      top: o.top + 4,
+      top: o.top - 8 ,
       bottom: o.bottom - 4
     };
   } else {
