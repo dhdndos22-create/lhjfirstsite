@@ -1,1 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>효종갤러리</title>
+  <link rel="stylesheet" href="css/gallery.css" />
+</head>
+<body>
+  <main class="gallery-wrap">
+    <h1>📷 효종갤러리</h1>
+    <p class="desc">누구든지 사진을 업로드할 수 있어요!</p>
 
+    <section class="upload-box">
+      <input type="text" id="nicknameInput" placeholder="닉네임 입력" maxlength="12" />
+      <input type="file" id="imageInput" accept="image/*" />
+      <button id="uploadBtn">업로드</button>
+      <p id="statusText"></p>
+    </section>
+
+    <section id="galleryList" class="gallery-list"></section>
+
+    <a href="index.html" class="back-btn">← 메인으로</a>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/gallery.js"></script>
+</body>
+</html>
