@@ -17,63 +17,62 @@ class HyojongmonWorld extends Phaser.Scene {
     this.speed = 170;
     this.encounterCooldown = false;
 
-    this.add.rectangle(400, 300, 800, 600, 0x8ee873);
+    // 월드 배경
+    this.add.rectangle(400, 300, 800, 600, 0x8ee873).setDepth(0);
 
-    this.add.rectangle(400, 300, 800, 120, 0xd8b56d);
-    this.add.rectangle(400, 300, 120, 600, 0xd8b56d);
+    // 길
+    this.add.rectangle(400, 300, 800, 120, 0xd8b56d).setDepth(1);
+    this.add.rectangle(400, 300, 120, 600, 0xd8b56d).setDepth(1);
 
-    this.grassArea = this.add.rectangle(620, 170, 180, 120, 0x2ecc71);
+    // 풀숲
+    this.grassArea = this.add.rectangle(620, 170, 180, 120, 0x2ecc71).setDepth(2);
     this.grassArea.setStrokeStyle(4, 0x1e8449);
 
     this.add.text(565, 145, "풀숲", {
       fontSize: "22px",
       color: "#ffffff",
       fontStyle: "bold"
-    });
+    }).setDepth(3);
 
+    // 벽
     this.walls = this.physics.add.staticGroup();
 
     this.createWall(400, 20, 800, 40);
     this.createWall(400, 580, 800, 40);
     this.createWall(20, 300, 40, 600);
     this.createWall(780, 300, 40, 600);
-
     this.createWall(230, 180, 130, 80);
     this.createWall(570, 430, 170, 80);
 
+    // 플레이어
     this.player = this.physics.add.rectangle(400, 300, 34, 34, 0x3498db);
+    this.player.setDepth(10);
     this.player.setCollideWorldBounds(true);
 
     this.physics.add.collider(this.player, this.walls);
 
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    this.infoText = this.add.text(20, 20, "효종몬 월드", {
+    this.add.text(20, 20, "효종몬 월드", {
       fontSize: "24px",
       color: "#ffffff",
       fontStyle: "bold",
       backgroundColor: "#00000088",
-      padding: {
-        x: 10,
-        y: 6
-      }
-    });
+      padding: { x: 10, y: 6 }
+    }).setDepth(100);
 
-    this.noticeText = this.add.text(20, 60, "방향키 또는 화면 안 조작패드로 이동", {
+    this.add.text(20, 60, "방향키 또는 화면 안 조작패드로 이동", {
       fontSize: "16px",
       color: "#ffffff",
       backgroundColor: "#00000088",
-      padding: {
-        x: 10,
-        y: 5
-      }
-    });
+      padding: { x: 10, y: 5 }
+    }).setDepth(100);
 
     this.createInGameControls();
   }
 
   createWall(x, y, width, height) {
-    const wall = this.add.rectangle(x, y, width, height, 0x6b4f2a);
+    const wall = this.add.rectangle(x, y, width, height, 0x6b4f2a).setDepth(5);
     this.physics.add.existing(wall, true);
     this.walls.add(wall);
   }
@@ -81,18 +80,18 @@ class HyojongmonWorld extends Phaser.Scene {
   createInGameControls() {
     const baseX = 115;
     const baseY = 490;
-
     const alpha = 0.38;
     const dpadColor = 0x111111;
 
-    // 십자 D-pad 모양 배경
-    const center = this.add.rectangle(baseX, baseY, 46, 46, dpadColor, alpha);
-    const up = this.add.rectangle(baseX, baseY - 43, 46, 46, dpadColor, alpha);
-    const down = this.add.rectangle(baseX, baseY + 43, 46, 46, dpadColor, alpha);
-    const left = this.add.rectangle(baseX - 43, baseY, 46, 46, dpadColor, alpha);
-    const right = this.add.rectangle(baseX + 43, baseY, 46, 46, dpadColor, alpha);
+    const parts = [
+      this.add.rectangle(baseX, baseY, 46, 46, dpadColor, alpha),
+      this.add.rectangle(baseX, baseY - 43, 46, 46, dpadColor, alpha),
+      this.add.rectangle(baseX, baseY + 43, 46, 46, dpadColor, alpha),
+      this.add.rectangle(baseX - 43, baseY, 46, 46, dpadColor, alpha),
+      this.add.rectangle(baseX + 43, baseY, 46, 46, dpadColor, alpha)
+    ];
 
-    [center, up, down, left, right].forEach((part) => {
+    parts.forEach((part) => {
       part.setStrokeStyle(2, 0xffffff, 0.35);
       part.setDepth(1000);
     });
@@ -102,7 +101,6 @@ class HyojongmonWorld extends Phaser.Scene {
     this.createDpadButton(baseX - 43, baseY, "◀", "left");
     this.createDpadButton(baseX + 43, baseY, "▶", "right");
 
-    // 동그란 A 버튼
     const aButton = this.add.circle(690, 500, 36, 0x4a90e2, 0.42)
       .setStrokeStyle(3, 0xffffff, 0.65)
       .setDepth(1000)
@@ -112,25 +110,9 @@ class HyojongmonWorld extends Phaser.Scene {
       fontSize: "28px",
       color: "#ffffff",
       fontStyle: "bold"
-    })
-      .setOrigin(0.5)
-      .setDepth(1001);
+    }).setOrigin(0.5).setDepth(1001);
 
-    aButton.on("pointerdown", () => {
-      mobileInput.select = true;
-    });
-
-    aButton.on("pointerup", () => {
-      mobileInput.select = false;
-    });
-
-    aButton.on("pointerout", () => {
-      mobileInput.select = false;
-    });
-
-    aButton.on("pointerupoutside", () => {
-      mobileInput.select = false;
-    });
+    this.bindButton(aButton, "select");
   }
 
   createDpadButton(x, y, label, key) {
@@ -142,23 +124,25 @@ class HyojongmonWorld extends Phaser.Scene {
       fontSize: "20px",
       color: "#ffffff",
       fontStyle: "bold"
-    })
-      .setOrigin(0.5)
-      .setDepth(1001);
+    }).setOrigin(0.5).setDepth(1001);
 
-    hitArea.on("pointerdown", () => {
+    this.bindButton(hitArea, key);
+  }
+
+  bindButton(button, key) {
+    button.on("pointerdown", () => {
       mobileInput[key] = true;
     });
 
-    hitArea.on("pointerup", () => {
+    button.on("pointerup", () => {
       mobileInput[key] = false;
     });
 
-    hitArea.on("pointerout", () => {
+    button.on("pointerout", () => {
       mobileInput[key] = false;
     });
 
-    hitArea.on("pointerupoutside", () => {
+    button.on("pointerupoutside", () => {
       mobileInput[key] = false;
     });
   }
@@ -186,10 +170,6 @@ class HyojongmonWorld extends Phaser.Scene {
     }
 
     this.checkGrassEncounter();
-
-    if (mobileInput.select) {
-      console.log("선택 버튼 눌림");
-    }
   }
 
   checkGrassEncounter() {
@@ -222,7 +202,7 @@ const config = {
   parent: "gameContainer",
   width: 800,
   height: 600,
-  backgroundColor: "#000000",
+  backgroundColor: "#8ee873",
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
@@ -236,4 +216,4 @@ const config = {
   scene: [HyojongmonWorld]
 };
 
-const game = new Phaser.Game(config);
+new Phaser.Game(config);
