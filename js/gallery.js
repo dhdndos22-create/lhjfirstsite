@@ -9,6 +9,10 @@ const uploadBtn = document.getElementById("uploadBtn");
 const statusText = document.getElementById("statusText");
 const galleryList = document.getElementById("galleryList");
 
+let currentPage = 1;
+const itemsPerPage = 4;
+let totalItems = 0;
+
 uploadBtn.addEventListener("click", uploadImage);
 
 loadGallery();
@@ -82,20 +86,33 @@ async function uploadImage() {
   imageInput.value = "";
   uploadBtn.disabled = false;
 
+  currentPage = 1;
   loadGallery();
 }
 
 async function loadGallery() {
   galleryList.innerHTML = "";
 
-  const { data, error } = await supabaseClient
+  const from = (currentPage - 1) * itemsPerPage;
+  const to = from + itemsPerPage - 1;
+
+  const { data, error, count } = await supabaseClient
     .from("gallery")
-    .select("*")
-    .order("created_at", { ascending: false });
+    .select("*", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, to);
 
   if (error) {
     console.error(error);
     galleryList.innerHTML = "<p>갤러리를 불러오지 못했어.</p>";
+    return;
+  }
+
+  totalItems = count || 0;
+
+  if (!data || data.length === 0) {
+    galleryList.innerHTML = "<p>아직 업로드된 사진이 없어.</p>";
+    renderPagination();
     return;
   }
 
@@ -112,10 +129,48 @@ async function loadGallery() {
         <div class="date">${date}</div>
       </div>
     `;
+
     card.addEventListener("click", function () {
-        location.href = `photo.html?id=${item.id}`;
+      location.href = `photo.html?id=${item.id}`;
     });
 
     galleryList.appendChild(card);
   });
+
+  renderPagination();
+}
+
+function renderPagination() {
+  let pagination = document.getElementById("pagination");
+
+  if (!pagination) {
+    pagination = document.createElement("div");
+    pagination.id = "pagination";
+    pagination.className = "pagination";
+    galleryList.after(pagination);
+  }
+
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  if (totalPages <= 1) {
+    pagination.innerHTML = "";
+    return;
+  }
+
+  let buttons = "";
+
+  for (let i = 1; i <= totalPages; i++) {
+    buttons += `
+      <button class="page-btn ${i === currentPage ? "active" : ""}" onclick="goToPage(${i})">
+        ${i}
+      </button>
+    `;
+  }
+
+  pagination.innerHTML = buttons;
+}
+
+function goToPage(page) {
+  currentPage = page;
+  loadGallery();
 }
