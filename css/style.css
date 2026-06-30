@@ -199,3 +199,98 @@ body {
     transform: translateX(130vw);
   }
 }
+
+
+.title-wrap {
+  position: relative;
+  width: 520px;
+  height: 190px;
+  margin: 0 auto 10px;
+}
+
+.title {
+  position: absolute;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+
+  font-family: 'Courier New', monospace;
+  font-size: 72px;
+  font-weight: 900;
+  color: white;
+  letter-spacing: 6px;
+
+  text-shadow:
+    4px 4px 0 #111,
+    -4px 4px 0 #111,
+    4px -4px 0 #111,
+    -4px -4px 0 #111,
+    0 7px 0 #3b78c2;
+}
+
+.title-rainbow {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 390px;
+  height: 195px;
+  border-radius: 390px 390px 0 0;
+
+  background:
+    radial-gradient(circle at 50% 100%,
+      transparent 0 38%,
+      #8b5cf6 39% 44%,
+      #3b82f6 45% 50%,
+      #22c55e 51% 56%,
+      #fde047 57% 62%,
+      #fb923c 63% 68%,
+      #ef4444 69% 74%,
+      transparent 75%
+    );
+
+  z-index: 1;
+}
+
+.title-cloud {
+  position: absolute;
+  width: 145px;
+  height: 55px;
+  background: white;
+  border-radius: 40px;
+  z-index: 3;
+  top: 95px;
+  box-shadow: 0 7px 0 rgba(80, 160, 220, 0.35);
+}
+
+.title-cloud::before,
+.title-cloud::after {
+  content: "";
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+}
+
+.title-cloud::before {
+  width: 62px;
+  height: 62px;
+  top: -28px;
+  left: 22px;
+}
+
+.title-cloud::after {
+  width: 78px;
+  height: 78px;
+  top: -40px;
+  right: 18px;
+}
+
+.title-cloud-left {
+  left: 10px;
+}
+
+.title-cloud-right {
+  right: 10px;
+}

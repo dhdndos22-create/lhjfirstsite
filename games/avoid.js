@@ -5,97 +5,170 @@ const player = document.getElementById("player");
 const obstacle = document.getElementById("obstacle");
 const scoreText = document.getElementById("score");
 
+let nextObstacleTimeout = null;
+let gameRunning = false;
 let score = 0;
-let scoreInterval;
-let collisionInterval;
-let obstacleStartTimeout;
-let isStarted = false;
-let obstacleActive = false;
 
-let obstacleSpeed = 1.7;
-let jumpSpeed = 0.55;
+let obstacleX = -120;
+let obstacleSpeed = 6;
+let jumpTime = 550;
+let obstacleType = "ground";
 
-startBtn.onclick = function () {
-  if (isStarted) return;
+let scoreTimer = null;
+let obstacleTimer = null;
+let collisionTimer = null;
+let firstObstacleTimer = null;
 
-  isStarted = true;
-  obstacleActive = false;
+startBtn.addEventListener("click", startGame);
+
+function startGame() {
+  if (gameRunning) return;
+
+  gameRunning = true;
   score = 0;
 
-  obstacleSpeed = 1.7;
-  jumpSpeed = 0.55;
+  obstacleX = -120;
+  obstacleSpeed = 6;
+  jumpTime = 550;
+  obstacleType = "ground";
 
   startScreen.style.display = "none";
   game.style.display = "block";
-  scoreText.innerHTML = "점수 : 0";
 
-  game.style.setProperty("--obstacle-speed", obstacleSpeed + "s");
-  game.style.setProperty("--jump-speed", jumpSpeed + "s");
+  scoreText.textContent = "점수 : 0";
+  obstacle.style.right = obstacleX + "px";
+  player.style.setProperty("--jump-time", jumpTime + "ms");
 
-  obstacle.classList.remove("obstacleMove");
+  prepareNextObstacle();
 
-  scoreInterval = setInterval(function () {
-    score++;
-    scoreText.innerHTML = "점수 : " + score;
-    increaseDifficulty();
-  }, 100);
+  scoreTimer = setInterval(updateScore, 100);
 
-  obstacleStartTimeout = setTimeout(function () {
-    obstacleActive = true;
-    obstacle.classList.add("obstacleMove");
+  firstObstacleTimer = setTimeout(() => {
+    startObstacle();
   }, 3000);
 
-  collisionInterval = setInterval(function () {
-    if (!obstacleActive) return;
+  collisionTimer = setInterval(checkCollision, 10);
+}
 
-    const p = player.getBoundingClientRect();
-    const o = obstacle.getBoundingClientRect();
+function updateScore() {
+  if (!gameRunning) return;
 
-    if (
-      p.left < o.right &&
-      p.right > o.left &&
-      p.bottom > o.top &&
-      p.top < o.bottom
-    ) {
-      gameOver();
+  score++;
+  scoreText.textContent = "점수 : " + score;
+}
+
+function prepareNextObstacle() {
+  obstacleType = Math.random() < 0.5 ? "ground" : "ball";
+
+  obstacle.classList.remove("groundObstacle", "ballObstacle");
+
+  if (obstacleType === "ground") {
+    obstacle.classList.add("groundObstacle");
+  } else {
+    obstacle.classList.add("ballObstacle");
+  }
+
+  obstacleX = -120;
+  obstacle.style.right = obstacleX + "px";
+}
+
+function startObstacle() {
+  obstacleTimer = setInterval(moveObstacle, 16);
+}
+
+function moveObstacle() {
+  if (!gameRunning) return;
+
+  obstacleX += obstacleSpeed;
+  obstacle.style.right = obstacleX + "px";
+
+  const gameWidth = game.clientWidth;
+
+  if (obstacleX > gameWidth + 120) {
+    clearInterval(obstacleTimer);
+
+    if (score < 1500) {
+      obstacleSpeed = Math.min(obstacleSpeed + 0.27, 12);
+      jumpTime = Math.max(jumpTime - 7.5, 400);
+
+      player.style.setProperty("--jump-time", jumpTime + "ms");
     }
-  }, 10);
-};
 
-function increaseDifficulty() {
-  if (score % 50 === 0 && score > 0) {
-    obstacleSpeed = Math.max(0.75, obstacleSpeed - 0.08);
-    jumpSpeed = Math.max(0.35, jumpSpeed - 0.02);
+    prepareNextObstacle();
 
-    game.style.setProperty("--obstacle-speed", obstacleSpeed + "s");
-    game.style.setProperty("--jump-speed", jumpSpeed + "s");
+    const delay = 600 + Math.random() * 500;
 
-    if (obstacleActive) {
-      obstacle.classList.remove("obstacleMove");
-      void obstacle.offsetWidth;
-      obstacle.classList.add("obstacleMove");
-    }
+    nextObstacleTimeout = setTimeout(function () {
+      startObstacle();
+    }, delay);
   }
 }
 
 function jump() {
-  if (!isStarted) return;
+  if (!gameRunning) return;
 
-  if (!player.classList.contains("jump")) {
-    player.classList.add("jump");
+  if (player.classList.contains("jump")) return;
 
-    setTimeout(function () {
-      player.classList.remove("jump");
-    }, jumpSpeed * 1000);
+  player.classList.add("jump");
+
+  setTimeout(() => {
+    player.classList.remove("jump");
+  }, jumpTime);
+}
+
+function checkCollision() {
+  if (!gameRunning) return;
+
+  const p = player.getBoundingClientRect();
+  const o = obstacle.getBoundingClientRect();
+
+  const playerHitbox = {
+    left: p.left + 18,
+    right: p.right - 18,
+    top: p.top + 18,
+    bottom: p.bottom - 12
+  };
+
+  let obstacleHitbox;
+
+  if (obstacleType === "ground") {
+    obstacleHitbox = {
+      left: o.left + 4,
+      right: o.right - 4,
+      top: o.top + 4,
+      bottom: o.bottom - 4
+    };
+  } else {
+    obstacleHitbox = {
+      left: o.left + 5,
+      right: o.right - 5,
+      top: o.top + 5,
+      bottom: o.bottom - 5
+    };
+  }
+
+  const isCollision =
+    playerHitbox.left < obstacleHitbox.right &&
+    playerHitbox.right > obstacleHitbox.left &&
+    playerHitbox.top < obstacleHitbox.bottom &&
+    playerHitbox.bottom > obstacleHitbox.top;
+
+  if (isCollision) {
+    endGame();
   }
 }
 
-function gameOver() {
-  clearInterval(scoreInterval);
-  clearInterval(collisionInterval);
-  clearTimeout(obstacleStartTimeout);
+function endGame() {
+  gameRunning = false;
+
+  clearInterval(scoreTimer);
+  clearInterval(obstacleTimer);
+  clearInterval(collisionTimer);
+  clearTimeout(firstObstacleTimer);
+  clearTimeout(nextObstacleTimeout);
 
   alert("게임오버!\n점수 : " + score);
+
   location.reload();
 }
 
