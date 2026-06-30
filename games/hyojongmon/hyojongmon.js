@@ -96,7 +96,7 @@ class HyojongmonWorld extends Phaser.Scene {
     const alpha = 0.38;
     const dpadColor = 0x111111;
 
-    const parts = [
+    this.dpadParts = [
       this.add.rectangle(baseX, baseY, 46, 46, dpadColor, alpha),
       this.add.rectangle(baseX, baseY - 43, 46, 46, dpadColor, alpha),
       this.add.rectangle(baseX, baseY + 43, 46, 46, dpadColor, alpha),
@@ -104,7 +104,7 @@ class HyojongmonWorld extends Phaser.Scene {
       this.add.rectangle(baseX + 43, baseY, 46, 46, dpadColor, alpha)
     ];
 
-    parts.forEach((part) => {
+    this.dpadParts.forEach((part) => {
       part.setStrokeStyle(2, 0xffffff, 0.35);
       part.setDepth(1000);
     });
@@ -119,45 +119,67 @@ class HyojongmonWorld extends Phaser.Scene {
       .setDepth(1000)
       .setInteractive();
 
-    this.add.text(690, 500, "A", {
+    const aText = this.add.text(690, 500, "A", {
       fontSize: "28px",
       color: "#ffffff",
       fontStyle: "bold"
     }).setOrigin(0.5).setDepth(1001);
 
-    this.bindButton(aButton, "select");
+    this.bindButton(aButton, "select", aButton, aText);
   }
 
   createDpadButton(x, y, label, key) {
+    const visualButton = this.add.rectangle(x, y, 46, 46, 0x111111, 0)
+      .setDepth(1000);
+
     const hitArea = this.add.rectangle(x, y, 46, 46, 0xffffff, 0)
       .setDepth(1002)
       .setInteractive();
 
-    this.add.text(x, y, label, {
+    const buttonText = this.add.text(x, y, label, {
       fontSize: "20px",
       color: "#ffffff",
       fontStyle: "bold"
     }).setOrigin(0.5).setDepth(1001);
 
-    this.bindButton(hitArea, key);
+    this.bindButton(hitArea, key, visualButton, buttonText);
   }
 
-  bindButton(button, key) {
-    button.on("pointerdown", () => {
+  bindButton(hitArea, key, visualObject, textObject) {
+    const pressButton = () => {
       mobileInput[key] = true;
-    });
 
-    button.on("pointerup", () => {
-      mobileInput[key] = false;
-    });
+      this.tweens.killTweensOf([visualObject, textObject]);
 
-    button.on("pointerout", () => {
-      mobileInput[key] = false;
-    });
+      this.tweens.add({
+        targets: [visualObject, textObject],
+        scaleX: 0.88,
+        scaleY: 0.88,
+        alpha: 0.75,
+        duration: 60,
+        ease: "Power1"
+      });
+    };
 
-    button.on("pointerupoutside", () => {
+    const releaseButton = () => {
       mobileInput[key] = false;
-    });
+
+      this.tweens.killTweensOf([visualObject, textObject]);
+
+      this.tweens.add({
+        targets: [visualObject, textObject],
+        scaleX: 1,
+        scaleY: 1,
+        alpha: 1,
+        duration: 80,
+        ease: "Back.easeOut"
+      });
+    };
+
+    hitArea.on("pointerdown", pressButton);
+    hitArea.on("pointerup", releaseButton);
+    hitArea.on("pointerout", releaseButton);
+    hitArea.on("pointerupoutside", releaseButton);
   }
 
   update() {

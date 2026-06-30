@@ -30,7 +30,3 @@ body {
 canvas {
   display: block;
 }
-
-#mobileControls {
-  display: none;
-}
