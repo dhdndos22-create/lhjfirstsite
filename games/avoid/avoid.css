@@ -114,7 +114,7 @@ h1 {
 #obstacle.groundObstacle {
   width: 24px;
   height: 42px;
-  bottom: 70px;
+  bottom: 58px;
   background: linear-gradient(#ff5a4f, #d82121);
   border: 3px solid #8b1717;
   border-radius: 8px 8px 4px 4px;
@@ -366,7 +366,7 @@ h1 {
   }
 
   #obstacle.groundObstacle {
-    bottom: 62px;
+    bottom: 52px;
   }
 
   #obstacle.ballObstacle {
