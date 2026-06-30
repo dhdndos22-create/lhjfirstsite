@@ -20,14 +20,104 @@ body {
   position: relative;
   z-index: 5;
   text-align: center;
-  padding-top: 70px;
+  padding-top: 50px;
+}
+
+.title-wrap {
+  position: relative;
+  width: 900px;
+  max-width: 95vw;
+  height: 190px;
+  margin: 0 auto 10px;
 }
 
 .title {
-  font-size: 48px;
+  position: absolute;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+
+  width: max-content;
+  max-width: none;
+
+  font-family: Arial, sans-serif;
+  font-size: 72px;
+  font-weight: 900;
   color: white;
-  text-shadow: 3px 3px 0 #4a90e2;
-  margin-bottom: 20px;
+
+  white-space: nowrap;
+  word-break: keep-all;
+
+  text-shadow:
+    4px 4px 0 #1e3a8a,
+    -4px 4px 0 #1e3a8a,
+    4px -4px 0 #1e3a8a,
+    -4px -4px 0 #1e3a8a,
+    0 7px 0 #3b78c2;
+}
+
+.title-rainbow {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 430px;
+  height: 215px;
+  border-radius: 430px 430px 0 0;
+  background:
+    radial-gradient(circle at 50% 100%,
+      transparent 0 38%,
+      #8b5cf6 39% 44%,
+      #3b82f6 45% 50%,
+      #22c55e 51% 56%,
+      #fde047 57% 62%,
+      #fb923c 63% 68%,
+      #ef4444 69% 74%,
+      transparent 75%
+    );
+  z-index: 1;
+}
+
+.title-cloud {
+  position: absolute;
+  width: 145px;
+  height: 55px;
+  background: white;
+  border-radius: 40px;
+  z-index: 3;
+  top: 95px;
+  box-shadow: 0 7px 0 rgba(80, 160, 220, 0.35);
+}
+
+.title-cloud::before,
+.title-cloud::after {
+  content: "";
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+}
+
+.title-cloud::before {
+  width: 62px;
+  height: 62px;
+  top: -28px;
+  left: 22px;
+}
+
+.title-cloud::after {
+  width: 78px;
+  height: 78px;
+  top: -40px;
+  right: 18px;
+}
+
+.title-cloud-left {
+  left: 80px;
+}
+
+.title-cloud-right {
+  right: 80px;
 }
 
 .mascot {
@@ -200,100 +290,36 @@ body {
   }
 }
 
+@media (max-width: 700px) {
+  .main-wrap {
+    padding-top: 40px;
+  }
 
-.title-wrap {
-  position: relative;
-  width: 700px;
-  max-width: 95vw;
-  height: 190px;
-  margin: 0 auto 10px;
-}
+  .title-wrap {
+    height: 150px;
+  }
 
-.title {
-  position: absolute;
-  top: 75px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 5;
+  .title {
+    top: 65px;
+    font-size: 44px;
+  }
 
-  font-size: 72px;
-  font-weight: 900;
-  font-family: Arial, sans-serif;
+  .title-rainbow {
+    width: 330px;
+    height: 165px;
+  }
 
-  color: white;
+  .title-cloud {
+    width: 100px;
+    height: 40px;
+    top: 85px;
+  }
 
-  white-space: nowrap;   /* ← 한 줄 출력 */
+  .title-cloud-left {
+    left: 25px;
+  }
 
-  text-shadow:
-    4px 4px 0 #111,
-    -4px 4px 0 #111,
-    4px -4px 0 #111,
-    -4px -4px 0 #111,
-    0 7px 0 #3b78c2;
-}
-
-.title-rainbow {
-  position: absolute;
-  top: 5px;
-  left: 50%;
-  transform: translateX(-50%);
-
-  width: 390px;
-  height: 195px;
-  border-radius: 390px 390px 0 0;
-
-  background:
-    radial-gradient(circle at 50% 100%,
-      transparent 0 38%,
-      #8b5cf6 39% 44%,
-      #3b82f6 45% 50%,
-      #22c55e 51% 56%,
-      #fde047 57% 62%,
-      #fb923c 63% 68%,
-      #ef4444 69% 74%,
-      transparent 75%
-    );
-
-  z-index: 1;
-}
-
-.title-cloud {
-  position: absolute;
-  width: 145px;
-  height: 55px;
-  background: white;
-  border-radius: 40px;
-  z-index: 3;
-  top: 95px;
-  box-shadow: 0 7px 0 rgba(80, 160, 220, 0.35);
-}
-
-.title-cloud::before,
-.title-cloud::after {
-  content: "";
-  position: absolute;
-  background: white;
-  border-radius: 50%;
-}
-
-.title-cloud::before {
-  width: 62px;
-  height: 62px;
-  top: -28px;
-  left: 22px;
-}
-
-.title-cloud::after {
-  width: 78px;
-  height: 78px;
-  top: -40px;
-  right: 18px;
-}
-
-.title-cloud-left {
-  left: 10px;
-}
-
-.title-cloud-right {
-  right: 10px;
+  .title-cloud-right {
+    right: 25px;
+  }
 }
