@@ -9,11 +9,32 @@ const uploadBtn = document.getElementById("uploadBtn");
 const statusText = document.getElementById("statusText");
 const galleryList = document.getElementById("galleryList");
 
+const deleteModal = document.getElementById("deleteModal");
+const deletePassword = document.getElementById("deletePassword");
+const deleteConfirm = document.getElementById("deleteConfirm");
+const deleteCancel = document.getElementById("deleteCancel");
+
+let deleteTargetId = null;
+
 let currentPage = 1;
 const itemsPerPage = 4;
 let totalItems = 0;
 
 uploadBtn.addEventListener("click", uploadImage);
+deleteConfirm.addEventListener("click", confirmDeletePost);
+deleteCancel.addEventListener("click", closeDeleteModal);
+
+deleteModal.addEventListener("click", function (e) {
+  if (e.target === deleteModal) {
+    closeDeleteModal();
+  }
+});
+
+deletePassword.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    confirmDeletePost();
+  }
+});
 
 loadGallery();
 
@@ -127,11 +148,19 @@ async function loadGallery() {
       <div class="gallery-info">
         <div class="nickname">👤 ${item.nickname}</div>
         <div class="date">${date}</div>
+        <button class="delete-btn">삭제</button>
       </div>
     `;
 
     card.addEventListener("click", function () {
       location.href = `photo.html?id=${item.id}`;
+    });
+
+    const deleteBtn = card.querySelector(".delete-btn");
+
+    deleteBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      openDeleteModal(item.id);
     });
 
     galleryList.appendChild(card);
@@ -172,5 +201,53 @@ function renderPagination() {
 
 function goToPage(page) {
   currentPage = page;
+  loadGallery();
+}
+
+function openDeleteModal(id) {
+  deleteTargetId = id;
+  deletePassword.value = "";
+  deleteModal.classList.add("show");
+
+  setTimeout(() => {
+    deletePassword.focus();
+  }, 100);
+}
+
+function closeDeleteModal() {
+  deleteModal.classList.remove("show");
+  deleteTargetId = null;
+  deletePassword.value = "";
+}
+
+async function confirmDeletePost() {
+  if (!deleteTargetId) return;
+
+  const password = deletePassword.value.trim();
+
+  if (!password) {
+    alert("비밀번호 입력");
+    return;
+  }
+
+  deleteConfirm.disabled = true;
+  deleteConfirm.textContent = "삭제 중...";
+
+  const { error } = await supabaseClient.rpc("delete_gallery_post", {
+    post_id: deleteTargetId,
+    admin_password: password
+  });
+
+  deleteConfirm.disabled = false;
+  deleteConfirm.textContent = "삭제";
+
+  if (error) {
+    console.error(error);
+    alert("비밀번호 틀림.");
+    return;
+  }
+
+  alert("게시물 삭제완료.");
+  closeDeleteModal();
   loadGallery();
 }

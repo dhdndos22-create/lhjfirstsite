@@ -23,6 +23,25 @@
     <a href="index.html" class="back-btn">← 메인으로</a>
   </main>
 
+  <!-- 삭제 팝업 -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-box">
+      <h2>🗑 게시물 삭제</h2>
+      <p>관리자 비밀번호를 입력하세요.</p>
+
+      <input
+        type="password"
+        id="deletePassword"
+        placeholder="비밀번호"
+      />
+
+      <div class="modal-buttons">
+        <button id="deleteConfirm">삭제</button>
+        <button id="deleteCancel">취소</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/gallery.js"></script>
 </body>
