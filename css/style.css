@@ -203,7 +203,8 @@ body {
 
 .title-wrap {
   position: relative;
-  width: 520px;
+  width: 700px;
+  max-width: 95vw;
   height: 190px;
   margin: 0 auto 10px;
 }
@@ -215,11 +216,13 @@ body {
   transform: translateX(-50%);
   z-index: 5;
 
-  font-family: 'Courier New', monospace;
   font-size: 72px;
   font-weight: 900;
+  font-family: Arial, sans-serif;
+
   color: white;
-  letter-spacing: 6px;
+
+  white-space: nowrap;   /* ← 한 줄 출력 */
 
   text-shadow:
     4px 4px 0 #111,
