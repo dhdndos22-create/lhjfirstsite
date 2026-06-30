@@ -111,7 +111,6 @@ h1 {
   z-index: 9;
 }
 
-/* 바닥 장애물 */
 #obstacle.groundObstacle {
   width: 24px;
   height: 42px;
@@ -122,13 +121,11 @@ h1 {
   box-shadow: inset -4px 0 rgba(0, 0, 0, 0.15);
 }
 
-/* 공중 야구공 */
 #obstacle.ballObstacle {
   width: 34px;
   height: 34px;
   bottom: 160px;
-  background:
-    radial-gradient(circle at 35% 30%, #ffffff 0%, #ffffff 45%, #f1f1f1 100%);
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #ffffff 45%, #f1f1f1 100%);
   border: 3px solid #222;
   border-radius: 50%;
   box-shadow: inset -3px -3px rgba(0, 0, 0, 0.12);
@@ -183,57 +180,6 @@ h1 {
 
   100% {
     bottom: 58px;
-  }
-}
-
-.back-btn {
-  display: inline-block;
-  text-decoration: none;
-  background: #4a90e2;
-  color: white;
-  font-weight: bold;
-  padding: 12px 22px;
-  border-radius: 22px;
-}
-
-@media (max-width: 700px) {
-  h1 {
-    font-size: 24px;
-  }
-
-  #gameWrap {
-    height: 300px;
-  }
-
-  #player {
-    width: 70px;
-    height: 70px;
-    left: 70px;
-    bottom: 52px;
-  }
-
-  #obstacle.groundObstacle {
-    bottom: 62px;
-  }
-
-  #obstacle.ballObstacle {
-    width: 30px;
-    height: 30px;
-    bottom: 135px;
-  }
-
-  @keyframes jump {
-    0% {
-      bottom: 52px;
-    }
-
-    50% {
-      bottom: 165px;
-    }
-
-    100% {
-      bottom: 52px;
-    }
   }
 }
 
@@ -344,19 +290,22 @@ h1 {
   }
 }
 
+/* 게임오버 화면 */
 #gameOverScreen {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  display: none;
+  background: rgba(0, 0, 0, 0.5);
+
+  display: none !important;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 50;
+
+  z-index: 100;
 }
 
 #gameOverScreen.show {
-  display: flex;
+  display: flex !important;
 }
 
 #gameOverScreen h2 {
@@ -388,4 +337,55 @@ h1 {
 #restartBtn:active {
   transform: translateY(3px);
   box-shadow: 0 2px 0 #2d73c7;
+}
+
+.back-btn {
+  display: inline-block;
+  text-decoration: none;
+  background: #4a90e2;
+  color: white;
+  font-weight: bold;
+  padding: 12px 22px;
+  border-radius: 22px;
+}
+
+@media (max-width: 700px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  #gameWrap {
+    height: 300px;
+  }
+
+  #player {
+    width: 70px;
+    height: 70px;
+    left: 70px;
+    bottom: 52px;
+  }
+
+  #obstacle.groundObstacle {
+    bottom: 62px;
+  }
+
+  #obstacle.ballObstacle {
+    width: 30px;
+    height: 30px;
+    bottom: 135px;
+  }
+
+  @keyframes jump {
+    0% {
+      bottom: 52px;
+    }
+
+    50% {
+      bottom: 165px;
+    }
+
+    100% {
+      bottom: 52px;
+    }
+  }
 }

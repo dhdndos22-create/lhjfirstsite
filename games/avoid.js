@@ -10,6 +10,10 @@ const finalScore = document.getElementById("finalScore");
 const restartBtn = document.getElementById("restartBtn");
 
 
+
+startBtn.addEventListener("click", startGame);
+restartBtn.addEventListener("click", restartGame);
+
 let runFrame = 1;
 let runAnimationTimer = null;
 
@@ -27,8 +31,7 @@ let obstacleTimer = null;
 let collisionTimer = null;
 let firstObstacleTimer = null;
 
-startBtn.addEventListener("click", startGame);
-restartBtn.addEventListener("click", restartGame);
+
 
 function startGame() {
   if (gameRunning) return;
@@ -175,6 +178,7 @@ function endGame() {
   clearInterval(scoreTimer);
   clearInterval(obstacleTimer);
   clearInterval(collisionTimer);
+  clearInterval(runAnimationTimer);
   clearTimeout(firstObstacleTimer);
   clearTimeout(nextObstacleTimeout);
 
@@ -222,6 +226,7 @@ function restartGame() {
   clearInterval(scoreTimer);
   clearInterval(obstacleTimer);
   clearInterval(collisionTimer);
+  clearInterval(runAnimationTimer);
   clearTimeout(firstObstacleTimer);
   clearTimeout(nextObstacleTimeout);
 
