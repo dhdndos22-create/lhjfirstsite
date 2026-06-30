@@ -4,6 +4,10 @@ const game = document.getElementById("game");
 const player = document.getElementById("player");
 const obstacle = document.getElementById("obstacle");
 const scoreText = document.getElementById("score");
+const playerImg = document.getElementById("playerImg");
+
+let runFrame = 1;
+let runAnimationTimer = null;
 
 let nextObstacleTimeout = null;
 let gameRunning = false;
@@ -23,7 +27,7 @@ startBtn.addEventListener("click", startGame);
 
 function startGame() {
   if (gameRunning) return;
-
+  startRunAnimation();
   gameRunning = true;
   score = 0;
 
@@ -109,10 +113,12 @@ function jump() {
 
   if (player.classList.contains("jump")) return;
 
+  playerImg.src = "../images/player-jump.png";
   player.classList.add("jump");
 
   setTimeout(() => {
     player.classList.remove("jump");
+    playerImg.src = "../images/player-run1.png";
   }, jumpTime);
 }
 
@@ -160,7 +166,7 @@ function checkCollision() {
 
 function endGame() {
   gameRunning = false;
-
+  clearInterval(runAnimationTimer);
   clearInterval(scoreTimer);
   clearInterval(obstacleTimer);
   clearInterval(collisionTimer);
@@ -181,3 +187,15 @@ document.addEventListener("keydown", function (e) {
 document.addEventListener("touchstart", function () {
   jump();
 });
+
+function startRunAnimation() {
+  clearInterval(runAnimationTimer);
+
+  runAnimationTimer = setInterval(function () {
+    if (!gameRunning) return;
+    if (player.classList.contains("jump")) return;
+
+    runFrame = runFrame === 1 ? 2 : 1;
+    playerImg.src = `../images/player-run${runFrame}.png`;
+  }, 160);
+}
