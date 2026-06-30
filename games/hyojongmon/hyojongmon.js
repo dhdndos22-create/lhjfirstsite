@@ -17,16 +17,13 @@ class HyojongmonWorld extends Phaser.Scene {
     this.speed = 170;
     this.encounterCooldown = false;
 
-    // 월드 배경
-    this.add.rectangle(400, 300, 800, 600, 0x8ee873).setDepth(0);
+    this.cameras.main.setBackgroundColor("#8ee873");
 
-    // 길
-    this.add.rectangle(400, 300, 800, 120, 0xd8b56d).setDepth(1);
-    this.add.rectangle(400, 300, 120, 600, 0xd8b56d).setDepth(1);
+    this.drawWorld();
 
-    // 풀숲
-    this.grassArea = this.add.rectangle(620, 170, 180, 120, 0x2ecc71).setDepth(2);
+    this.grassArea = this.add.rectangle(620, 170, 180, 120, 0x2ecc71);
     this.grassArea.setStrokeStyle(4, 0x1e8449);
+    this.grassArea.setDepth(2);
 
     this.add.text(565, 145, "풀숲", {
       fontSize: "22px",
@@ -34,7 +31,6 @@ class HyojongmonWorld extends Phaser.Scene {
       fontStyle: "bold"
     }).setDepth(3);
 
-    // 벽
     this.walls = this.physics.add.staticGroup();
 
     this.createWall(400, 20, 800, 40);
@@ -44,10 +40,12 @@ class HyojongmonWorld extends Phaser.Scene {
     this.createWall(230, 180, 130, 80);
     this.createWall(570, 430, 170, 80);
 
-    // 플레이어
-    this.player = this.physics.add.rectangle(400, 300, 34, 34, 0x3498db);
+    this.player = this.add.rectangle(400, 300, 34, 34, 0x3498db);
+    this.player.setStrokeStyle(3, 0xffffff);
     this.player.setDepth(10);
-    this.player.setCollideWorldBounds(true);
+
+    this.physics.add.existing(this.player);
+    this.player.body.setCollideWorldBounds(true);
 
     this.physics.add.collider(this.player, this.walls);
 
@@ -71,8 +69,22 @@ class HyojongmonWorld extends Phaser.Scene {
     this.createInGameControls();
   }
 
+  drawWorld() {
+    const g = this.add.graphics();
+    g.setDepth(0);
+
+    g.fillStyle(0x8ee873, 1);
+    g.fillRect(0, 0, 800, 600);
+
+    g.fillStyle(0xd8b56d, 1);
+    g.fillRect(0, 240, 800, 120);
+    g.fillRect(340, 0, 120, 600);
+  }
+
   createWall(x, y, width, height) {
-    const wall = this.add.rectangle(x, y, width, height, 0x6b4f2a).setDepth(5);
+    const wall = this.add.rectangle(x, y, width, height, 0x6b4f2a);
+    wall.setDepth(5);
+
     this.physics.add.existing(wall, true);
     this.walls.add(wall);
   }
@@ -80,6 +92,7 @@ class HyojongmonWorld extends Phaser.Scene {
   createInGameControls() {
     const baseX = 115;
     const baseY = 490;
+
     const alpha = 0.38;
     const dpadColor = 0x111111;
 

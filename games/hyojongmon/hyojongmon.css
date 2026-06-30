@@ -17,22 +17,20 @@ body {
 
 #gameContainer {
   width: 800px;
+  height: 600px;
   max-width: 96vw;
-  aspect-ratio: 4 / 3;
+  max-height: 90vh;
   border: 4px solid #111;
   border-radius: 14px;
   overflow: hidden;
-  background: #000;
+  background: #8ee873;
   box-shadow: 0 8px 0 rgba(0, 0, 0, 0.25);
 }
 
 canvas {
   display: block;
-  width: 100%;
-  height: 100%;
 }
 
-/* 예전 바깥 모바일 조작 버튼이 남아 있어도 보이지 않게 처리 */
 #mobileControls {
   display: none;
 }
