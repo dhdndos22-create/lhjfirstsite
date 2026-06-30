@@ -121,12 +121,12 @@ function jump() {
 
   if (player.classList.contains("jump")) return;
 
-  playerImg.src = "../images/player-jump.png";
+  playerImg.src = "../../images/player-jump.png";
   player.classList.add("jump");
 
   setTimeout(() => {
     player.classList.remove("jump");
-    playerImg.src = "../images/player-run1.png";
+    playerImg.src = "../../images/player-run1.png";
   }, jumpTime);
 }
 
@@ -204,7 +204,7 @@ function startRunAnimation() {
     if (player.classList.contains("jump")) return;
 
     runFrame = runFrame === 1 ? 2 : 1;
-    playerImg.src = `../images/player-run${runFrame}.png`;
+    playerImg.src = `../../images/player-run${runFrame}.png`;
   }, 160);
 }
 
