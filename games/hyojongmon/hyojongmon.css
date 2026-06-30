@@ -2,72 +2,37 @@
   box-sizing: border-box;
 }
 
-html,
 body {
   margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #111;
+  min-height: 100vh;
+  background: linear-gradient(#8fd3ff, #dff6ff);
   font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  user-select: none;
+  touch-action: none;
 }
 
 #gameContainer {
-  width: 100vw;
-  height: 100vh;
-}
-
-/* 모바일 조작 버튼 */
-#mobileControls {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 22px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding: 0 24px;
-  z-index: 9999;
-  pointer-events: none;
-}
-
-#mobileControls button {
-  width: 58px;
-  height: 58px;
-  border: 3px solid #333;
+  width: 800px;
+  max-width: 96vw;
+  aspect-ratio: 4 / 3;
+  border: 4px solid #111;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.85);
-  font-size: 22px;
-  font-weight: bold;
-  color: #222;
-  pointer-events: auto;
-  touch-action: none;
-  user-select: none;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.25);
 }
 
-.dpad {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
-.dpad-row {
-  display: flex;
-  gap: 6px;
-}
-
-#btnSelect {
-  width: 82px;
-  height: 82px;
-  border-radius: 50%;
-  font-size: 18px;
-}
-
-/* PC에서는 버튼을 숨기고 싶으면 아래 사용 */
-@media (min-width: 900px) {
-  #mobileControls {
-    opacity: 0.75;
-  }
+/* 예전 바깥 모바일 조작 버튼이 남아 있어도 보이지 않게 처리 */
+#mobileControls {
+  display: none;
 }

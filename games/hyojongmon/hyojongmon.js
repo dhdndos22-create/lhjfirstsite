@@ -6,45 +6,6 @@ const mobileInput = {
   select: false
 };
 
-function bindMobileButton(id, key) {
-  const button = document.getElementById(id);
-
-  if (!button) return;
-
-  button.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    mobileInput[key] = true;
-  });
-
-  button.addEventListener("touchend", (e) => {
-    e.preventDefault();
-    mobileInput[key] = false;
-  });
-
-  button.addEventListener("touchcancel", (e) => {
-    e.preventDefault();
-    mobileInput[key] = false;
-  });
-
-  button.addEventListener("mousedown", () => {
-    mobileInput[key] = true;
-  });
-
-  button.addEventListener("mouseup", () => {
-    mobileInput[key] = false;
-  });
-
-  button.addEventListener("mouseleave", () => {
-    mobileInput[key] = false;
-  });
-}
-
-bindMobileButton("btnUp", "up");
-bindMobileButton("btnDown", "down");
-bindMobileButton("btnLeft", "left");
-bindMobileButton("btnRight", "right");
-bindMobileButton("btnSelect", "select");
-
 class HyojongmonWorld extends Phaser.Scene {
   constructor() {
     super("HyojongmonWorld");
@@ -54,15 +15,13 @@ class HyojongmonWorld extends Phaser.Scene {
 
   create() {
     this.speed = 170;
+    this.encounterCooldown = false;
 
-    // 배경
     this.add.rectangle(400, 300, 800, 600, 0x8ee873);
 
-    // 길
     this.add.rectangle(400, 300, 800, 120, 0xd8b56d);
     this.add.rectangle(400, 300, 120, 600, 0xd8b56d);
 
-    // 풀숲
     this.grassArea = this.add.rectangle(620, 170, 180, 120, 0x2ecc71);
     this.grassArea.setStrokeStyle(4, 0x1e8449);
 
@@ -72,7 +31,6 @@ class HyojongmonWorld extends Phaser.Scene {
       fontStyle: "bold"
     });
 
-    // 벽 그룹
     this.walls = this.physics.add.staticGroup();
 
     this.createWall(400, 20, 800, 40);
@@ -80,17 +38,14 @@ class HyojongmonWorld extends Phaser.Scene {
     this.createWall(20, 300, 40, 600);
     this.createWall(780, 300, 40, 600);
 
-    // 장애물
     this.createWall(230, 180, 130, 80);
     this.createWall(570, 430, 170, 80);
 
-    // 플레이어
     this.player = this.physics.add.rectangle(400, 300, 34, 34, 0x3498db);
     this.player.setCollideWorldBounds(true);
 
     this.physics.add.collider(this.player, this.walls);
 
-    // 키보드 방향키
     this.cursors = this.input.keyboard.createCursorKeys();
 
     this.infoText = this.add.text(20, 20, "효종몬 월드", {
@@ -104,7 +59,7 @@ class HyojongmonWorld extends Phaser.Scene {
       }
     });
 
-    this.noticeText = this.add.text(20, 60, "방향키 또는 화면 버튼으로 이동", {
+    this.noticeText = this.add.text(20, 60, "방향키 또는 화면 안 조작패드로 이동", {
       fontSize: "16px",
       color: "#ffffff",
       backgroundColor: "#00000088",
@@ -114,13 +69,98 @@ class HyojongmonWorld extends Phaser.Scene {
       }
     });
 
-    this.encounterCooldown = false;
+    this.createInGameControls();
   }
 
   createWall(x, y, width, height) {
     const wall = this.add.rectangle(x, y, width, height, 0x6b4f2a);
     this.physics.add.existing(wall, true);
     this.walls.add(wall);
+  }
+
+  createInGameControls() {
+    const baseX = 115;
+    const baseY = 490;
+
+    const alpha = 0.38;
+    const dpadColor = 0x111111;
+
+    // 십자 D-pad 모양 배경
+    const center = this.add.rectangle(baseX, baseY, 46, 46, dpadColor, alpha);
+    const up = this.add.rectangle(baseX, baseY - 43, 46, 46, dpadColor, alpha);
+    const down = this.add.rectangle(baseX, baseY + 43, 46, 46, dpadColor, alpha);
+    const left = this.add.rectangle(baseX - 43, baseY, 46, 46, dpadColor, alpha);
+    const right = this.add.rectangle(baseX + 43, baseY, 46, 46, dpadColor, alpha);
+
+    [center, up, down, left, right].forEach((part) => {
+      part.setStrokeStyle(2, 0xffffff, 0.35);
+      part.setDepth(1000);
+    });
+
+    this.createDpadButton(baseX, baseY - 43, "▲", "up");
+    this.createDpadButton(baseX, baseY + 43, "▼", "down");
+    this.createDpadButton(baseX - 43, baseY, "◀", "left");
+    this.createDpadButton(baseX + 43, baseY, "▶", "right");
+
+    // 동그란 A 버튼
+    const aButton = this.add.circle(690, 500, 36, 0x4a90e2, 0.42)
+      .setStrokeStyle(3, 0xffffff, 0.65)
+      .setDepth(1000)
+      .setInteractive();
+
+    this.add.text(690, 500, "A", {
+      fontSize: "28px",
+      color: "#ffffff",
+      fontStyle: "bold"
+    })
+      .setOrigin(0.5)
+      .setDepth(1001);
+
+    aButton.on("pointerdown", () => {
+      mobileInput.select = true;
+    });
+
+    aButton.on("pointerup", () => {
+      mobileInput.select = false;
+    });
+
+    aButton.on("pointerout", () => {
+      mobileInput.select = false;
+    });
+
+    aButton.on("pointerupoutside", () => {
+      mobileInput.select = false;
+    });
+  }
+
+  createDpadButton(x, y, label, key) {
+    const hitArea = this.add.rectangle(x, y, 46, 46, 0xffffff, 0)
+      .setDepth(1002)
+      .setInteractive();
+
+    this.add.text(x, y, label, {
+      fontSize: "20px",
+      color: "#ffffff",
+      fontStyle: "bold"
+    })
+      .setOrigin(0.5)
+      .setDepth(1001);
+
+    hitArea.on("pointerdown", () => {
+      mobileInput[key] = true;
+    });
+
+    hitArea.on("pointerup", () => {
+      mobileInput[key] = false;
+    });
+
+    hitArea.on("pointerout", () => {
+      mobileInput[key] = false;
+    });
+
+    hitArea.on("pointerupoutside", () => {
+      mobileInput[key] = false;
+    });
   }
 
   update() {
