@@ -66,7 +66,9 @@ class HyojongmonWorld extends Phaser.Scene {
       padding: { x: 10, y: 5 }
     }).setDepth(100);
 
-    this.createInGameControls();
+    if (this.sys.game.device.input.touch) {
+       this.createInGameControls();
+    }
   }
 
   drawWorld() {
