@@ -90,18 +90,20 @@ class HyojongmonWorld extends Phaser.Scene {
   }
 
   createInGameControls() {
-    const baseX = 115;
-    const baseY = 490;
+    const baseX = 135;
+    const baseY = 475;
 
+    const buttonSize = 70;
+    const buttonGap = 65;
     const alpha = 0.38;
     const dpadColor = 0x111111;
 
     this.dpadParts = [
-      this.add.rectangle(baseX, baseY, 46, 46, dpadColor, alpha),
-      this.add.rectangle(baseX, baseY - 43, 46, 46, dpadColor, alpha),
-      this.add.rectangle(baseX, baseY + 43, 46, 46, dpadColor, alpha),
-      this.add.rectangle(baseX - 43, baseY, 46, 46, dpadColor, alpha),
-      this.add.rectangle(baseX + 43, baseY, 46, 46, dpadColor, alpha)
+      this.add.rectangle(baseX, baseY, buttonSize, buttonSize, dpadColor, alpha),
+      this.add.rectangle(baseX, baseY - buttonGap, buttonSize, buttonSize, dpadColor, alpha),
+      this.add.rectangle(baseX, baseY + buttonGap, buttonSize, buttonSize, dpadColor, alpha),
+      this.add.rectangle(baseX - buttonGap, baseY, buttonSize, buttonSize, dpadColor, alpha),
+      this.add.rectangle(baseX + buttonGap, baseY, buttonSize, buttonSize, dpadColor, alpha)
     ];
 
     this.dpadParts.forEach((part) => {
@@ -109,18 +111,18 @@ class HyojongmonWorld extends Phaser.Scene {
       part.setDepth(1000);
     });
 
-    this.createDpadButton(baseX, baseY - 43, "▲", "up");
-    this.createDpadButton(baseX, baseY + 43, "▼", "down");
-    this.createDpadButton(baseX - 43, baseY, "◀", "left");
-    this.createDpadButton(baseX + 43, baseY, "▶", "right");
+    this.createDpadButton(baseX, baseY - buttonGap, "▲", "up", buttonSize);
+    this.createDpadButton(baseX, baseY + buttonGap, "▼", "down", buttonSize);
+    this.createDpadButton(baseX - buttonGap, baseY, "◀", "left", buttonSize);
+    this.createDpadButton(baseX + buttonGap, baseY, "▶", "right", buttonSize);
 
-    const aButton = this.add.circle(690, 500, 36, 0x4a90e2, 0.42)
-      .setStrokeStyle(3, 0xffffff, 0.65)
+    const aButton = this.add.circle(680, 490, 54, 0x4a90e2, 0.42)
+      .setStrokeStyle(4, 0xffffff, 0.65)
       .setDepth(1000)
       .setInteractive();
 
-    const aText = this.add.text(690, 500, "A", {
-      fontSize: "28px",
+    const aText = this.add.text(680, 490, "A", {
+      fontSize: "40px",
       color: "#ffffff",
       fontStyle: "bold"
     }).setOrigin(0.5).setDepth(1001);
@@ -128,16 +130,16 @@ class HyojongmonWorld extends Phaser.Scene {
     this.bindButton(aButton, "select", aButton, aText);
   }
 
-  createDpadButton(x, y, label, key) {
-    const visualButton = this.add.rectangle(x, y, 46, 46, 0x111111, 0)
+  createDpadButton(x, y, label, key, size) {
+    const visualButton = this.add.rectangle(x, y, size, size, 0x111111, 0)
       .setDepth(1000);
 
-    const hitArea = this.add.rectangle(x, y, 46, 46, 0xffffff, 0)
+    const hitArea = this.add.rectangle(x, y, size, size, 0xffffff, 0)
       .setDepth(1002)
       .setInteractive();
 
     const buttonText = this.add.text(x, y, label, {
-      fontSize: "20px",
+      fontSize: "30px",
       color: "#ffffff",
       fontStyle: "bold"
     }).setOrigin(0.5).setDepth(1001);
@@ -153,9 +155,9 @@ class HyojongmonWorld extends Phaser.Scene {
 
       this.tweens.add({
         targets: [visualObject, textObject],
-        scaleX: 0.88,
-        scaleY: 0.88,
-        alpha: 0.75,
+        scaleX: 0.94,
+        scaleY: 0.94,
+        alpha: 0.85,
         duration: 60,
         ease: "Power1"
       });
