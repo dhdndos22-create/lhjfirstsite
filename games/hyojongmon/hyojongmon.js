@@ -1,263 +1,199 @@
-const TILE = 40;
-const MAP_WIDTH = 16;
-const MAP_HEIGHT = 10;
+const mobileInput = {
+  up: false,
+  down: false,
+  left: false,
+  right: false,
+  select: false
+};
 
-let player;
-let cursors;
-let mapLayer = [];
-let battleText;
-let inBattle = false;
-let encounterCooldown = 0;
+function bindMobileButton(id, key) {
+  const button = document.getElementById(id);
 
-const monsters = [
-  { name: "풀토리", emoji: "🌱", hp: 25 },
-  { name: "불몽", emoji: "🔥", hp: 28 },
-  { name: "물치", emoji: "💧", hp: 26 }
-];
+  if (!button) return;
 
-const mapData = [
-  "WWWWWWWWWWWWWWWW",
-  "W..............W",
-  "W..GGG.........W",
-  "W..GGG....WWW..W",
-  "W...........W..W",
-  "W......GGG..W..W",
-  "W......GGG.....W",
-  "W..............W",
-  "W..............W",
-  "WWWWWWWWWWWWWWWW"
-];
+  button.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    mobileInput[key] = true;
+  });
 
-class WorldScene extends Phaser.Scene {
+  button.addEventListener("touchend", (e) => {
+    e.preventDefault();
+    mobileInput[key] = false;
+  });
+
+  button.addEventListener("touchcancel", (e) => {
+    e.preventDefault();
+    mobileInput[key] = false;
+  });
+
+  button.addEventListener("mousedown", () => {
+    mobileInput[key] = true;
+  });
+
+  button.addEventListener("mouseup", () => {
+    mobileInput[key] = false;
+  });
+
+  button.addEventListener("mouseleave", () => {
+    mobileInput[key] = false;
+  });
+}
+
+bindMobileButton("btnUp", "up");
+bindMobileButton("btnDown", "down");
+bindMobileButton("btnLeft", "left");
+bindMobileButton("btnRight", "right");
+bindMobileButton("btnSelect", "select");
+
+class HyojongmonWorld extends Phaser.Scene {
   constructor() {
-    super("WorldScene");
+    super("HyojongmonWorld");
   }
 
   preload() {}
 
   create() {
-    inBattle = false;
-    encounterCooldown = 0;
+    this.speed = 170;
 
-    this.cameras.main.setBackgroundColor("#7fdcff");
+    // 배경
+    this.add.rectangle(400, 300, 800, 600, 0x8ee873);
 
-    drawMap(this);
+    // 길
+    this.add.rectangle(400, 300, 800, 120, 0xd8b56d);
+    this.add.rectangle(400, 300, 120, 600, 0xd8b56d);
 
-    player = this.add.rectangle(TILE * 2 + 20, TILE * 7 + 20, 28, 28, 0xffcc00);
-    player.setStrokeStyle(3, 0x111111);
+    // 풀숲
+    this.grassArea = this.add.rectangle(620, 170, 180, 120, 0x2ecc71);
+    this.grassArea.setStrokeStyle(4, 0x1e8449);
 
-    this.add.text(player.x - 12, player.y - 14, "😀", {
-      fontSize: "24px"
-    }).setName("playerFace");
-
-    cursors = this.input.keyboard.createCursorKeys();
-
-    battleText = this.add.text(20, 20, "", {
-      fontSize: "20px",
-      color: "#111",
-      backgroundColor: "#ffffff",
-      padding: { x: 10, y: 6 }
+    this.add.text(565, 145, "풀숲", {
+      fontSize: "22px",
+      color: "#ffffff",
+      fontStyle: "bold"
     });
-    battleText.setVisible(false);
+
+    // 벽 그룹
+    this.walls = this.physics.add.staticGroup();
+
+    this.createWall(400, 20, 800, 40);
+    this.createWall(400, 580, 800, 40);
+    this.createWall(20, 300, 40, 600);
+    this.createWall(780, 300, 40, 600);
+
+    // 장애물
+    this.createWall(230, 180, 130, 80);
+    this.createWall(570, 430, 170, 80);
+
+    // 플레이어
+    this.player = this.physics.add.rectangle(400, 300, 34, 34, 0x3498db);
+    this.player.setCollideWorldBounds(true);
+
+    this.physics.add.collider(this.player, this.walls);
+
+    // 키보드 방향키
+    this.cursors = this.input.keyboard.createCursorKeys();
+
+    this.infoText = this.add.text(20, 20, "효종몬 월드", {
+      fontSize: "24px",
+      color: "#ffffff",
+      fontStyle: "bold",
+      backgroundColor: "#00000088",
+      padding: {
+        x: 10,
+        y: 6
+      }
+    });
+
+    this.noticeText = this.add.text(20, 60, "방향키 또는 화면 버튼으로 이동", {
+      fontSize: "16px",
+      color: "#ffffff",
+      backgroundColor: "#00000088",
+      padding: {
+        x: 10,
+        y: 5
+      }
+    });
+
+    this.encounterCooldown = false;
+  }
+
+  createWall(x, y, width, height) {
+    const wall = this.add.rectangle(x, y, width, height, 0x6b4f2a);
+    this.physics.add.existing(wall, true);
+    this.walls.add(wall);
   }
 
   update() {
-    if (inBattle) return;
+    let velocityX = 0;
+    let velocityY = 0;
 
-    movePlayer(this);
-
-    if (encounterCooldown > 0) {
-      encounterCooldown--;
+    if (this.cursors.left.isDown || mobileInput.left) {
+      velocityX = -this.speed;
+    } else if (this.cursors.right.isDown || mobileInput.right) {
+      velocityX = this.speed;
     }
 
-    checkGrassEncounter(this);
+    if (this.cursors.up.isDown || mobileInput.up) {
+      velocityY = -this.speed;
+    } else if (this.cursors.down.isDown || mobileInput.down) {
+      velocityY = this.speed;
+    }
+
+    this.player.body.setVelocity(velocityX, velocityY);
+
+    if (velocityX !== 0 && velocityY !== 0) {
+      this.player.body.velocity.normalize().scale(this.speed);
+    }
+
+    this.checkGrassEncounter();
+
+    if (mobileInput.select) {
+      console.log("선택 버튼 눌림");
+    }
   }
-}
 
-class BattleScene extends Phaser.Scene {
-  constructor() {
-    super("BattleScene");
-  }
+  checkGrassEncounter() {
+    const playerBounds = this.player.getBounds();
+    const grassBounds = this.grassArea.getBounds();
 
-  init(data) {
-    this.monster = data.monster;
-  }
+    const isInGrass = Phaser.Geom.Intersects.RectangleToRectangle(
+      playerBounds,
+      grassBounds
+    );
 
-  create() {
-    this.cameras.main.setBackgroundColor("#f8fafc");
+    if (isInGrass && !this.encounterCooldown) {
+      this.encounterCooldown = true;
 
-    this.add.rectangle(320, 200, 560, 300, 0xffffff)
-      .setStrokeStyle(4, 0x111111);
+      const randomChance = Phaser.Math.Between(1, 100);
 
-    this.add.text(70, 70, "야생 몬스터가 나타났다!", {
-      fontSize: "26px",
-      color: "#111"
-    });
+      if (randomChance <= 3) {
+        alert("야생 효종몬이 나타났다!");
+      }
 
-    this.add.text(260, 130, this.monster.emoji, {
-      fontSize: "80px"
-    });
-
-    this.add.text(245, 225, `${this.monster.name}  HP ${this.monster.hp}`, {
-      fontSize: "24px",
-      color: "#111"
-    });
-
-    const fightBtn = createButton(this, 150, 320, "공격");
-    const catchBtn = createButton(this, 320, 320, "포획");
-    const runBtn = createButton(this, 490, 320, "도망");
-
-    fightBtn.on("pointerdown", () => {
-      this.add.text(190, 370, `${this.monster.name}에게 공격했다!`, {
-        fontSize: "20px",
-        color: "#111"
+      this.time.delayedCall(800, () => {
+        this.encounterCooldown = false;
       });
-    });
-
-    catchBtn.on("pointerdown", () => {
-      const success = Math.random() < 0.5;
-
-      if (success) {
-        this.add.text(190, 370, `${this.monster.name} 포획 성공!`, {
-          fontSize: "20px",
-          color: "#111"
-        });
-
-        this.time.delayedCall(1200, () => {
-          this.scene.start("WorldScene");
-        });
-      } else {
-        this.add.text(190, 370, "포획 실패!", {
-          fontSize: "20px",
-          color: "#111"
-        });
-      }
-    });
-
-    runBtn.on("pointerdown", () => {
-      this.scene.start("WorldScene");
-    });
-  }
-}
-
-function drawMap(scene) {
-  for (let y = 0; y < MAP_HEIGHT; y++) {
-    mapLayer[y] = [];
-
-    for (let x = 0; x < MAP_WIDTH; x++) {
-      const tile = mapData[y][x];
-
-      let color = 0x7bd957;
-
-      if (tile === "W") color = 0x4b7f3f;
-      if (tile === "G") color = 0x2faa45;
-
-      const rect = scene.add.rectangle(
-        x * TILE + TILE / 2,
-        y * TILE + TILE / 2,
-        TILE,
-        TILE,
-        color
-      );
-
-      rect.setStrokeStyle(1, 0x5ba55b);
-
-      if (tile === "W") {
-        scene.add.text(x * TILE + 8, y * TILE + 7, "🌳", {
-          fontSize: "24px"
-        });
-      }
-
-      if (tile === "G") {
-        scene.add.text(x * TILE + 8, y * TILE + 7, "🌿", {
-          fontSize: "24px"
-        });
-      }
-
-      mapLayer[y][x] = tile;
     }
   }
-}
-
-function movePlayer(scene) {
-  const speed = 3;
-  let dx = 0;
-  let dy = 0;
-
-  if (cursors.left.isDown) dx = -speed;
-  if (cursors.right.isDown) dx = speed;
-  if (cursors.up.isDown) dy = -speed;
-  if (cursors.down.isDown) dy = speed;
-
-  if (dx === 0 && dy === 0) return;
-
-  const nextX = player.x + dx;
-  const nextY = player.y + dy;
-
-  if (!isWall(nextX, nextY)) {
-    player.x = nextX;
-    player.y = nextY;
-
-    const face = scene.children.getByName("playerFace");
-    face.x = player.x - 12;
-    face.y = player.y - 14;
-  }
-}
-
-function isWall(x, y) {
-  const tileX = Math.floor(x / TILE);
-  const tileY = Math.floor(y / TILE);
-
-  if (tileX < 0 || tileX >= MAP_WIDTH || tileY < 0 || tileY >= MAP_HEIGHT) {
-    return true;
-  }
-
-  return mapLayer[tileY][tileX] === "W";
-}
-
-function checkGrassEncounter(scene) {
-  const tileX = Math.floor(player.x / TILE);
-  const tileY = Math.floor(player.y / TILE);
-
-  if (mapLayer[tileY][tileX] !== "G") return;
-  if (encounterCooldown > 0) return;
-
-  encounterCooldown = 35;
-
-  if (Math.random() < 0.035) {
-    inBattle = true;
-
-    const monster = Phaser.Utils.Array.GetRandom(monsters);
-
-    battleText.setText(`야생 ${monster.name} 등장!`);
-    battleText.setVisible(true);
-
-    scene.time.delayedCall(700, () => {
-      scene.scene.start("BattleScene", { monster });
-    });
-  }
-}
-
-function createButton(scene, x, y, text) {
-  const box = scene.add.rectangle(x, y, 120, 48, 0x4a90e2)
-    .setStrokeStyle(3, 0x111111)
-    .setInteractive({ useHandCursor: true });
-
-  scene.add.text(x - 26, y - 13, text, {
-    fontSize: "22px",
-    color: "#ffffff"
-  });
-
-  return box;
 }
 
 const config = {
   type: Phaser.AUTO,
-  width: 640,
-  height: 400,
   parent: "gameContainer",
-  backgroundColor: "#7fdcff",
-  scene: [WorldScene, BattleScene]
+  width: 800,
+  height: 600,
+  backgroundColor: "#000000",
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH
+  },
+  physics: {
+    default: "arcade",
+    arcade: {
+      debug: false
+    }
+  },
+  scene: [HyojongmonWorld]
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);

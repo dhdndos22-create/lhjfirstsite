@@ -1,21 +1,73 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>효종몬 월드</title>
-  <link rel="stylesheet" href="hyojongmon.css">
-</head>
-<body>
-  <h1>🗺 효종몬 월드</h1>
+* {
+  box-sizing: border-box;
+}
 
-  <div id="gameContainer"></div>
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #111;
+  font-family: Arial, sans-serif;
+}
 
-  <p class="info">방향키로 이동 / 풀숲에 들어가면 몬스터가 등장할 수 있어!</p>
+#gameContainer {
+  width: 100vw;
+  height: 100vh;
+}
 
-  <a class="back-btn" href="../../index.html">← 메인으로</a>
+/* 모바일 조작 버튼 */
+#mobileControls {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 24px;
+  z-index: 9999;
+  pointer-events: none;
+}
 
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
-  <script src="hyojongmon.js"></script>
-</body>
-</html>
+#mobileControls button {
+  width: 58px;
+  height: 58px;
+  border: 3px solid #333;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 22px;
+  font-weight: bold;
+  color: #222;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+}
+
+.dpad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.dpad-row {
+  display: flex;
+  gap: 6px;
+}
+
+#btnSelect {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  font-size: 18px;
+}
+
+/* PC에서는 버튼을 숨기고 싶으면 아래 사용 */
+@media (min-width: 900px) {
+  #mobileControls {
+    opacity: 0.75;
+  }
+}

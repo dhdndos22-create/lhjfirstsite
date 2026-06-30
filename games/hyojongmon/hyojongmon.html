@@ -1,21 +1,32 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>효종몬 월드</title>
-  <link rel="stylesheet" href="hyojongmon.css">
+
+  <link rel="stylesheet" href="hyojongmon.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 </head>
 <body>
-  <h1>🗺 효종몬 월드</h1>
-
   <div id="gameContainer"></div>
 
-  <p class="info">방향키로 이동 / 풀숲에 들어가면 몬스터가 등장할 수 있어!</p>
+  <!-- 효종몬 월드에서만 보이는 모바일 조작 버튼 -->
+  <div id="mobileControls">
+    <div class="dpad">
+      <button id="btnUp">▲</button>
 
-  <a class="back-btn" href="../../index.html">← 메인으로</a>
+      <div class="dpad-row">
+        <button id="btnLeft">◀</button>
+        <button id="btnDown">▼</button>
+        <button id="btnRight">▶</button>
+      </div>
+    </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+    <button id="btnSelect">선택</button>
+  </div>
+
   <script src="hyojongmon.js"></script>
 </body>
 </html>
