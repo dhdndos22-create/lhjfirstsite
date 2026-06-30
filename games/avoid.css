@@ -236,3 +236,110 @@ h1 {
     }
   }
 }
+
+.game-cloud {
+  position: absolute;
+  background: white;
+  border-radius: 50px;
+  opacity: 0.9;
+  z-index: 2;
+  animation: bgMove linear infinite;
+}
+
+.game-cloud::before,
+.game-cloud::after {
+  content: "";
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+}
+
+.game-cloud1 {
+  width: 120px;
+  height: 42px;
+  top: 38px;
+  right: -150px;
+  animation-duration: 9s;
+}
+
+.game-cloud1::before {
+  width: 52px;
+  height: 52px;
+  top: -25px;
+  left: 18px;
+}
+
+.game-cloud1::after {
+  width: 68px;
+  height: 68px;
+  top: -36px;
+  right: 16px;
+}
+
+.game-cloud2 {
+  width: 90px;
+  height: 34px;
+  top: 88px;
+  right: -180px;
+  animation-duration: 13s;
+  animation-delay: 3s;
+  opacity: 0.75;
+}
+
+.game-cloud2::before {
+  width: 42px;
+  height: 42px;
+  top: -20px;
+  left: 14px;
+}
+
+.game-cloud2::after {
+  width: 55px;
+  height: 55px;
+  top: -29px;
+  right: 12px;
+}
+
+.bird {
+  position: absolute;
+  right: -80px;
+  color: #333;
+  font-size: 26px;
+  font-weight: bold;
+  z-index: 3;
+  animation: bgMove linear infinite, birdFloat 0.8s ease-in-out infinite alternate;
+}
+
+.bird1 {
+  top: 70px;
+  animation-duration: 7s, 0.8s;
+  animation-delay: 1s, 0s;
+}
+
+.bird2 {
+  top: 120px;
+  font-size: 20px;
+  opacity: 0.75;
+  animation-duration: 11s, 0.8s;
+  animation-delay: 5s, 0.2s;
+}
+
+@keyframes bgMove {
+  from {
+    right: -180px;
+  }
+
+  to {
+    right: 105%;
+  }
+}
+
+@keyframes birdFloat {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-8px);
+  }
+}
