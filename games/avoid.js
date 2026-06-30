@@ -5,6 +5,10 @@ const player = document.getElementById("player");
 const obstacle = document.getElementById("obstacle");
 const scoreText = document.getElementById("score");
 const playerImg = document.getElementById("playerImg");
+const gameOverScreen = document.getElementById("gameOverScreen");
+const finalScore = document.getElementById("finalScore");
+const restartBtn = document.getElementById("restartBtn");
+
 
 let runFrame = 1;
 let runAnimationTimer = null;
@@ -24,6 +28,7 @@ let collisionTimer = null;
 let firstObstacleTimer = null;
 
 startBtn.addEventListener("click", startGame);
+restartBtn.addEventListener("click", restartGame);
 
 function startGame() {
   if (gameRunning) return;
@@ -166,16 +171,15 @@ function checkCollision() {
 
 function endGame() {
   gameRunning = false;
-  clearInterval(runAnimationTimer);
+
   clearInterval(scoreTimer);
   clearInterval(obstacleTimer);
   clearInterval(collisionTimer);
   clearTimeout(firstObstacleTimer);
   clearTimeout(nextObstacleTimeout);
 
-  alert("게임오버!\n점수 : " + score);
-
-  location.reload();
+  finalScore.textContent = "점수 : " + score;
+  gameOverScreen.classList.add("show");
 }
 
 document.addEventListener("keydown", function (e) {
@@ -198,4 +202,29 @@ function startRunAnimation() {
     runFrame = runFrame === 1 ? 2 : 1;
     playerImg.src = `../images/player-run${runFrame}.png`;
   }, 160);
+}
+
+function restartGame() {
+  gameOverScreen.classList.remove("show");
+
+  score = 0;
+  obstacleX = -120;
+  obstacleSpeed = 6;
+  jumpTime = 550;
+  obstacleType = "ground";
+
+  player.classList.remove("jump");
+  player.style.setProperty("--jump-time", jumpTime + "ms");
+
+  obstacle.style.right = obstacleX + "px";
+  scoreText.textContent = "점수 : 0";
+
+  clearInterval(scoreTimer);
+  clearInterval(obstacleTimer);
+  clearInterval(collisionTimer);
+  clearTimeout(firstObstacleTimer);
+  clearTimeout(nextObstacleTimeout);
+
+  gameRunning = false;
+  startGame();
 }

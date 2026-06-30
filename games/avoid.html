@@ -7,34 +7,67 @@
   <link rel="stylesheet" href="avoid.css">
 </head>
 <body>
+
   <h1>🎮 장애물 피하기</h1>
 
   <section id="gameWrap">
+
+    <!-- 시작 화면 -->
     <div id="startScreen">
       <h2>장애물 피하기</h2>
-      <p>PC: 스페이스바 / 모바일: 화면 터치</p>
+      <p>PC : 스페이스바 / 모바일 : 화면 터치</p>
       <button id="startBtn">게임 시작</button>
     </div>
 
+    <!-- 게임 화면 -->
     <div id="game">
+
       <div id="score">점수 : 0</div>
 
+      <!-- 배경 구름 -->
       <div class="game-cloud game-cloud1"></div>
       <div class="game-cloud game-cloud2"></div>
 
+      <!-- 새 -->
       <div class="bird bird1">⌒⌒</div>
       <div class="bird bird2">⌒⌒</div>
 
+      <!-- 플레이어 -->
       <div id="player">
-        <img id="playerImg" src="../images/player-run1.png" alt="플레이어">
+        <img
+          id="playerImg"
+          src="../images/player-run1.png"
+          alt="플레이어"
+        >
       </div>
 
+      <!-- 장애물 -->
       <div id="obstacle"></div>
+
+      <!-- 게임오버 화면 -->
+      <div id="gameOverScreen">
+
+        <h2>GAME OVER</h2>
+
+        <p id="finalScore">
+          점수 : 0
+        </p>
+
+        <button id="restartBtn">
+          다시하기
+        </button>
+
+      </div>
+
     </div>
+
   </section>
 
-  <a class="back-btn" href="../index.html">← 메인으로</a>
+  <a class="back-btn" href="../index.html">
+    ← 메인으로
+  </a>
 
   <script src="avoid.js"></script>
+
 </body>
 </html>

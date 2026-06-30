@@ -343,3 +343,49 @@ h1 {
     transform: translateY(-8px);
   }
 }
+
+#gameOverScreen {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+
+#gameOverScreen.show {
+  display: flex;
+}
+
+#gameOverScreen h2 {
+  font-size: 54px;
+  color: white;
+  margin: 0 0 14px;
+  text-shadow: 4px 4px 0 #111;
+}
+
+#finalScore {
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 24px;
+}
+
+#restartBtn {
+  border: none;
+  background: #4a90e2;
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 14px 34px;
+  border-radius: 24px;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #2d73c7;
+}
+
+#restartBtn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #2d73c7;
+}
