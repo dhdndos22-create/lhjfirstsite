@@ -88,8 +88,8 @@ function moveObstacle() {
     clearInterval(obstacleTimer);
 
     if (score < 1500) {
-      obstacleSpeed = Math.min(obstacleSpeed + 0.27, 12);
-      jumpTime = Math.max(jumpTime - 7.5, 400);
+      obstacleSpeed = Math.min(obstacleSpeed + 0.4, 14);
+      jumpTime = Math.max(jumpTime - 10, 360);
 
       player.style.setProperty("--jump-time", jumpTime + "ms");
     }
