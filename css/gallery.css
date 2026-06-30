@@ -117,3 +117,28 @@ h1 {
   border-radius: 22px;
   font-weight: bold;
 }
+
+
+.gallery-card {
+  cursor: pointer;
+}
+
+.photo-detail {
+  max-width: 800px;
+  margin: 30px auto;
+}
+
+.photo-detail-card {
+  background: white;
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 6px 0 #70b8ff;
+}
+
+.photo-detail-card img {
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 18px;
+  background: #f3f9ff;
+}

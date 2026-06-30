@@ -112,6 +112,9 @@ async function loadGallery() {
         <div class="date">${date}</div>
       </div>
     `;
+    card.addEventListener("click", function () {
+        location.href = `photo.html?id=${item.id}`;
+    });
 
     galleryList.appendChild(card);
   });
