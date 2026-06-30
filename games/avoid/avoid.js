@@ -140,7 +140,7 @@ function checkCollision() {
     left: p.left + 18,
     right: p.right - 18,
     top: p.top + 18,
-    bottom: p.bottom - 12
+    bottom: p.bottom - 5
   };
 
   let obstacleHitbox;
