@@ -350,13 +350,19 @@ h1 {
 }
 
 @media (max-width: 700px) {
+  
   h1 {
-    font-size: 24px;
+  font-size: 24px;
+  margin-top: 40px;
+  margin-bottom: 20px;
   }
 
   #gameWrap {
-    height: 300px;
+  width: 96vw;
+  height: 420px;
+  margin: 40px auto 20px;
   }
+
 
   #player {
     width: 70px;
@@ -387,5 +393,9 @@ h1 {
     100% {
       bottom: 52px;
     }
+  }
+  
+  .back-btn {
+  margin-top: 30px;
   }
 }
