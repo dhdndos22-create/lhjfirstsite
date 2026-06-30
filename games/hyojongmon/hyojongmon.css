@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>효종몬 월드</title>
+  <link rel="stylesheet" href="hyojongmon.css">
+</head>
+<body>
+  <h1>🗺 효종몬 월드</h1>
+
+  <div id="gameContainer"></div>
+
+  <p class="info">방향키로 이동 / 풀숲에 들어가면 몬스터가 등장할 수 있어!</p>
+
+  <a class="back-btn" href="../../index.html">← 메인으로</a>
+
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+  <script src="hyojongmon.js"></script>
+</body>
+</html>
