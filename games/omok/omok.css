@@ -3,51 +3,50 @@ body {
   font-family: Arial, sans-serif;
   background: #eaf7ff;
   text-align: center;
+  overflow-x: hidden;
 }
 
 h1 {
-  margin-top: 30px;
+  margin-top: 25px;
   color: #333;
+  font-size: 42px;
 }
 
 #gameInfo {
   margin: 15px 0;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
 }
 
 #board {
-  width: 570px;
-  height: 570px;
+  width: min(92vw, 570px);
+  height: min(92vw, 570px);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(19, 30px);
-  grid-template-rows: repeat(19, 30px);
+  grid-template-columns: repeat(19, 1fr);
+  grid-template-rows: repeat(19, 1fr);
   background-color: #d8a84f;
   background-image:
     linear-gradient(to right, #5a3512 1px, transparent 1px),
     linear-gradient(to bottom, #5a3512 1px, transparent 1px);
-  background-size: 30px 30px;
-  background-position: 15px 15px;
+  background-size: calc(100% / 19) calc(100% / 19);
+  background-position: calc(100% / 38) calc(100% / 38);
   border: 3px solid #5a3512;
   position: relative;
 }
 
 .cell {
-  width: 30px;
-  height: 30px;
-  box-sizing: border-box;
   position: relative;
   cursor: pointer;
 }
 
 .stone {
-  width: 26px;
-  height: 26px;
+  width: 82%;
+  height: 82%;
   border-radius: 50%;
   position: absolute;
-  top: 2px;
-  left: 2px;
+  top: 9%;
+  left: 9%;
   z-index: 5;
 }
 
@@ -62,6 +61,7 @@ h1 {
 
 #resetBtn {
   margin-top: 20px;
+  margin-bottom: 30px;
   padding: 10px 22px;
   font-size: 16px;
   border: none;
@@ -73,4 +73,27 @@ h1 {
 
 #resetBtn:hover {
   background: #1f86ee;
+}
+
+@media (max-width: 700px) {
+  h1 {
+    font-size: 32px;
+    margin-top: 22px;
+  }
+
+  #gameInfo {
+    font-size: 19px;
+    margin: 12px 0;
+  }
+
+  #board {
+    width: 94vw;
+    height: 94vw;
+  }
+
+  #resetBtn {
+    margin-top: 18px;
+    font-size: 16px;
+    padding: 10px 24px;
+  }
 }
