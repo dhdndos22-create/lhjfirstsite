@@ -23,26 +23,32 @@ h1 {
   display: grid;
   grid-template-columns: repeat(19, 30px);
   grid-template-rows: repeat(19, 30px);
-  background: #d8a84f;
+  background-color: #d8a84f;
+  background-image:
+    linear-gradient(to right, #5a3512 1px, transparent 1px),
+    linear-gradient(to bottom, #5a3512 1px, transparent 1px);
+  background-size: 30px 30px;
+  background-position: 15px 15px;
   border: 3px solid #5a3512;
+  position: relative;
 }
 
 .cell {
   width: 30px;
   height: 30px;
-  border: 1px solid #8b5a2b;
   box-sizing: border-box;
   position: relative;
   cursor: pointer;
 }
 
 .stone {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   position: absolute;
   top: 2px;
   left: 2px;
+  z-index: 5;
 }
 
 .black {
