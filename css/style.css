@@ -5,15 +5,18 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .sky {
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   background: linear-gradient(#8fd3ff, #dff6ff);
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: 160px;
 }
 
 .main-wrap {
@@ -153,6 +156,7 @@ body {
   display: none;
   grid-template-columns: 1fr;
   gap: 14px;
+  padding-bottom: 80px;
 }
 
 .menu-box.show {
@@ -291,35 +295,93 @@ body {
 }
 
 @media (max-width: 700px) {
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .sky {
+    min-height: 100vh;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 180px;
+  }
+
   .main-wrap {
-    padding-top: 40px;
+    padding-top: 30px;
+    padding-bottom: 80px;
   }
 
   .title-wrap {
-    height: 150px;
+    height: 135px;
+    margin-bottom: 5px;
   }
 
   .title {
-    top: 65px;
-    font-size: 44px;
+    top: 60px;
+    font-size: 38px;
   }
 
   .title-rainbow {
-    width: 330px;
-    height: 165px;
+    width: 300px;
+    height: 150px;
   }
 
   .title-cloud {
-    width: 100px;
-    height: 40px;
-    top: 85px;
+    width: 90px;
+    height: 36px;
+    top: 78px;
+  }
+
+  .title-cloud::before {
+    width: 42px;
+    height: 42px;
+    top: -18px;
+    left: 16px;
+  }
+
+  .title-cloud::after {
+    width: 52px;
+    height: 52px;
+    top: -26px;
+    right: 12px;
   }
 
   .title-cloud-left {
-    left: 25px;
+    left: 12px;
   }
 
   .title-cloud-right {
-    right: 25px;
+    right: 12px;
+  }
+
+  .mascot {
+    width: 160px;
+    max-width: 55%;
+    margin-bottom: 14px;
+  }
+
+  .menu-main-btn {
+    font-size: 20px;
+    padding: 12px 34px;
+  }
+
+  .menu-box {
+    width: 86vw;
+    max-width: 330px;
+    margin-top: 20px;
+    gap: 12px;
+    padding-bottom: 120px;
+  }
+
+  .menu-card {
+    font-size: 19px;
+    padding: 15px 18px;
+  }
+
+  .grass {
+    position: fixed;
+    height: 90px;
   }
 }
