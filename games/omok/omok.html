@@ -7,15 +7,38 @@
   <link rel="stylesheet" href="./omok.css" />
 </head>
 <body>
-  <h1>효종월드 오목</h1>
+  <div class="omok-bg">
+    <section id="startScreen" class="screen active">
+      <h1>⚫ 효종월드 오목 ⚪</h1>
+      <p>귀여운 하늘 위에서 즐기는 오목 한 판!</p>
 
-  <div id="gameInfo">
-    현재 차례: <span id="turnText">흑돌</span>
+      <button id="startBtn" class="main-btn">게임 시작</button>
+      <a href="../../index.html" class="sub-btn">메인으로</a>
+    </section>
+
+    <section id="modeScreen" class="screen">
+      <h2>플레이 모드 선택</h2>
+
+      <button id="singleBtn" class="main-btn">싱글 플레이</button>
+      <button id="multiBtn" class="main-btn">멀티 플레이</button>
+      <button id="backToStartBtn" class="sub-btn">뒤로가기</button>
+    </section>
+
+    <section id="gameScreen" class="game-screen">
+      <h2>⚫ 오목게임 ⚪</h2>
+
+      <div id="gameInfo">
+        현재 차례: <span id="turnText">흑돌</span>
+      </div>
+
+      <div id="board"></div>
+
+      <div class="game-buttons">
+        <button id="resetBtn" class="sub-btn">다시하기</button>
+        <button id="backToModeBtn" class="sub-btn">모드 선택</button>
+      </div>
+    </section>
   </div>
-
-  <div id="board"></div>
-
-  <button id="resetBtn">다시 시작</button>
 
   <script src="./omok.js"></script>
 </body>
