@@ -6,11 +6,14 @@ const startBtn = document.getElementById("startBtn");
 const singleBtn = document.getElementById("singleBtn");
 const multiBtn = document.getElementById("multiBtn");
 const backToStartBtn = document.getElementById("backToStartBtn");
-const backToModeBtn = document.getElementById("backToModeBtn");
+
+const menuBtn = document.getElementById("menuBtn");
+const gameMenu = document.getElementById("gameMenu");
+const menuResetBtn = document.getElementById("menuResetBtn");
+const menuModeBtn = document.getElementById("menuModeBtn");
 
 const boardElement = document.getElementById("board");
 const turnText = document.getElementById("turnText");
-const resetBtn = document.getElementById("resetBtn");
 
 const SIZE = 19;
 
@@ -34,18 +37,40 @@ backToStartBtn.addEventListener("click", () => {
   showScreen(startScreen);
 });
 
-backToModeBtn.addEventListener("click", () => {
-  showScreen(modeScreen);
+singleBtn.addEventListener("click", () => {
+  showScreen(gameScreen);
+  closeGameMenu();
+  initGame();
 });
 
 multiBtn.addEventListener("click", () => {
   alert("멀티 플레이는 아직 준비중입니다!");
 });
 
-singleBtn.addEventListener("click", () => {
-  showScreen(gameScreen);
+menuBtn.addEventListener("click", (event) => {
+  event.stopPropagation();
+  gameMenu.classList.toggle("show");
+});
+
+menuResetBtn.addEventListener("click", () => {
+  closeGameMenu();
   initGame();
 });
+
+menuModeBtn.addEventListener("click", () => {
+  closeGameMenu();
+  showScreen(modeScreen);
+});
+
+document.addEventListener("click", (event) => {
+  if (!event.target.closest(".menu-wrap")) {
+    closeGameMenu();
+  }
+});
+
+function closeGameMenu() {
+  gameMenu.classList.remove("show");
+}
 
 function initGame() {
   board = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
@@ -80,6 +105,7 @@ function handleCellClick(event) {
 
   if (checkWin(row, col, currentTurn)) {
     gameOver = true;
+
     const winner = currentTurn === "black" ? "흑돌" : "백돌";
     turnText.textContent = `${winner} 승리!`;
 
@@ -139,5 +165,3 @@ function countStones(row, col, dr, dc, color) {
 
   return count;
 }
-
-resetBtn.addEventListener("click", initGame);

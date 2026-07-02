@@ -25,18 +25,25 @@
     </section>
 
     <section id="gameScreen" class="game-screen">
-      <h2>⚫ 오목게임 ⚪</h2>
+      <div class="game-header">
+        <h2>⚫ 오목게임 ⚪</h2>
+
+        <div class="menu-wrap">
+          <button id="menuBtn" class="menu-btn">☰</button>
+
+          <div id="gameMenu" class="game-menu">
+            <button id="menuResetBtn">🔄 다시하기</button>
+            <button id="menuModeBtn">🎮 모드 선택</button>
+            <a href="../../index.html">🏠 메인으로</a>
+          </div>
+        </div>
+      </div>
 
       <div id="gameInfo">
         현재 차례: <span id="turnText">흑돌</span>
       </div>
 
       <div id="board"></div>
-
-      <div class="game-buttons">
-        <button id="resetBtn" class="sub-btn">다시하기</button>
-        <button id="backToModeBtn" class="sub-btn">모드 선택</button>
-      </div>
     </section>
   </div>
 
