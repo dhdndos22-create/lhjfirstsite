@@ -1,0 +1,12 @@
+# Node.js
+node_modules/
+server/node_modules/
+
+# VS Code
+.vscode/
+
+# 환경변수
+.env
+
+# macOS
+.DS_Store
