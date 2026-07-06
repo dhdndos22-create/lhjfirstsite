@@ -542,3 +542,59 @@ button:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
+
+.player-panel {
+  width: min(94vw, 570px);
+  margin: 10px auto;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 5px 0 #6cb8ff;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.player-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #5680a8;
+}
+
+.player-panel strong {
+  font-size: 18px;
+  color: #1e3a8a;
+}
+
+.player-status {
+  font-size: 14px;
+  font-weight: bold;
+  color: #2776c9;
+}
+
+.multi-control-box {
+  width: min(94vw, 570px);
+  margin: 12px auto 0;
+}
+
+.multi-control-box .main-btn,
+.multi-control-box .sub-btn {
+  width: 100%;
+  max-width: 570px;
+  margin: 10px auto;
+}
+
+@media (max-width: 700px) {
+  .player-panel {
+    padding: 10px 12px;
+  }
+
+  .player-panel strong {
+    font-size: 16px;
+  }
+
+  .player-status {
+    font-size: 13px;
+  }
+}

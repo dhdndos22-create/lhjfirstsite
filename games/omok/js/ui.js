@@ -2,7 +2,6 @@ const startScreen = document.getElementById("startScreen");
 const modeScreen = document.getElementById("modeScreen");
 const roomListScreen = document.getElementById("roomListScreen");
 const createRoomScreen = document.getElementById("createRoomScreen");
-const lobbyScreen = document.getElementById("lobbyScreen");
 const gameScreen = document.getElementById("gameScreen");
 
 let nickname = localStorage.getItem("omokNickname") || "게스트";
@@ -11,6 +10,10 @@ const nicknameText = document.getElementById("nicknameText");
 const nicknameInput = document.getElementById("nicknameInput");
 const userMenuBox = document.getElementById("userMenuBox");
 const gameMenu = document.getElementById("gameMenu");
+
+const opponentPanel = document.getElementById("opponentPanel");
+const myPanel = document.getElementById("myPanel");
+const multiControlBox = document.getElementById("multiControlBox");
 
 nicknameText.textContent = nickname;
 nicknameInput.value = nickname;
@@ -21,7 +24,6 @@ function showScreen(screen) {
     modeScreen,
     roomListScreen,
     createRoomScreen,
-    lobbyScreen,
     gameScreen
   ].forEach((s) => s.classList.remove("active"));
 
@@ -48,4 +50,16 @@ function closeUserMenu() {
 
 function closeGameMenu() {
   gameMenu.classList.remove("show");
+}
+
+function showMultiUI() {
+  opponentPanel.style.display = "flex";
+  myPanel.style.display = "flex";
+  multiControlBox.style.display = "block";
+}
+
+function hideMultiUI() {
+  opponentPanel.style.display = "none";
+  myPanel.style.display = "none";
+  multiControlBox.style.display = "none";
 }

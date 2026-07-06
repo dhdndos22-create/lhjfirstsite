@@ -1,9 +1,10 @@
 const roomList = document.getElementById("roomList");
 const roomNameInput = document.getElementById("roomNameInput");
 
-const lobbyRoomName = document.getElementById("lobbyRoomName");
-const playerList = document.getElementById("playerList");
-const lobbyMessage = document.getElementById("lobbyMessage");
+const opponentName = document.getElementById("opponentName");
+const opponentState = document.getElementById("opponentState");
+const myName = document.getElementById("myName");
+const myState = document.getElementById("myState");
 
 const readyBtn = document.getElementById("readyBtn");
 const startGameBtn = document.getElementById("startGameBtn");
@@ -65,15 +66,27 @@ socket.on("roomList", (rooms) => {
 socket.on("roomCreated", ({ roomId, room }) => {
   currentRoomId = roomId;
   currentRoom = room;
-  renderLobby(room);
-  showScreen(lobbyScreen);
+
+  showScreen(gameScreen);
+  showMultiUI();
+  closeGameMenu();
+  initBoard();
+
+  turnText.textContent = "상대 기다리는 중...";
+  renderGameRoom(room);
 });
 
 socket.on("roomJoined", ({ roomId, room }) => {
   currentRoomId = roomId;
   currentRoom = room;
-  renderLobby(room);
-  showScreen(lobbyScreen);
+
+  showScreen(gameScreen);
+  showMultiUI();
+  closeGameMenu();
+  initBoard();
+
+  turnText.textContent = "게임 준비중";
+  renderGameRoom(room);
 });
 
 socket.on("joinRoomFailed", (message) => {
@@ -82,39 +95,35 @@ socket.on("joinRoomFailed", (message) => {
 
 socket.on("lobbyUpdated", (room) => {
   currentRoom = room;
-  renderLobby(room);
+  renderGameRoom(room);
 });
 
-function renderLobby(room) {
-  lobbyRoomName.textContent = room.roomName;
-  playerList.innerHTML = "";
-
+function renderGameRoom(room) {
   const me = room.players.find((p) => p.socketId === socket.id);
-  const isHost = me && me.isHost;
+  const opponent = room.players.find((p) => p.socketId !== socket.id);
 
-  room.players.forEach((player) => {
-    const card = document.createElement("div");
-    card.classList.add("player-card");
+  if (!me) return;
 
-    const hostIcon = player.isHost ? "👑 " : "";
-    const state = player.isHost
+  myName.textContent = me.nickname;
+  myState.textContent = me.isHost
+    ? "방장"
+    : me.ready
+      ? "준비 완료"
+      : "준비 전";
+
+  if (opponent) {
+    opponentName.textContent = opponent.nickname;
+    opponentState.textContent = opponent.isHost
       ? "방장"
-      : player.ready
+      : opponent.ready
         ? "준비 완료"
         : "준비 전";
+  } else {
+    opponentName.textContent = "상대 기다리는 중...";
+    opponentState.textContent = "대기중";
+  }
 
-    card.innerHTML = `
-      <span class="player-name">${hostIcon}${player.nickname}</span>
-      <span class="player-state">${state}</span>
-    `;
-
-    playerList.appendChild(card);
-  });
-
-  lobbyMessage.textContent =
-    room.players.length < 2 ? "상대를 기다리는 중..." : "상대가 입장했습니다.";
-
-  if (isHost) {
+  if (me.isHost) {
     readyBtn.style.display = "none";
     startGameBtn.style.display = "block";
 
@@ -126,7 +135,14 @@ function renderLobby(room) {
   } else {
     readyBtn.style.display = "block";
     startGameBtn.style.display = "none";
+
     readyBtn.textContent = me.ready ? "준비 취소" : "준비하기";
+  }
+
+  if (room.status === "playing") {
+    readyBtn.style.display = "none";
+    startGameBtn.style.display = "none";
+    turnText.textContent = "멀티 게임 진행중";
   }
 }
 
@@ -170,11 +186,7 @@ socket.on("startGameFailed", (message) => {
 socket.on("multiGameStart", ({ roomId }) => {
   currentRoomId = roomId;
 
-  alert("게임을 시작합니다!");
-
-  showScreen(gameScreen);
-  closeGameMenu();
-  initBoard();
-
-  turnText.textContent = "멀티 게임 시작!";
+  turnText.textContent = "게임 시작!";
+  readyBtn.style.display = "none";
+  startGameBtn.style.display = "none";
 });

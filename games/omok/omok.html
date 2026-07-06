@@ -58,18 +58,6 @@
       <button id="cancelCreateRoomBtn" class="sub-btn">취소</button>
     </section>
 
-    <section id="lobbyScreen" class="screen">
-      <h2 id="lobbyRoomName">대기실</h2>
-
-      <div id="playerList" class="player-list"></div>
-
-      <p id="lobbyMessage" class="lobby-message">상대를 기다리는 중...</p>
-
-      <button id="readyBtn" class="main-btn">준비하기</button>
-      <button id="startGameBtn" class="main-btn">게임 시작</button>
-      <button id="leaveRoomBtn" class="sub-btn">방 나가기</button>
-    </section>
-
     <section id="gameScreen" class="game-screen">
       <div class="game-header">
         <h2>⚫ 오목게임 ⚪</h2>
@@ -85,11 +73,29 @@
         </div>
       </div>
 
+      <div id="opponentPanel" class="player-panel opponent-panel">
+        <span class="player-label">상대</span>
+        <strong id="opponentName">상대 없음</strong>
+        <span id="opponentState" class="player-status">대기중</span>
+      </div>
+
       <div id="gameInfo">
-        현재 차례: <span id="turnText">흑돌</span>
+        현재 상태: <span id="turnText">흑돌</span>
       </div>
 
       <div id="board"></div>
+
+      <div id="myPanel" class="player-panel my-panel">
+        <span class="player-label">나</span>
+        <strong id="myName">게스트</strong>
+        <span id="myState" class="player-status">대기중</span>
+      </div>
+
+      <div id="multiControlBox" class="multi-control-box">
+        <button id="readyBtn" class="main-btn">준비하기</button>
+        <button id="startGameBtn" class="main-btn">게임 시작</button>
+        <button id="leaveRoomBtn" class="sub-btn">방 나가기</button>
+      </div>
     </section>
   </div>
 

@@ -1,6 +1,7 @@
 function startSingleGame() {
   showScreen(gameScreen);
   closeGameMenu();
+  hideMultiUI();
   initBoard(handleSingleCellClick);
 }
 
