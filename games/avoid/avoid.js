@@ -59,7 +59,7 @@ function startGame() {
     startObstacle();
   }, 3000);
 
-  collisionTimer = setInterval(checkCollision, 20);
+  collisionTimer = setInterval(checkCollision, 16);
 }
 
 function updateScore() {
