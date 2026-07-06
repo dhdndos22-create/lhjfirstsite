@@ -383,3 +383,162 @@ body {
     width: 190px;
   }
 }
+
+/* ========================= */
+/* 방 만들기 */
+/* ========================= */
+
+.room-input {
+  width: min(90%, 360px);
+  display: block;
+  margin: 25px auto;
+  padding: 16px;
+  font-size: 20px;
+  border: 3px solid #7fc7ff;
+  border-radius: 18px;
+  outline: none;
+  text-align: center;
+}
+
+.room-input:focus {
+  border-color: #4aa3ff;
+}
+
+/* ========================= */
+/* 대기실 */
+/* ========================= */
+
+.player-list {
+  width: min(90%, 420px);
+  margin: 20px auto;
+}
+
+.player-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 12px;
+  padding: 16px 20px;
+
+  background: white;
+  border-radius: 18px;
+
+  box-shadow: 0 5px 0 #6cb8ff;
+}
+
+.player-name {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.player-state {
+  font-size: 17px;
+  color: #3b82f6;
+  font-weight: bold;
+}
+
+.lobby-message {
+  margin: 30px 0;
+  font-size: 20px;
+  font-weight: bold;
+  color: #4473b5;
+}
+
+/* 준비 버튼 */
+
+#readyBtn {
+  display: none;
+}
+
+/* 게임 시작 버튼 */
+
+#startGameBtn {
+  display: none;
+}
+
+/* 방 나가기 */
+
+#leaveRoomBtn {
+  margin-top: 14px;
+}
+
+/* 모바일 */
+
+@media (max-width:700px){
+
+.player-card{
+
+    padding:14px;
+
+}
+
+.player-name{
+
+    font-size:18px;
+
+}
+
+.player-state{
+
+    font-size:15px;
+
+}
+
+.room-input{
+
+    font-size:18px;
+
+}
+
+.lobby-message{
+
+    font-size:18px;
+
+}
+
+}
+
+.room-card {
+  width: 100%;
+  border: none;
+  background: white;
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #6cb8ff;
+  text-align: left;
+}
+
+.room-card div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room-card strong {
+  font-size: 18px;
+  color: #1e3a8a;
+}
+
+.room-card span {
+  font-weight: bold;
+  color: #2776c9;
+}
+
+.room-card p {
+  margin: 8px 0 0;
+  font-weight: bold;
+  color: #58a35c;
+}
+
+.room-card:hover {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #6cb8ff;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
