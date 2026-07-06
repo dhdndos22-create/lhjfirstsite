@@ -278,3 +278,108 @@ body {
     font-size: 22px;
   }
 }
+
+.room-screen {
+  margin-top: 45px;
+}
+
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.room-header h2 {
+  margin: 0;
+}
+
+.user-menu-wrap {
+  position: relative;
+}
+
+.user-menu-btn {
+  border: none;
+  border-radius: 20px;
+  background: white;
+  color: #2776c9;
+  padding: 10px 14px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #4a90e2;
+}
+
+.user-menu-box {
+  display: none;
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 210px;
+  padding: 14px;
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 6px 0 #70b8ff;
+  z-index: 30;
+}
+
+.user-menu-box.show {
+  display: block;
+}
+
+.user-menu-box p {
+  margin: 0 0 10px;
+  color: #1e3a8a;
+  font-weight: bold;
+}
+
+.user-menu-box input {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #b7dcff;
+  border-radius: 12px;
+  font-size: 15px;
+  outline: none;
+}
+
+.user-menu-box button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 12px;
+  background: #4aa3ff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.room-list {
+  min-height: 180px;
+  padding: 16px;
+  background: #eaf7ff;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.empty-room {
+  margin-top: 60px;
+  color: #5680a8;
+  font-weight: bold;
+}
+
+@media (max-width: 700px) {
+  .room-header {
+    align-items: flex-start;
+  }
+
+  .user-menu-btn {
+    font-size: 14px;
+    padding: 9px 12px;
+  }
+
+  .user-menu-box {
+    width: 190px;
+  }
+}

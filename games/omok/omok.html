@@ -24,6 +24,29 @@
       <button id="backToStartBtn" class="sub-btn">뒤로가기</button>
     </section>
 
+    <section id="roomListScreen" class="screen room-screen">
+      <div class="room-header">
+        <h2>방 목록</h2>
+
+        <div class="user-menu-wrap">
+          <button id="userMenuBtn" class="user-menu-btn">👤 <span id="nicknameText">게스트</span></button>
+
+          <div id="userMenuBox" class="user-menu-box">
+            <p>닉네임 설정</p>
+            <input id="nicknameInput" type="text" maxlength="10" placeholder="닉네임 입력" />
+            <button id="saveNicknameBtn">저장</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="roomList" class="room-list">
+        <p class="empty-room">아직 생성된 방이 없습니다.</p>
+      </div>
+
+      <button id="createRoomBtn" class="main-btn">+ 방 만들기</button>
+      <button id="backToModeFromRoomBtn" class="sub-btn">뒤로가기</button>
+    </section>
+
     <section id="gameScreen" class="game-screen">
       <div class="game-header">
         <h2>⚫ 오목게임 ⚪</h2>
