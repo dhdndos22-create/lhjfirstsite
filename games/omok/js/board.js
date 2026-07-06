@@ -7,7 +7,7 @@ let board = [];
 let currentTurn = "black";
 let gameOver = false;
 
-function initBoard() {
+function initBoard(cellClickHandler) {
   board = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
   currentTurn = "black";
   gameOver = false;
@@ -20,6 +20,11 @@ function initBoard() {
       cell.classList.add("cell");
       cell.dataset.row = row;
       cell.dataset.col = col;
+
+      if (cellClickHandler) {
+        cell.addEventListener("click", cellClickHandler);
+      }
+
       boardElement.appendChild(cell);
     }
   }
@@ -30,22 +35,15 @@ function placeStone(row, col, color) {
 
   board[row][col] = color;
 
-  const cell = getCell(row, col);
-  drawStone(cell, color);
-
-  return true;
-}
-
-function getCell(row, col) {
-  return boardElement.querySelector(
+  const cell = boardElement.querySelector(
     `.cell[data-row="${row}"][data-col="${col}"]`
   );
-}
 
-function drawStone(cell, color) {
   const stone = document.createElement("div");
   stone.classList.add("stone", color);
   cell.appendChild(stone);
+
+  return true;
 }
 
 function switchTurn() {
@@ -63,7 +61,6 @@ function checkWin(row, col, color) {
 
   for (const [dr, dc] of directions) {
     let count = 1;
-
     count += countStones(row, col, dr, dc, color);
     count += countStones(row, col, -dr, -dc, color);
 
@@ -91,16 +88,4 @@ function countStones(row, col, dr, dc, color) {
   }
 
   return count;
-}
-
-function setGameOver(value) {
-  gameOver = value;
-}
-
-function isGameOver() {
-  return gameOver;
-}
-
-function getCurrentTurn() {
-  return currentTurn;
 }

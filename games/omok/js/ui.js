@@ -1,5 +1,3 @@
-// ---------- 화면 ----------
-
 const startScreen = document.getElementById("startScreen");
 const modeScreen = document.getElementById("modeScreen");
 const roomListScreen = document.getElementById("roomListScreen");
@@ -7,90 +5,47 @@ const createRoomScreen = document.getElementById("createRoomScreen");
 const lobbyScreen = document.getElementById("lobbyScreen");
 const gameScreen = document.getElementById("gameScreen");
 
-function showScreen(screen){
+let nickname = localStorage.getItem("omokNickname") || "게스트";
 
-    [
-        startScreen,
-        modeScreen,
-        roomListScreen,
-        createRoomScreen,
-        lobbyScreen,
-        gameScreen
-    ].forEach(s=>s.classList.remove("active"));
-
-    screen.classList.add("active");
-
-}
-
-// ---------- 닉네임 ----------
-
-let nickname =
-localStorage.getItem("omokNickname") || "게스트";
-
-const nicknameText =
-document.getElementById("nicknameText");
-
-const nicknameInput =
-document.getElementById("nicknameInput");
+const nicknameText = document.getElementById("nicknameText");
+const nicknameInput = document.getElementById("nicknameInput");
+const userMenuBox = document.getElementById("userMenuBox");
+const gameMenu = document.getElementById("gameMenu");
 
 nicknameText.textContent = nickname;
 nicknameInput.value = nickname;
 
-function saveNickname(){
+function showScreen(screen) {
+  [
+    startScreen,
+    modeScreen,
+    roomListScreen,
+    createRoomScreen,
+    lobbyScreen,
+    gameScreen
+  ].forEach((s) => s.classList.remove("active"));
 
-    const value =
-    nicknameInput.value.trim();
-
-    if(value===""){
-
-        alert("닉네임을 입력하세요.");
-        return;
-
-    }
-
-    nickname=value;
-
-    localStorage.setItem(
-        "omokNickname",
-        nickname
-    );
-
-    nicknameText.textContent=nickname;
-
-    closeUserMenu();
-
+  screen.classList.add("active");
 }
 
-const userMenuBtn =
-document.getElementById("userMenuBtn");
+function saveNickname() {
+  const value = nicknameInput.value.trim();
 
-const userMenuBox =
-document.getElementById("userMenuBox");
+  if (value === "") {
+    alert("닉네임을 입력해주세요!");
+    return;
+  }
 
-userMenuBtn.onclick=(e)=>{
-
-    e.stopPropagation();
-
-    userMenuBox.classList.toggle("show");
-
-};
-
-function closeUserMenu(){
-
-    userMenuBox.classList.remove("show");
-
+  nickname = value;
+  localStorage.setItem("omokNickname", nickname);
+  nicknameText.textContent = nickname;
+  closeUserMenu();
 }
 
-document.addEventListener("click",(e)=>{
+function closeUserMenu() {
+  userMenuBox.classList.remove("show");
+}
 
-    if(!e.target.closest(".user-menu-wrap")){
-
-        closeUserMenu();
-
-    }
-
-});
-
-document
-.getElementById("saveNicknameBtn")
-.onclick=saveNickname;
+function closeGameMenu() {
+  gameMenu.classList.remove("show");
+}

@@ -1,25 +1,22 @@
 function startSingleGame() {
   showScreen(gameScreen);
   closeGameMenu();
-  initBoard();
-
-  boardElement.addEventListener("click", handleSingleBoardClick);
+  initBoard(handleSingleCellClick);
 }
 
-function handleSingleBoardClick(event) {
-  if (!event.target.classList.contains("cell")) return;
-  if (isGameOver()) return;
+function handleSingleCellClick(event) {
+  if (gameOver) return;
 
-  const cell = event.target;
+  const cell = event.currentTarget;
   const row = Number(cell.dataset.row);
   const col = Number(cell.dataset.col);
-  const color = getCurrentTurn();
+  const color = currentTurn;
 
   const success = placeStone(row, col, color);
   if (!success) return;
 
   if (checkWin(row, col, color)) {
-    setGameOver(true);
+    gameOver = true;
 
     const winner = color === "black" ? "흑돌" : "백돌";
     turnText.textContent = `${winner} 승리!`;
