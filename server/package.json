@@ -2,8 +2,9 @@
   "name": "hyojong-omok-server",
   "version": "1.0.0",
   "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
+ "scripts": {
+  "start": "node server.js",
+  "dev": "nodemon server.js"
   },
   "dependencies": {
     "cors": "^2.8.6",
@@ -14,5 +15,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
 }
