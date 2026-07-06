@@ -17,140 +17,186 @@ const io = new Server(server, {
 
 const PORT = process.env.PORT || 3000;
 
-let waitingPlayer = null;
 const rooms = {};
 
-const SIZE = 19;
-
-function createBoard() {
-  return Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
+function makeRoomId() {
+  return Math.random().toString(36).substring(2, 8);
 }
 
-function checkWin(board, row, col, color) {
-  const directions = [
-    [0, 1],
-    [1, 0],
-    [1, 1],
-    [1, -1]
-  ];
-
-  for (const [dr, dc] of directions) {
-    let count = 1;
-    count += countStones(board, row, col, dr, dc, color);
-    count += countStones(board, row, col, -dr, -dc, color);
-
-    if (count >= 5) return true;
-  }
-
-  return false;
+function getRoomList() {
+  return Object.values(rooms).map((room) => ({
+    roomId: room.roomId,
+    roomName: room.roomName,
+    playerCount: room.players.length,
+    maxPlayers: 2,
+    status: room.status
+  }));
 }
 
-function countStones(board, row, col, dr, dc, color) {
-  let count = 0;
-  let nextRow = row + dr;
-  let nextCol = col + dc;
-
-  while (
-    nextRow >= 0 &&
-    nextRow < SIZE &&
-    nextCol >= 0 &&
-    nextCol < SIZE &&
-    board[nextRow][nextCol] === color
-  ) {
-    count++;
-    nextRow += dr;
-    nextCol += dc;
-  }
-
-  return count;
+function sendRoomList() {
+  io.emit("roomList", getRoomList());
 }
 
 io.on("connection", (socket) => {
   console.log("접속:", socket.id);
 
-  socket.on("joinGame", () => {
-    if (waitingPlayer && waitingPlayer.id !== socket.id) {
-      const roomId = `room-${waitingPlayer.id}-${socket.id}`;
-
-      socket.join(roomId);
-      waitingPlayer.join(roomId);
-
-      rooms[roomId] = {
-        board: createBoard(),
-        players: {
-          black: waitingPlayer.id,
-          white: socket.id
-        },
-        turn: "black",
-        gameOver: false
-      };
-
-      waitingPlayer.emit("gameStart", {
-        roomId,
-        color: "black",
-        message: "게임 시작! 당신은 흑돌입니다."
-      });
-
-      socket.emit("gameStart", {
-        roomId,
-        color: "white",
-        message: "게임 시작! 당신은 백돌입니다."
-      });
-
-      io.to(roomId).emit("turnChanged", "black");
-
-      waitingPlayer = null;
-    } else {
-      waitingPlayer = socket;
-      socket.emit("waiting", "상대를 기다리는 중...");
-    }
+  socket.on("getRoomList", () => {
+    socket.emit("roomList", getRoomList());
   });
 
-  socket.on("placeStone", ({ roomId, row, col }) => {
-    const room = rooms[roomId];
-    if (!room || room.gameOver) return;
+  socket.on("createRoom", ({ roomName, nickname }) => {
+    const roomId = makeRoomId();
 
-    const color = room.players.black === socket.id ? "black" : "white";
+    rooms[roomId] = {
+      roomId,
+      roomName: roomName || "이름 없는 방",
+      hostId: socket.id,
+      players: [
+        {
+          socketId: socket.id,
+          nickname: nickname || "게스트",
+          isHost: true,
+          ready: true
+        }
+      ],
+      status: "waiting"
+    };
 
-    if (room.turn !== color) return;
-    if (room.board[row][col] !== null) return;
+    socket.join(roomId);
 
-    room.board[row][col] = color;
-
-    io.to(roomId).emit("stonePlaced", {
-      row,
-      col,
-      color
+    socket.emit("roomCreated", {
+      roomId,
+      room: rooms[roomId]
     });
 
-    if (checkWin(room.board, row, col, color)) {
-      room.gameOver = true;
-      io.to(roomId).emit("gameOver", color);
+    io.to(roomId).emit("lobbyUpdated", rooms[roomId]);
+    sendRoomList();
+  });
+
+  socket.on("joinRoom", ({ roomId, nickname }) => {
+    const room = rooms[roomId];
+
+    if (!room) {
+      socket.emit("joinRoomFailed", "존재하지 않는 방입니다.");
       return;
     }
 
-    room.turn = color === "black" ? "white" : "black";
-    io.to(roomId).emit("turnChanged", room.turn);
+    if (room.players.length >= 2) {
+      socket.emit("joinRoomFailed", "이미 가득 찬 방입니다.");
+      return;
+    }
+
+    if (room.status !== "waiting") {
+      socket.emit("joinRoomFailed", "이미 게임이 시작된 방입니다.");
+      return;
+    }
+
+    room.players.push({
+      socketId: socket.id,
+      nickname: nickname || "게스트",
+      isHost: false,
+      ready: false
+    });
+
+    socket.join(roomId);
+
+    socket.emit("roomJoined", {
+      roomId,
+      room
+    });
+
+    io.to(roomId).emit("lobbyUpdated", room);
+    sendRoomList();
+  });
+
+  socket.on("toggleReady", ({ roomId }) => {
+    const room = rooms[roomId];
+    if (!room) return;
+
+    const player = room.players.find((p) => p.socketId === socket.id);
+    if (!player || player.isHost) return;
+
+    player.ready = !player.ready;
+
+    io.to(roomId).emit("lobbyUpdated", room);
+  });
+
+  socket.on("startGame", ({ roomId }) => {
+    const room = rooms[roomId];
+    if (!room) return;
+
+    if (room.hostId !== socket.id) {
+      socket.emit("startGameFailed", "방장만 게임을 시작할 수 있습니다.");
+      return;
+    }
+
+    if (room.players.length < 2) {
+      socket.emit("startGameFailed", "상대가 아직 없습니다.");
+      return;
+    }
+
+    const guest = room.players.find((p) => !p.isHost);
+
+    if (!guest.ready) {
+      socket.emit("startGameFailed", "상대가 아직 준비하지 않았습니다.");
+      return;
+    }
+
+    room.status = "playing";
+
+    io.to(roomId).emit("multiGameStart", {
+      roomId,
+      players: room.players
+    });
+
+    sendRoomList();
+  });
+
+  socket.on("leaveRoom", ({ roomId }) => {
+    const room = rooms[roomId];
+    if (!room) return;
+
+    socket.leave(roomId);
+
+    room.players = room.players.filter((p) => p.socketId !== socket.id);
+
+    if (room.players.length === 0) {
+      delete rooms[roomId];
+    } else {
+      room.hostId = room.players[0].socketId;
+      room.players[0].isHost = true;
+      room.players[0].ready = true;
+
+      io.to(roomId).emit("lobbyUpdated", room);
+    }
+
+    sendRoomList();
   });
 
   socket.on("disconnect", () => {
     console.log("나감:", socket.id);
 
-    if (waitingPlayer && waitingPlayer.id === socket.id) {
-      waitingPlayer = null;
-    }
-
     for (const roomId in rooms) {
       const room = rooms[roomId];
 
-      if (
-        room.players.black === socket.id ||
-        room.players.white === socket.id
-      ) {
-        io.to(roomId).emit("opponentLeft", "상대가 나갔습니다.");
-        delete rooms[roomId];
+      const isInRoom = room.players.some((p) => p.socketId === socket.id);
+
+      if (isInRoom) {
+        room.players = room.players.filter((p) => p.socketId !== socket.id);
+
+        if (room.players.length === 0) {
+          delete rooms[roomId];
+        } else {
+          room.hostId = room.players[0].socketId;
+          room.players[0].isHost = true;
+          room.players[0].ready = true;
+
+          io.to(roomId).emit("lobbyUpdated", room);
+        }
       }
     }
+
+    sendRoomList();
   });
 });
 

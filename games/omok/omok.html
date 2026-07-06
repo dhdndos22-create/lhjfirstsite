@@ -29,7 +29,9 @@
         <h2>방 목록</h2>
 
         <div class="user-menu-wrap">
-          <button id="userMenuBtn" class="user-menu-btn">👤 <span id="nicknameText">게스트</span></button>
+          <button id="userMenuBtn" class="user-menu-btn">
+            👤 <span id="nicknameText">게스트</span>
+          </button>
 
           <div id="userMenuBox" class="user-menu-box">
             <p>닉네임 설정</p>
@@ -45,6 +47,27 @@
 
       <button id="createRoomBtn" class="main-btn">+ 방 만들기</button>
       <button id="backToModeFromRoomBtn" class="sub-btn">뒤로가기</button>
+    </section>
+
+    <section id="createRoomScreen" class="screen">
+      <h2>방 만들기</h2>
+
+      <input id="roomNameInput" class="room-input" type="text" maxlength="16" placeholder="방 이름을 입력하세요" />
+
+      <button id="confirmCreateRoomBtn" class="main-btn">방 생성</button>
+      <button id="cancelCreateRoomBtn" class="sub-btn">취소</button>
+    </section>
+
+    <section id="lobbyScreen" class="screen">
+      <h2 id="lobbyRoomName">대기실</h2>
+
+      <div id="playerList" class="player-list"></div>
+
+      <p id="lobbyMessage" class="lobby-message">상대를 기다리는 중...</p>
+
+      <button id="readyBtn" class="main-btn">준비하기</button>
+      <button id="startGameBtn" class="main-btn">게임 시작</button>
+      <button id="leaveRoomBtn" class="sub-btn">방 나가기</button>
     </section>
 
     <section id="gameScreen" class="game-screen">
@@ -70,6 +93,7 @@
     </section>
   </div>
 
+  <script src="http://localhost:3000/socket.io/socket.io.js"></script>
   <script src="./omok.js"></script>
 </body>
 </html>
