@@ -22,40 +22,39 @@ function backToMainMenu() {
   mainMenu.classList.add("show");
 }
 
-/* ===========================================
-   로그인 시스템
-=========================================== */
+/* 로그인 시스템 */
 
 const loginBox = document.getElementById("loginBox");
 const loginUsername = document.getElementById("loginUsername");
 const loginPassword = document.getElementById("loginPassword");
-
 const loginBtn = document.getElementById("loginBtn");
 const guestBtn = document.getElementById("guestBtn");
-
 const currentUserText = document.getElementById("currentUserText");
 const logoutBtn = document.getElementById("logoutBtn");
 
-function initLogin() {
-
-  const savedUser = localStorage.getItem("hyojongUser");
-
-  if(savedUser){
-
-    currentUserText.textContent = savedUser;
-    loginBox.classList.remove("show");
-
-  }else{
-
-    currentUserText.textContent = "guest";
-    loginBox.classList.add("show");
-
-  }
-
+function setGuestUI() {
+  currentUserText.textContent = "guest";
+  logoutBtn.textContent = "로그인";
 }
 
-loginBtn.addEventListener(() => {
+function setLoginUI(username) {
+  currentUserText.textContent = username;
+  logoutBtn.textContent = "로그아웃";
+}
 
+function initLogin() {
+  const savedUser = localStorage.getItem("hyojongUser");
+
+  if (savedUser) {
+    setLoginUI(savedUser);
+    loginBox.classList.remove("show");
+  } else {
+    setGuestUI();
+    loginBox.classList.add("show");
+  }
+}
+
+loginBtn.addEventListener("click", () => {
   const username = loginUsername.value.trim();
   const password = loginPassword.value.trim();
 
@@ -68,43 +67,35 @@ loginBtn.addEventListener(() => {
     username,
     password
   });
-
-});
-
-guestBtn.addEventListener("click",()=>{
-
-  localStorage.removeItem("hyojongUser");
-
-  currentUserText.textContent="guest";
-
-  loginBox.classList.remove("show");
-
-});
-
-logoutBtn.addEventListener("click",()=>{
-
-  localStorage.removeItem("hyojongUser");
-
-  currentUserText.textContent="guest";
-
-  loginBox.classList.add("show");
-
 });
 
 mainSocket.on("loginSuccess", ({ username }) => {
-
   localStorage.setItem("hyojongUser", username);
-
-  currentUserText.textContent = username;
-
+  setLoginUI(username);
   loginBox.classList.remove("show");
-
 });
 
 mainSocket.on("loginFailed", (message) => {
-
   alert(message);
+});
 
+guestBtn.addEventListener("click", () => {
+  localStorage.removeItem("hyojongUser");
+  setGuestUI();
+  loginBox.classList.remove("show");
+});
+
+logoutBtn.addEventListener("click", () => {
+  const savedUser = localStorage.getItem("hyojongUser");
+
+  if (savedUser) {
+    localStorage.removeItem("hyojongUser");
+    setGuestUI();
+  }
+
+  loginUsername.value = "";
+  loginPassword.value = "";
+  loginBox.classList.add("show");
 });
 
 initLogin();
