@@ -8,11 +8,36 @@ const playerImg = document.getElementById("playerImg");
 const gameOverScreen = document.getElementById("gameOverScreen");
 const finalScore = document.getElementById("finalScore");
 const restartBtn = document.getElementById("restartBtn");
-
+const commonMenuBtn = document.getElementById("commonMenuBtn");
+const commonGameMenu = document.getElementById("commonGameMenu");
+const menuRestartBtn = document.getElementById("menuRestartBtn");
+const menuHomeBtn = document.getElementById("menuHomeBtn");
+const menuCloseBtn = document.getElementById("menuCloseBtn");
 
 
 startBtn.addEventListener("click", startGame);
 restartBtn.addEventListener("click", restartGame);
+
+startBtn.addEventListener("click", startGame);
+restartBtn.addEventListener("click", restartGame);
+
+// 공통 메뉴
+commonMenuBtn.addEventListener("click", function () {
+  commonGameMenu.classList.toggle("show");
+});
+
+menuCloseBtn.addEventListener("click", function () {
+  commonGameMenu.classList.remove("show");
+});
+
+menuHomeBtn.addEventListener("click", function () {
+  location.href = "../../index.html";
+});
+
+menuRestartBtn.addEventListener("click", function () {
+  commonGameMenu.classList.remove("show");
+  restartGame();
+});
 
 let runFrame = 1;
 let runAnimationTimer = null;

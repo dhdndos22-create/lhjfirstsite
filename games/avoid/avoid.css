@@ -399,3 +399,53 @@ h1 {
   margin-top: 30px;
   }
 }
+
+.common-menu-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 80;
+
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.85);
+  color: #245;
+  font-size: 26px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+}
+
+.common-game-menu {
+  position: absolute;
+  top: 66px;
+  right: 14px;
+  z-index: 90;
+
+  width: 170px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+
+  background: rgba(255, 255, 255, 0.92);
+  border: 3px solid #245;
+  border-radius: 18px;
+  padding: 12px;
+}
+
+.common-game-menu.show {
+  display: flex;
+}
+
+.common-game-menu button {
+  border: none;
+  background: #4a90e2;
+  color: white;
+  font-weight: bold;
+  padding: 11px 12px;
+  border-radius: 14px;
+  cursor: pointer;
+}
