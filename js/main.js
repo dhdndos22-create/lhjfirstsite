@@ -1,7 +1,7 @@
 const mainMenu = document.getElementById("mainMenu");
 const gameMenu = document.getElementById("gameMenu");
 
-const mainSocket = io("http://localhost:3000");
+const mainSocket = io("https://lhjfirstsite.onrender.com");
 
 function toggleMenu() {
   if (mainMenu.classList.contains("show") || gameMenu.classList.contains("show")) {
