@@ -4,7 +4,10 @@ const roomListScreen = document.getElementById("roomListScreen");
 const createRoomScreen = document.getElementById("createRoomScreen");
 const gameScreen = document.getElementById("gameScreen");
 
-let nickname = localStorage.getItem("omokNickname") || "게스트";
+let nickname =
+  localStorage.getItem("hyojongUser") ||
+  localStorage.getItem("omokNickname") ||
+  "guest";
 
 const nicknameText = document.getElementById("nicknameText");
 const nicknameInput = document.getElementById("nicknameInput");

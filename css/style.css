@@ -385,3 +385,89 @@ body {
     height: 90px;
   }
 }
+
+.login-box {
+  position: fixed;
+  inset: 0;
+  background: rgba(60, 150, 220, 0.45);
+  z-index: 100;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-box.show {
+  display: flex;
+}
+
+.login-card {
+  width: min(88vw, 360px);
+  padding: 28px 22px;
+  background: white;
+  border-radius: 28px;
+  text-align: center;
+  box-shadow: 0 10px 0 #4a90e2;
+}
+
+.login-card h2 {
+  margin: 0 0 10px;
+  color: #1e3a8a;
+}
+
+.login-card p {
+  font-weight: bold;
+  color: #5680a8;
+}
+
+.login-card input {
+  width: 100%;
+  margin: 8px 0;
+  padding: 13px;
+  border: 2px solid #b7dcff;
+  border-radius: 16px;
+  font-size: 16px;
+}
+
+.login-card button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 13px;
+  border: none;
+  border-radius: 20px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#loginBtn {
+  background: #4aa3ff;
+  color: white;
+}
+
+#guestBtn {
+  background: #fff7d6;
+  color: #7a5a00;
+}
+
+.user-badge {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 50;
+  background: white;
+  padding: 9px 12px;
+  border-radius: 18px;
+  font-weight: bold;
+  color: #1e3a8a;
+  box-shadow: 0 4px 0 #4a90e2;
+}
+
+#logoutBtn {
+  margin-left: 8px;
+  border: none;
+  border-radius: 12px;
+  background: #eaf7ff;
+  color: #1e3a8a;
+  font-weight: bold;
+  cursor: pointer;
+}
