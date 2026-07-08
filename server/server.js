@@ -39,6 +39,18 @@ function sendRoomList() {
 
 io.on("connection", (socket) => {
   console.log("접속:", socket.id);
+  socket.on("login", ({ username, password }) => {
+    if (!username || !password) {
+      socket.emit("loginFailed", "유저명과 비밀번호를 입력해주세요.");
+      return;
+    }
+
+     socket.emit("loginSuccess", {
+       username
+      });
+  });
+
+
 
   socket.on("getRoomList", () => {
     socket.emit("roomList", getRoomList());
@@ -46,7 +58,7 @@ io.on("connection", (socket) => {
 
   socket.on("createRoom", ({ roomName, nickname }) => {
     const roomId = makeRoomId();
-
+    
     rooms[roomId] = {
       roomId,
       roomName: roomName || "이름 없는 방",

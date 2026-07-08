@@ -1,6 +1,8 @@
 const mainMenu = document.getElementById("mainMenu");
 const gameMenu = document.getElementById("gameMenu");
 
+const mainSocket = io("http://localhost:3000");
+
 function toggleMenu() {
   if (mainMenu.classList.contains("show") || gameMenu.classList.contains("show")) {
     mainMenu.classList.remove("show");
@@ -52,23 +54,20 @@ function initLogin() {
 
 }
 
-loginBtn.addEventListener("click",()=>{
+loginBtn.addEventListener(() => {
 
   const username = loginUsername.value.trim();
   const password = loginPassword.value.trim();
 
-  if(username==="" || password===""){
-
+  if (username === "" || password === "") {
     alert("유저명과 비밀번호를 입력해주세요.");
     return;
-
   }
 
-  localStorage.setItem("hyojongUser",username);
-
-  currentUserText.textContent = username;
-
-  loginBox.classList.remove("show");
+  mainSocket.emit("login", {
+    username,
+    password
+  });
 
 });
 
@@ -89,6 +88,22 @@ logoutBtn.addEventListener("click",()=>{
   currentUserText.textContent="guest";
 
   loginBox.classList.add("show");
+
+});
+
+mainSocket.on("loginSuccess", ({ username }) => {
+
+  localStorage.setItem("hyojongUser", username);
+
+  currentUserText.textContent = username;
+
+  loginBox.classList.remove("show");
+
+});
+
+mainSocket.on("loginFailed", (message) => {
+
+  alert(message);
 
 });
 
