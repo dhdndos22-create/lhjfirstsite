@@ -7,11 +7,14 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+
   <div class="sky">
+
     <div class="cloud cloud1"></div>
     <div class="cloud cloud2"></div>
     <div class="cloud cloud3"></div>
 
+    <!-- 로그인 -->
     <div id="loginBox" class="login-box">
       <div class="login-card">
         <h2>효종월드 로그인</h2>
@@ -25,12 +28,14 @@
       </div>
     </div>
 
+    <!-- 로그인 상태 -->
     <div id="userBadge" class="user-badge">
       👤 <span id="currentUserText">guest</span>
       <button id="logoutBtn">로그아웃</button>
     </div>
-    
+
     <main class="main-wrap">
+
       <div class="title-wrap">
         <div class="title-rainbow"></div>
         <div class="title-cloud title-cloud-left"></div>
@@ -41,31 +46,60 @@
 
       <img src="images/mascot.png" alt="효종월드 캐릭터" class="mascot" />
 
-      <button class="menu-main-btn" onclick="toggleMenu()">MENU</button>
+      <button class="menu-main-btn" onclick="toggleMenu()">
+        MENU
+      </button>
 
+      <!-- 메인 메뉴 -->
       <div id="mainMenu" class="menu-box">
         <button class="menu-card" onclick="openGameMenu()">🎮 게임</button>
-        <a href="gallery.html" class="menu-card">📷 효종갤러리</a>
-        <a href="#" class="menu-card preparing">📝 준비중</a>
-        <a href="#" class="menu-card preparing">👤 준비중</a>
+
+        <a href="gallery.html" class="menu-card">
+          📷 효종갤러리
+        </a>
+
+        <a href="#" class="menu-card preparing">
+          📝 준비중
+        </a>
+
+        <a href="#" class="menu-card preparing">
+          👤 준비중
+        </a>
       </div>
 
+      <!-- 게임 메뉴 -->
       <div id="gameMenu" class="menu-box">
-        <a href="games/avoid/avoid.html" class="menu-card">🎮 장애물 피하기</a>
-        <a href="games/hyojongmon/hyojongmon.html" class="menu-card">🗺 효종몬 월드</a>
-        <a href="./games/omok/omok.html" class="menu-card">⚫ 오목게임</a>
-        <button onclick="location.href='games/billionaire/billionaire.html'">
-           💰 억만장자
+
+        <a href="games/avoid/avoid.html" class="menu-card">
+          🎮 장애물 피하기
+        </a>
+
+        <a href="games/hyojongmon/hyojongmon.html" class="menu-card">
+          🗺 효종몬 월드
+        </a>
+
+        <a href="games/omok/omok.html" class="menu-card">
+          ⚫ 오목게임
+        </a>
+
+        <a href="games/billionaire/billionaire.html" class="menu-card">
+          💰 억만장자
+        </a>
+
+        <button class="menu-card back-card" onclick="backToMainMenu()">
+          ◀ 뒤로가기
         </button>
-        <button class="menu-card back-card" onclick="backToMainMenu()">◀ 뒤로가기</button>
+
       </div>
+
     </main>
 
     <div class="grass"></div>
+
   </div>
 
   <script src="https://lhjfirstsite.onrender.com/socket.io/socket.io.js"></script>
   <script src="js/main.js"></script>
-  
+
 </body>
 </html>
