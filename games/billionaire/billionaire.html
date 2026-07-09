@@ -27,34 +27,49 @@
       </div>
     </header>
 
+    <button id="gameMenuBtn">☰ 메뉴</button>
+
+    <div id="gameMenuPanel" class="hidden">
+      <button class="menuItem" id="upgradeMenuBtn">강화</button>
+
+      <div id="upgradeSubMenu" class="hidden">
+        <button class="subMenuItem" id="clickUpgradeBtn">
+          클릭 강화<br>
+          <span id="clickUpgradeCostText">비용: 50원</span>
+        </button>
+
+        <button class="subMenuItem" id="autoUpgradeBtn">
+          시간당 강화<br>
+          <span id="autoUpgradeCostText">비용: 100원</span>
+        </button>
+
+        <button class="subMenuItem" id="levelUpBtn">
+          레벨업<br>
+          <span id="levelUpCostText">비용: 500원</span>
+        </button>
+      </div>
+
+      <button class="menuItem preparing">직업</button>
+      <button class="menuItem preparing">부동산</button>
+      <button class="menuItem preparing">사업</button>
+      <button class="menuItem preparing">주식</button>
+      <button class="menuItem preparing">자동차</button>
+      <button class="menuItem preparing">펫</button>
+      <button class="menuItem preparing">업적</button>
+      <button class="menuItem preparing">랭킹</button>
+      <button class="menuItem preparing">설정</button>
+    </div>
+
     <main id="clickArea">
       <div class="characterBox">
         <img src="../../images/mascot.png" alt="효종월드 캐릭터" id="mainCharacter">
         <p>화면 아무 곳이나 클릭!</p>
+        <p class="incomeText">
+          클릭당 수입: <strong id="clickPowerText">1원</strong><br>
+          초당 수입: <strong id="autoIncomeText">0원 / 초</strong>
+        </p>
       </div>
     </main>
-
-    <section class="upgradePanel">
-      <div class="incomeInfo">
-        <p>클릭당 수입: <strong id="clickPowerText">1원</strong></p>
-        <p>초당 수입: <strong id="autoIncomeText">0원</strong></p>
-      </div>
-
-      <button class="upgradeBtn" id="clickUpgradeBtn">
-        클릭 수입 강화<br>
-        <span id="clickUpgradeCostText">비용: 50원</span>
-      </button>
-
-      <button class="upgradeBtn" id="autoUpgradeBtn">
-        자동 수입 강화<br>
-        <span id="autoUpgradeCostText">비용: 100원</span>
-      </button>
-
-      <button class="upgradeBtn" id="levelUpBtn">
-        레벨 업<br>
-        <span id="levelUpCostText">비용: 500원</span>
-      </button>
-    </section>
   </section>
 
   <script src="billionaire.js"></script>

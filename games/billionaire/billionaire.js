@@ -18,6 +18,11 @@ const clickUpgradeCostText = document.getElementById("clickUpgradeCostText");
 const autoUpgradeCostText = document.getElementById("autoUpgradeCostText");
 const levelUpCostText = document.getElementById("levelUpCostText");
 
+const gameMenuBtn = document.getElementById("gameMenuBtn");
+const gameMenuPanel = document.getElementById("gameMenuPanel");
+const upgradeMenuBtn = document.getElementById("upgradeMenuBtn");
+const upgradeSubMenu = document.getElementById("upgradeSubMenu");
+
 let money = 0;
 let level = 1;
 
@@ -30,6 +35,24 @@ let autoUpgradeLevel = 0;
 let clickUpgradeCost = 50;
 let autoUpgradeCost = 100;
 let levelUpCost = 500;
+
+
+gameMenuBtn.addEventListener("click", function (e) {
+  e.stopPropagation();
+  gameMenuPanel.classList.toggle("hidden");
+});
+
+upgradeMenuBtn.addEventListener("click", function (e) {
+  e.stopPropagation();
+  upgradeSubMenu.classList.toggle("hidden");
+});
+
+gameMenuPanel.addEventListener("click", function (e) {
+  e.stopPropagation();
+});
+
+
+
 
 startBtn.addEventListener("click", startGame);
 
