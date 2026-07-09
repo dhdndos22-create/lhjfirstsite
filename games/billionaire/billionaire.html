@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>억만장자 - 효종월드</title>
+  <link rel="stylesheet" href="billionaire.css" />
+</head>
+<body>
+
+  <section id="startScreen">
+    <h1>💰 억만장자 💰</h1>
+    <p>화면을 눌러 돈을 벌고, 업그레이드해서 억만장자가 되어보자!</p>
+    <button id="startBtn">게임시작</button>
+    <button id="homeBtn">효종월드로 돌아가기</button>
+  </section>
+
+  <section id="gameScreen" class="hidden">
+    <header class="topStatus">
+      <div>
+        <span>보유금</span>
+        <strong id="moneyText">0원</strong>
+      </div>
+      <div>
+        <span>레벨</span>
+        <strong id="levelText">1</strong>
+      </div>
+    </header>
+
+    <main id="clickArea">
+      <div class="characterBox">
+        <img src="../../images/mascot.png" alt="효종월드 캐릭터" id="mainCharacter">
+        <p>화면 아무 곳이나 클릭!</p>
+      </div>
+    </main>
+
+    <section class="upgradePanel">
+      <div class="incomeInfo">
+        <p>클릭당 수입: <strong id="clickPowerText">1원</strong></p>
+        <p>초당 수입: <strong id="autoIncomeText">0원</strong></p>
+      </div>
+
+      <button class="upgradeBtn" id="clickUpgradeBtn">
+        클릭 수입 강화<br>
+        <span id="clickUpgradeCostText">비용: 50원</span>
+      </button>
+
+      <button class="upgradeBtn" id="autoUpgradeBtn">
+        자동 수입 강화<br>
+        <span id="autoUpgradeCostText">비용: 100원</span>
+      </button>
+
+      <button class="upgradeBtn" id="levelUpBtn">
+        레벨 업<br>
+        <span id="levelUpCostText">비용: 500원</span>
+      </button>
+    </section>
+  </section>
+
+  <script src="billionaire.js"></script>
+</body>
+</html>
