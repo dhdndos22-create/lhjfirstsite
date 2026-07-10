@@ -87,7 +87,7 @@ export function initializeBuilding() {
 
   if (missingElements.length > 0) {
     console.error(
-      "건물 HTML 요소가 없습니다:",
+      "사업 HTML 요소가 없습니다:",
       missingElements
     );
 
