@@ -28,10 +28,10 @@ import {
   initializeUpgrade
 } from "./upgrade.js";
 
-import {
-  initializeJob,
-  updateJobUI
-} from "./job.js";
+//import {
+  //initializeJob,
+ // updateJobUI
+//} from "./job.js";
 
 let isGameStarted = false;
 let incomeTimer = null;
@@ -39,7 +39,7 @@ let saveTimer = null;
 
 initializeMainMenu();
 initializeUpgrade();
-initializeJob();
+//initializeJob();
 
 elements.startBtn.addEventListener(
   "click",
@@ -84,7 +84,7 @@ async function startGame() {
     isGameStarted = true;
 
     updateMainUI();
-    updateJobUI();
+    //updateJobUI();
 
     startIncomeTimer();
     startSaveTimer();
@@ -115,7 +115,7 @@ function earnMoneyByClick(event) {
   );
 
   updateMainUI();
-  updateJobUI();
+ // updateJobUI();
 }
 
 function startIncomeTimer() {
@@ -131,7 +131,7 @@ function startIncomeTimer() {
         getTotalAutoIncome();
 
       updateMainUI();
-      updateJobUI();
+    //  updateJobUI();
     },
     1000
   );

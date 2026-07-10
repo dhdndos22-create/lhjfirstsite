@@ -334,7 +334,7 @@ function renderJobHistory() {
 
   if (jobs.length === 0) {
     jobElements.jobHistoryList.textContent =
-      "아직 취업한 직업이 없습니다.";
+      "아직 직업이 없습니다.";
 
     return;
   }
