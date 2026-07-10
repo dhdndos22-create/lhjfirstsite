@@ -1,4 +1,11 @@
-import { DEFAULT_GAME_STATE } from "./config.js";
+import {
+  DEFAULT_GAME_STATE,
+  BUILDING_CONFIG
+} from "./config.js";
+
+/* =========================
+   기본 상태 복사
+========================= */
 
 function cloneDefaultState() {
   return JSON.parse(
@@ -9,7 +16,7 @@ function cloneDefaultState() {
 export const state = cloneDefaultState();
 
 /* =========================
-   최종 수입 계산
+   클릭 수입 계산
 ========================= */
 
 export function getTotalClickPower() {
@@ -19,10 +26,38 @@ export function getTotalClickPower() {
   );
 }
 
+/* =========================
+   건물 초당 수입 계산
+========================= */
+
+export function getBuildingAutoIncome() {
+  return BUILDING_CONFIG.reduce(
+    function (totalIncome, building) {
+      const ownedCount = Number(
+        state.buildingData.owned[
+          building.id
+        ] ?? 0
+      );
+
+      return (
+        totalIncome +
+        ownedCount *
+          Number(building.autoIncome)
+      );
+    },
+    0
+  );
+}
+
+/* =========================
+   전체 초당 수입 계산
+========================= */
+
 export function getTotalAutoIncome() {
   return (
     Number(state.baseAutoIncome) +
-    Number(state.jobData.auto_bonus)
+    Number(state.jobData.auto_bonus) +
+    getBuildingAutoIncome()
   );
 }
 
@@ -30,7 +65,9 @@ export function getTotalAutoIncome() {
    직업 데이터 정규화
 ========================= */
 
-export function normalizeJobData(savedJobData) {
+export function normalizeJobData(
+  savedJobData
+) {
   const defaultJobData =
     cloneDefaultState().jobData;
 
@@ -67,11 +104,14 @@ export function normalizeJobData(savedJobData) {
     ),
 
     pending_selection_level:
-      savedJobData.pending_selection_level === null ||
-      savedJobData.pending_selection_level === undefined
+      savedJobData.pending_selection_level ===
+        null ||
+      savedJobData.pending_selection_level ===
+        undefined
         ? null
         : Number(
-            savedJobData.pending_selection_level
+            savedJobData
+              .pending_selection_level
           )
   };
 }
@@ -95,44 +135,52 @@ export function normalizeGamblingData(
 
   const savedLottery =
     savedGamblingData.lottery &&
-    typeof savedGamblingData.lottery === "object"
+    typeof savedGamblingData.lottery ===
+      "object"
       ? savedGamblingData.lottery
       : {};
 
   const savedStats =
     savedGamblingData.stats &&
-    typeof savedGamblingData.stats === "object"
+    typeof savedGamblingData.stats ===
+      "object"
       ? savedGamblingData.stats
       : {};
 
   return {
     odd_even_last_played_at:
-      savedGamblingData.odd_even_last_played_at ??
+      savedGamblingData
+        .odd_even_last_played_at ??
       null,
 
     dice_last_played_at:
-      savedGamblingData.dice_last_played_at ??
+      savedGamblingData
+        .dice_last_played_at ??
       null,
 
     beggar_lottery_last_bought_at:
-      savedGamblingData.beggar_lottery_last_bought_at ??
+      savedGamblingData
+        .beggar_lottery_last_bought_at ??
       null,
 
     lottery: {
       beggar_ticket_count: Number(
-        savedLottery.beggar_ticket_count ??
+        savedLottery
+          .beggar_ticket_count ??
         defaultGamblingData.lottery
           .beggar_ticket_count
       ),
 
       beggar_total_spent: Number(
-        savedLottery.beggar_total_spent ??
+        savedLottery
+          .beggar_total_spent ??
         defaultGamblingData.lottery
           .beggar_total_spent
       ),
 
       beggar_total_won: Number(
-        savedLottery.beggar_total_won ??
+        savedLottery
+          .beggar_total_won ??
         defaultGamblingData.lottery
           .beggar_total_won
       )
@@ -167,6 +215,72 @@ export function normalizeGamblingData(
 }
 
 /* =========================
+   건물 데이터 정규화
+========================= */
+
+export function normalizeBuildingData(
+  savedBuildingData
+) {
+  const defaultBuildingData =
+    cloneDefaultState().buildingData;
+
+  if (
+    !savedBuildingData ||
+    typeof savedBuildingData !== "object"
+  ) {
+    return defaultBuildingData;
+  }
+
+  const savedOwned =
+    savedBuildingData.owned &&
+    typeof savedBuildingData.owned ===
+      "object"
+      ? savedBuildingData.owned
+      : {};
+
+  const normalizedOwned = {};
+
+  /*
+    config.js의 건물 목록을 기준으로
+    모든 건물 보유 개수를 안전하게 복원한다.
+  */
+  BUILDING_CONFIG.forEach(
+    function (building) {
+      normalizedOwned[building.id] =
+        Math.max(
+          0,
+          Math.floor(
+            Number(
+              savedOwned[building.id] ??
+              defaultBuildingData.owned[
+                building.id
+              ] ??
+              0
+            )
+          )
+        );
+    }
+  );
+
+  return {
+    owned: normalizedOwned,
+
+    total_purchases: Math.max(
+      0,
+      Math.floor(
+        Number(
+          savedBuildingData
+            .total_purchases ??
+          defaultBuildingData
+            .total_purchases ??
+          0
+        )
+      )
+    )
+  };
+}
+
+/* =========================
    DB 데이터 적용
 ========================= */
 
@@ -181,7 +295,8 @@ export function applySaveData(data) {
 
   /*
     DB의 click_power와 auto_income은
-    직업 보너스를 제외한 기본 강화 수입이다.
+    직업·건물 보너스를 제외한
+    기본 강화 수입이다.
   */
   state.baseClickPower = Number(
     data.click_power ?? 1
@@ -219,6 +334,11 @@ export function applySaveData(data) {
   state.gamblingData =
     normalizeGamblingData(
       data.gambling_data
+    );
+
+  state.buildingData =
+    normalizeBuildingData(
+      data.building_data
     );
 }
 
@@ -262,6 +382,9 @@ export function createSavePayload() {
 
     gambling_data:
       state.gamblingData,
+
+    building_data:
+      state.buildingData,
 
     last_saved_at: now,
     updated_at: now

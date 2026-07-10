@@ -3,6 +3,11 @@ import {
 } from "./config.js";
 
 import {
+  initializeBuilding,
+  updateBuildingUI
+} from "./building.js";
+
+import {
   state,
   getTotalClickPower,
   getTotalAutoIncome
@@ -56,6 +61,7 @@ initializeMainMenu();
 initializeUpgrade();
 initializeJob();
 initializeGambling();
+initializeBuilding();
 
 /* =========================
    기본 이벤트 등록
@@ -128,6 +134,7 @@ async function startGame() {
     updateJobUI();
     renderJobHistory();
     updateGamblingUI();
+    updateBuildingUI();
 
     startIncomeTimer();
     startSaveTimer();

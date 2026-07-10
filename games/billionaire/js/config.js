@@ -30,7 +30,7 @@ export const DEFAULT_GAME_STATE = {
 
   /*
     강화로 얻는 기본 수입.
-    직업이나 다른 콘텐츠 보너스는
+    직업·건물 등 콘텐츠 보너스는
     별도로 더해서 계산한다.
   */
   baseClickPower: 1,
@@ -75,6 +75,26 @@ export const DEFAULT_GAME_STATE = {
       dice_plays: 0,
       dice_wins: 0
     }
+  },
+
+  /* 건물 데이터 */
+  buildingData: {
+    owned: {
+      street_stall: 0,
+      small_store: 0,
+      snack_bar: 0,
+      cafe: 0,
+      restaurant: 0,
+      studio_room: 0,
+      meat_restaurant: 0,
+      villa: 0,
+      apartment: 0,
+      building: 0,
+      baseball_stadium: 0,
+      soccer_stadium: 0
+    },
+
+    total_purchases: 0
   }
 };
 
@@ -82,20 +102,11 @@ export const DEFAULT_GAME_STATE = {
    직업 선택지
 ========================= */
 
-/*
-  현재는 직업 레벨 10, 20, 30마다
-  동일한 세 직업이 표시된다.
-
-  나중에는 레벨별 직업 선택지로
-  구조를 변경할 수 있다.
-*/
-
 export const JOB_CHOICES = [
   {
     id: "delivery_driver",
     name: "배달기사",
     icon: "🛵",
-
     clickBonus: 1000,
     autoBonus: 0
   },
@@ -104,7 +115,6 @@ export const JOB_CHOICES = [
     id: "server",
     name: "서빙알바",
     icon: "🍽️",
-
     clickBonus: 0,
     autoBonus: 100
   },
@@ -113,7 +123,6 @@ export const JOB_CHOICES = [
     id: "cook",
     name: "요리사",
     icon: "👨‍🍳",
-
     clickBonus: 500,
     autoBonus: 50
   }
@@ -124,58 +133,26 @@ export const JOB_CHOICES = [
 ========================= */
 
 export const GAMBLING_CONFIG = {
-  /* 홀짝게임 */
   oddEven: {
     cooldownMs: 60 * 1000,
-
-    /*
-      베팅금은 먼저 차감한다.
-      성공하면 베팅금의 2배를 지급한다.
-
-      예:
-      10,000원 베팅
-      → 먼저 10,000원 차감
-      → 성공 시 20,000원 지급
-      → 최종 순이익 10,000원
-    */
     rewardMultiplier: 2
   },
 
-  /* 주사위 게임 */
   dice: {
     cooldownMs: 5 * 60 * 1000,
-
-    /*
-      성공 시 베팅금의 10배 지급.
-      베팅금은 게임 시작 전에 먼저 차감한다.
-    */
     rewardMultiplier: 10,
-
     minNumber: 1,
     maxNumber: 6
   },
 
-  /* 거지로또 */
   beggarLottery: {
     price: 5000,
-
     cooldownMs: 3 * 60 * 1000,
 
-    /*
-      0 이상 100 미만의 난수를 만든 뒤
-      아래 구간에 따라 보상을 지급한다.
-
-      0~30   : 꽝 30%
-      30~70  : 10,000원 40%
-      70~90  : 20,000원 20%
-      90~95  : 50,000원 5%
-      95~100 : 100,000원 5%
-    */
     rewards: [
       {
         min: 0,
         max: 30,
-
         reward: 0,
         label: "꽝"
       },
@@ -183,7 +160,6 @@ export const GAMBLING_CONFIG = {
       {
         min: 30,
         max: 70,
-
         reward: 10000,
         label: "10,000원 당첨"
       },
@@ -191,7 +167,6 @@ export const GAMBLING_CONFIG = {
       {
         min: 70,
         max: 90,
-
         reward: 20000,
         label: "20,000원 당첨"
       },
@@ -199,7 +174,6 @@ export const GAMBLING_CONFIG = {
       {
         min: 90,
         max: 95,
-
         reward: 50000,
         label: "50,000원 당첨"
       },
@@ -207,10 +181,135 @@ export const GAMBLING_CONFIG = {
       {
         min: 95,
         max: 100,
-
         reward: 100000,
         label: "100,000원 당첨"
       }
     ]
   }
 };
+
+/* =========================
+   건물 설정
+========================= */
+
+/*
+  basePrice:
+  첫 번째 건물 구매 가격
+
+  autoIncome:
+  건물 1개당 초당 수입
+
+  priceGrowth:
+  보유 개수가 늘어날 때마다
+  다음 구매 가격에 적용되는 배율
+*/
+
+export const BUILDING_CONFIG = [
+  {
+    id: "street_stall",
+    name: "포장마차",
+    icon: "🍢",
+    basePrice: 10000,
+    autoIncome: 10,
+    priceGrowth: 1.15
+  },
+
+  {
+    id: "small_store",
+    name: "구멍가게",
+    icon: "🏪",
+    basePrice: 50000,
+    autoIncome: 40,
+    priceGrowth: 1.15
+  },
+
+  {
+    id: "snack_bar",
+    name: "분식집",
+    icon: "🍜",
+    basePrice: 200000,
+    autoIncome: 150,
+    priceGrowth: 1.15
+  },
+
+  {
+    id: "cafe",
+    name: "카페",
+    icon: "☕",
+    basePrice: 1000000,
+    autoIncome: 600,
+    priceGrowth: 1.15
+  },
+
+  {
+    id: "restaurant",
+    name: "식당",
+    icon: "🍽️",
+    basePrice: 5000000,
+    autoIncome: 2500,
+    priceGrowth: 1.15
+  },
+
+  {
+    id: "studio_room",
+    name: "원룸",
+    icon: "🏠",
+    basePrice: 20000000,
+    autoIncome: 8000,
+    priceGrowth: 1.15
+  },
+
+  {
+    id: "meat_restaurant",
+    name: "고기집",
+    icon: "🥩",
+    basePrice: 100000000,
+    autoIncome: 30000,
+    priceGrowth: 1.15
+  },
+
+  {
+    id: "villa",
+    name: "빌라",
+    icon: "🏘️",
+    basePrice: 500000000,
+    autoIncome: 120000,
+    priceGrowth: 1.15
+  },
+
+  {
+    id: "apartment",
+    name: "아파트",
+    icon: "🏢",
+    basePrice: 2000000000,
+    autoIncome: 500000,
+    priceGrowth: 1.15
+  },
+
+  {
+    id: "building",
+    name: "빌딩",
+    icon: "🏙️",
+    basePrice: 10000000000,
+    autoIncome: 2000000,
+    priceGrowth: 1.15
+  },
+
+  {
+    id: "baseball_stadium",
+    name: "야구장",
+    icon: "⚾",
+    basePrice: 50000000000,
+    autoIncome: 8000000,
+    priceGrowth: 1.15
+  },
+
+  {
+    id: "soccer_stadium",
+    name: "축구장",
+    icon: "⚽",
+    basePrice: 200000000000,
+    autoIncome: 30000000,
+    priceGrowth: 1.15
+  }
+];
