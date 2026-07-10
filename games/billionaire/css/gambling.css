@@ -1,0 +1,359 @@
+/* =========================
+   도박 패널
+========================= */
+
+#gamblingPanel{
+    position:fixed;
+
+    top:90px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:min(96vw,720px);
+    max-height:82vh;
+
+    overflow-y:auto;
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:20px;
+
+    z-index:500;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.25);
+}
+
+/* =========================
+   헤더
+========================= */
+
+.gamblingHeader{
+
+    display:flex;
+
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:20px;
+
+}
+
+.gamblingHeader h2{
+
+    margin:0;
+
+    color:#e67e00;
+
+}
+
+#gamblingPanelCloseBtn{
+
+    width:42px;
+    height:42px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#eeeeee;
+
+    font-size:18px;
+
+    cursor:pointer;
+
+}
+
+/* =========================
+   탭
+========================= */
+
+.gamblingTabs{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-bottom:20px;
+
+}
+
+.gamblingTabBtn{
+
+    flex:1;
+
+    border:none;
+
+    border-radius:15px;
+
+    padding:12px;
+
+    background:#f3f3f3;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+}
+
+.gamblingTabBtn.active{
+
+    background:#ffcc33;
+
+    color:#5f3d00;
+
+}
+
+/* =========================
+   각 게임 영역
+========================= */
+
+.gamblingSection{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
+
+}
+
+.gamblingSection h3{
+
+    margin:0;
+
+    color:#444;
+
+}
+
+/* =========================
+   설명
+========================= */
+
+.gamblingDescription{
+
+    background:#fff8d5;
+
+    padding:14px;
+
+    border-radius:14px;
+
+    line-height:1.6;
+
+    font-size:15px;
+
+}
+
+/* =========================
+   입력
+========================= */
+
+.gamblingInput{
+
+    width:100%;
+
+    padding:13px;
+
+    border:2px solid #dddddd;
+
+    border-radius:14px;
+
+    font-size:16px;
+
+}
+
+/* =========================
+   선택 버튼
+========================= */
+
+.choiceButtons{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+.choiceButtons button{
+
+    flex:1;
+
+}
+
+/* =========================
+   주사위 번호
+========================= */
+
+.diceButtons{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:10px;
+
+}
+
+.diceButtons button{
+
+    padding:14px;
+
+}
+
+/* =========================
+   공통 버튼
+========================= */
+
+.gamblingBtn{
+
+    width:100%;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:#ffcc33;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:0 4px 0 #d49a00;
+
+}
+
+.gamblingBtn:active{
+
+    transform:translateY(3px);
+
+    box-shadow:0 1px 0 #d49a00;
+
+}
+
+.gamblingBtn:disabled{
+
+    opacity:.45;
+
+    cursor:not-allowed;
+
+}
+
+/* =========================
+   선택됨
+========================= */
+
+.selected{
+
+    background:#ffcc33 !important;
+
+    color:#5a3900;
+
+}
+
+/* =========================
+   결과
+========================= */
+
+.resultBox{
+
+    min-height:60px;
+
+    padding:15px;
+
+    border-radius:15px;
+
+    background:#f5f5f5;
+
+    font-weight:bold;
+
+    line-height:1.5;
+
+}
+
+.resultBox.success{
+
+    background:#dff9e1;
+
+    color:#0b7d30;
+
+}
+
+.resultBox.failure{
+
+    background:#ffe2e2;
+
+    color:#b10000;
+
+}
+
+/* =========================
+   쿨다운
+========================= */
+
+.cooldownText{
+
+    font-size:15px;
+
+    color:#777;
+
+    font-weight:bold;
+
+}
+
+/* =========================
+   통계
+========================= */
+
+.statsBox{
+
+    background:#eef7ff;
+
+    border-radius:15px;
+
+    padding:14px;
+
+    line-height:1.7;
+
+    font-size:15px;
+
+}
+
+/* =========================
+   모바일
+========================= */
+
+@media(max-width:700px){
+
+#gamblingPanel{
+
+    width:96vw;
+
+    top:75px;
+
+    max-height:84vh;
+
+    padding:15px;
+
+}
+
+.gamblingTabs{
+
+    flex-direction:column;
+
+}
+
+.diceButtons{
+
+    grid-template-columns:repeat(2,1fr);
+
+}
+
+}

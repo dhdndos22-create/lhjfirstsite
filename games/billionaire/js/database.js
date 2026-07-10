@@ -11,16 +11,33 @@ import {
   getTotalAutoIncome
 } from "./state.js";
 
+/* =========================
+   Supabase 연결
+========================= */
+
+if (!globalThis.supabase) {
+  throw new Error(
+    "Supabase 라이브러리를 불러오지 못했습니다."
+  );
+}
+
 const supabaseClient =
   globalThis.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
   );
 
+/* =========================
+   저장 상태 관리
+========================= */
+
 let isSaving = false;
 let saveRequestedAgain = false;
 
-/* 저장 데이터 불러오기 */
+/* =========================
+   게임 데이터 불러오기
+========================= */
+
 export async function loadGameData() {
   const { data, error } = await supabaseClient
     .from(SAVE_TABLE)
@@ -29,9 +46,18 @@ export async function loadGameData() {
     .maybeSingle();
 
   if (error) {
+    console.error(
+      "Supabase 불러오기 오류:",
+      error
+    );
+
     throw error;
   }
 
+  /*
+    저장 데이터가 없으면
+    현재 기본 상태로 신규 행을 생성한다.
+  */
   if (!data) {
     await createNewGameData();
 
@@ -41,6 +67,11 @@ export async function loadGameData() {
     };
   }
 
+  /*
+    DB 데이터를 state에 적용한다.
+    job_data와 gambling_data도
+    state.js에서 함께 처리된다.
+  */
   applySaveData(data);
 
   return {
@@ -49,21 +80,49 @@ export async function loadGameData() {
   };
 }
 
-/* 신규 유저 저장 데이터 생성 */
+/* =========================
+   신규 게임 데이터 생성
+========================= */
+
 async function createNewGameData() {
+  const payload = createSavePayload();
+
   const { error } = await supabaseClient
     .from(SAVE_TABLE)
-    .insert(createSavePayload());
+    .insert(payload);
 
   if (error) {
+    /*
+      같은 유저의 저장 데이터가
+      거의 동시에 생성된 경우에는
+      중복 키 오류가 발생할 수 있다.
+    */
+    if (error.code === "23505") {
+      return;
+    }
+
+    console.error(
+      "신규 게임 데이터 생성 오류:",
+      error
+    );
+
     throw error;
   }
 }
 
-/* 게임 저장 */
-export async function saveGameData() {
-  if (!state.username) return;
+/* =========================
+   게임 데이터 저장
+========================= */
 
+export async function saveGameData() {
+  if (!state.username) {
+    return;
+  }
+
+  /*
+    저장 중에 또 저장 요청이 들어오면
+    현재 저장 완료 후 한 번 더 저장한다.
+  */
   if (isSaving) {
     saveRequestedAgain = true;
     return;
@@ -72,10 +131,12 @@ export async function saveGameData() {
   isSaving = true;
 
   try {
+    const payload = createSavePayload();
+
     const { error } = await supabaseClient
       .from(SAVE_TABLE)
       .upsert(
-        createSavePayload(),
+        payload,
         {
           onConflict: "username"
         }
@@ -86,22 +147,35 @@ export async function saveGameData() {
         "Supabase 저장 오류:",
         error
       );
+
+      throw error;
     }
+  } catch (error) {
+    console.error(
+      "게임 저장 실패:",
+      error
+    );
   } finally {
     isSaving = false;
 
     if (saveRequestedAgain) {
       saveRequestedAgain = false;
-      saveGameData();
+
+      await saveGameData();
     }
   }
 }
 
-/* 오프라인 수익 계산 */
+/* =========================
+   오프라인 수익 지급
+========================= */
+
 export async function applyOfflineReward(
   lastSavedAt
 ) {
-  if (!lastSavedAt) return 0;
+  if (!lastSavedAt) {
+    return 0;
+  }
 
   const lastTime =
     new Date(lastSavedAt).getTime();
@@ -121,8 +195,11 @@ export async function applyOfflineReward(
     return 0;
   }
 
+  const autoIncome =
+    getTotalAutoIncome();
+
   const reward =
-    offlineSeconds * getTotalAutoIncome();
+    offlineSeconds * autoIncome;
 
   state.money += reward;
 

@@ -3,15 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>억만장자 - 효종월드</title>
+
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/start.css" />
   <link rel="stylesheet" href="css/game.css" />
   <link rel="stylesheet" href="css/menu.css" />
   <link rel="stylesheet" href="css/effects.css" />
   <link rel="stylesheet" href="css/job.css" />
+  <link rel="stylesheet" href="css/gambling.css" />
   <link rel="stylesheet" href="css/responsive.css" />
 </head>
+
 <body>
 
   <!-- 시작 화면 -->
@@ -24,7 +28,10 @@
     </p>
 
     <button id="startBtn">게임시작</button>
-    <button id="homeBtn">효종월드로 돌아가기</button>
+
+    <button id="homeBtn">
+      효종월드로 돌아가기
+    </button>
   </section>
 
   <!-- 게임 화면 -->
@@ -44,46 +51,71 @@
     </header>
 
     <!-- 통합 메뉴 버튼 -->
-    <button id="gameMenuBtn">☰ 메뉴</button>
+    <button id="gameMenuBtn">
+      ☰ 메뉴
+    </button>
 
     <!-- 통합 메뉴 -->
     <div id="gameMenuPanel" class="hidden">
 
-      <button class="menuItem" id="upgradeMenuBtn">
+      <!-- 강화 -->
+      <button
+        class="menuItem"
+        id="upgradeMenuBtn"
+      >
         💪 강화
       </button>
 
-      <div id="upgradeSubMenu" class="hidden">
+      <div
+        id="upgradeSubMenu"
+        class="hidden"
+      >
+        <button
+          class="subMenuItem"
+          id="clickUpgradeBtn"
+        >
+          클릭 강화
+          <br>
 
-        <button class="subMenuItem" id="clickUpgradeBtn">
-          클릭 강화<br>
           <span id="clickUpgradeCostText">
             비용: 50원
           </span>
         </button>
 
-        <button class="subMenuItem" id="autoUpgradeBtn">
-          초당 수입 강화<br>
+        <button
+          class="subMenuItem"
+          id="autoUpgradeBtn"
+        >
+          초당 수입 강화
+          <br>
+
           <span id="autoUpgradeCostText">
             비용: 100원
           </span>
         </button>
 
-        <button class="subMenuItem" id="levelUpBtn">
-          레벨업<br>
+        <button
+          class="subMenuItem"
+          id="levelUpBtn"
+        >
+          레벨업
+          <br>
+
           <span id="levelUpCostText">
             비용: 500원
           </span>
         </button>
-
       </div>
 
-      <!-- 직업 버튼 -->
-      <button class="menuItem" id="jobMenuBtn">
+      <!-- 직업 -->
+      <button
+        class="menuItem"
+        id="jobMenuBtn"
+      >
         💼 직업
       </button>
 
-      <!-- 나머지 메뉴 -->
+      <!-- 준비 중 메뉴 -->
       <button class="menuItem preparing">
         🏢 건물
       </button>
@@ -104,14 +136,17 @@
         ⚔ 장비
       </button>
 
-      <button class="menuItem preparing">
-        🎰 복권
+      <!-- 도박 -->
+      <button
+        class="menuItem"
+        id="gamblingMenuBtn"
+      >
+        🎰 도박
       </button>
 
       <button class="menuItem preparing">
         🏆 업적
       </button>
-
     </div>
 
     <!-- 클릭 영역 -->
@@ -124,37 +159,56 @@
           id="mainCharacter"
         >
 
-        <p>화면 아무 곳이나 클릭!</p>
+        <p>
+          화면 아무 곳이나 클릭!
+        </p>
 
         <p class="incomeText">
           클릭당 수입:
-          <strong id="clickPowerText">1원</strong>
+          <strong id="clickPowerText">
+            1원
+          </strong>
+
           <br>
 
           초당 수입:
-          <strong id="autoIncomeText">0원 / 초</strong>
+          <strong id="autoIncomeText">
+            0원 / 초
+          </strong>
         </p>
 
       </div>
     </main>
 
-    <!-- 직업 패널 -->
-    <div id="jobPanel" class="contentPanel hidden">
+    <!-- =========================
+         직업 패널
+    ========================== -->
 
+    <div
+      id="jobPanel"
+      class="contentPanel hidden"
+    >
       <div class="contentPanelHeader">
         <h2>💼 직업</h2>
-        <button id="jobPanelCloseBtn">✕</button>
+
+        <button id="jobPanelCloseBtn">
+          ✕
+        </button>
       </div>
 
       <div class="jobStatusBox">
 
         <p>
           직업 레벨
-          <strong id="jobLevelText">1</strong>
+
+          <strong id="jobLevelText">
+            1
+          </strong>
         </p>
 
         <p>
           다음 취업
+
           <strong id="nextJobLevelText">
             레벨 10
           </strong>
@@ -162,6 +216,7 @@
 
         <p>
           직업 클릭 보너스
+
           <strong id="jobClickBonusText">
             0원
           </strong>
@@ -169,6 +224,7 @@
 
         <p>
           직업 초당 보너스
+
           <strong id="jobAutoBonusText">
             0원 / 초
           </strong>
@@ -176,8 +232,12 @@
 
       </div>
 
-      <button id="jobLevelUpBtn" class="jobLevelUpBtn">
+      <button
+        id="jobLevelUpBtn"
+        class="jobLevelUpBtn"
+      >
         직업 레벨업
+
         <span id="jobLevelUpCostText">
           비용: 100원
         </span>
@@ -190,15 +250,18 @@
           아직 직업이 없습니다.
         </div>
       </div>
-
     </div>
 
-    <!-- 취업 선택 모달 -->
-    <div id="jobChoiceOverlay" class="jobChoiceOverlay hidden">
-
+    <!-- 취업 선택창 -->
+    <div
+      id="jobChoiceOverlay"
+      class="jobChoiceOverlay hidden"
+    >
       <div class="jobChoiceModal">
 
-        <h2>🎉 취업할 수 있습니다!</h2>
+        <h2>
+          🎉 취업할 수 있습니다!
+        </h2>
 
         <p id="jobChoiceLevelText">
           직업 레벨 10 달성
@@ -214,13 +277,310 @@
         ></div>
 
       </div>
+    </div>
+
+    <!-- =========================
+         도박 패널
+    ========================== -->
+
+    <div
+      id="gamblingPanel"
+      class="hidden"
+    >
+      <div class="gamblingHeader">
+        <h2>🎰 도박</h2>
+
+        <button id="gamblingPanelCloseBtn">
+          ✕
+        </button>
+      </div>
+
+      <!-- 도박 게임 선택 탭 -->
+      <div class="gamblingTabs">
+
+        <button
+          class="gamblingTabBtn active"
+          data-target="oddEvenSection"
+        >
+          🔴 홀짝
+        </button>
+
+        <button
+          class="gamblingTabBtn"
+          data-target="diceSection"
+        >
+          🎲 주사위
+        </button>
+
+        <button
+          class="gamblingTabBtn"
+          data-target="lotterySection"
+        >
+          🎟️ 로또
+        </button>
+
+      </div>
+
+      <!-- =========================
+           홀짝게임
+      ========================== -->
+
+      <section
+        id="oddEvenSection"
+        class="gamblingSection"
+      >
+        <h3>🔴 홀짝게임</h3>
+
+        <div class="gamblingDescription">
+          보유금 안에서 돈을 베팅하고
+          홀 또는 짝을 선택하세요.
+
+          <br>
+
+          맞으면 베팅금의 2배를 받고,
+          틀리면 베팅금을 잃습니다.
+
+          <br>
+
+          1분에 한 번 플레이할 수 있습니다.
+        </div>
+
+        <input
+          id="oddEvenBetInput"
+          class="gamblingInput"
+          type="number"
+          min="1"
+          step="1"
+          placeholder="베팅 금액 입력"
+        >
+
+        <div class="choiceButtons">
+
+          <button
+            id="oddChoiceBtn"
+            class="gamblingBtn"
+          >
+            홀
+          </button>
+
+          <button
+            id="evenChoiceBtn"
+            class="gamblingBtn"
+          >
+            짝
+          </button>
+
+        </div>
+
+        <button
+          id="oddEvenPlayBtn"
+          class="gamblingBtn"
+        >
+          홀짝게임 시작
+        </button>
+
+        <div
+          id="oddEvenCooldownText"
+          class="cooldownText"
+        >
+          지금 플레이 가능
+        </div>
+
+        <div
+          id="oddEvenResultText"
+          class="resultBox"
+        >
+          베팅 금액과 홀짝을 선택해주세요.
+        </div>
+
+        <div
+          id="oddEvenStatsText"
+          class="statsBox"
+        >
+          플레이 0회 · 성공 0회
+        </div>
+      </section>
+
+      <!-- =========================
+           주사위 게임
+      ========================== -->
+
+      <section
+        id="diceSection"
+        class="gamblingSection hidden"
+      >
+        <h3>🎲 주사위 게임</h3>
+
+        <div class="gamblingDescription">
+          보유금 안에서 돈을 베팅하고
+          1부터 6 중 하나를 선택하세요.
+
+          <br>
+
+          컴퓨터의 주사위 숫자와 같으면
+          베팅금의 10배를 받습니다.
+
+          <br>
+
+          틀리면 베팅금을 잃으며,
+          5분에 한 번 플레이할 수 있습니다.
+        </div>
+
+        <input
+          id="diceBetInput"
+          class="gamblingInput"
+          type="number"
+          min="1"
+          step="1"
+          placeholder="베팅 금액 입력"
+        >
+
+        <div class="diceButtons">
+
+          <button
+            class="gamblingBtn diceNumberBtn"
+            data-number="1"
+          >
+            1
+          </button>
+
+          <button
+            class="gamblingBtn diceNumberBtn"
+            data-number="2"
+          >
+            2
+          </button>
+
+          <button
+            class="gamblingBtn diceNumberBtn"
+            data-number="3"
+          >
+            3
+          </button>
+
+          <button
+            class="gamblingBtn diceNumberBtn"
+            data-number="4"
+          >
+            4
+          </button>
+
+          <button
+            class="gamblingBtn diceNumberBtn"
+            data-number="5"
+          >
+            5
+          </button>
+
+          <button
+            class="gamblingBtn diceNumberBtn"
+            data-number="6"
+          >
+            6
+          </button>
+
+        </div>
+
+        <button
+          id="dicePlayBtn"
+          class="gamblingBtn"
+        >
+          주사위 굴리기
+        </button>
+
+        <div
+          id="diceCooldownText"
+          class="cooldownText"
+        >
+          지금 플레이 가능
+        </div>
+
+        <div
+          id="diceResultText"
+          class="resultBox"
+        >
+          베팅 금액과 주사위 숫자를 선택해주세요.
+        </div>
+
+        <div
+          id="diceStatsText"
+          class="statsBox"
+        >
+          플레이 0회 · 성공 0회
+        </div>
+      </section>
+
+      <!-- =========================
+           로또
+      ========================== -->
+
+      <section
+        id="lotterySection"
+        class="gamblingSection hidden"
+      >
+        <h3>🎟️ 거지로또</h3>
+
+        <div class="gamblingDescription">
+          구매 비용은 5,000원입니다.
+
+          <br><br>
+
+          꽝: 30%
+          <br>
+          10,000원: 40%
+          <br>
+          20,000원: 20%
+          <br>
+          50,000원: 5%
+          <br>
+          100,000원: 5%
+
+          <br><br>
+
+          3분에 한 번 구매할 수 있습니다.
+        </div>
+
+        <button
+          id="beggarLotteryBuyBtn"
+          class="gamblingBtn"
+        >
+          거지로또 구매 (5,000원)
+        </button>
+
+        <div
+          id="beggarLotteryCooldownText"
+          class="cooldownText"
+        >
+          지금 구매 가능
+        </div>
+
+        <div
+          id="beggarLotteryResultText"
+          class="resultBox"
+        >
+          거지로또를 구매해보세요.
+        </div>
+
+        <div
+          id="beggarLotteryStatsText"
+          class="statsBox"
+        >
+          구매 0회 · 총 사용 0원 · 총 당첨 0원
+        </div>
+      </section>
 
     </div>
 
   </section>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script type="module" src="js/main.js"></script>
+
+  <!-- 메인 모듈 -->
+  <script
+    type="module"
+    src="js/main.js"
+  ></script>
 
 </body>
 </html>
