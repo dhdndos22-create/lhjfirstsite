@@ -1,4 +1,4 @@
-rrimport {
+import {
   BUILDING_CONFIG
 } from "./config.js";
 
