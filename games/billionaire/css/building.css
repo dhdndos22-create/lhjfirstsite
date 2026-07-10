@@ -1,363 +1,82 @@
-#buildingPanel {
-  position: fixed;
-  top: 50%;
-  left: 50%;
+/* 사업(내부 코드명 building) */
+#buildingList { margin-top: 14px; }
 
-  transform: translate(-50%, -50%);
-
-  width: min(94vw, 760px);
-  height: min(88vh, 720px);
-
-  z-index: 450;
-
-  display: flex;
-  flex-direction: column;
-
-  padding: 20px;
-
-  overflow: hidden;
-
-  background: #ffffff;
-
-  border: 4px solid #ffcc33;
-  border-radius: 24px;
-
-  box-shadow:
-    0 12px 30px rgba(0, 0, 0, 0.28);
-}
-
-.buildingHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  flex-shrink: 0;
-}
-
-.buildingHeader h2 {
-  margin: 0;
-
-  color: #e67e00;
-}
-
-#buildingPanelCloseBtn {
-  width: 42px;
-  height: 42px;
-
-  border: none;
-  border-radius: 50%;
-
-  background: #eeeeee;
-
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.buildingSummary {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-
-  gap: 12px;
-
-  margin-top: 14px;
-
-  flex-shrink: 0;
-}
-
-.buildingSummaryItem {
-  padding: 12px;
-
-  background: #fff8d7;
-
-  border-radius: 16px;
-
-  text-align: center;
-}
-
-.buildingSummaryItem span {
-  display: block;
-
-  font-size: 13px;
-  font-weight: bold;
-
-  color: #666666;
-}
-
-.buildingSummaryItem strong {
-  display: block;
-
-  margin-top: 4px;
-
-  font-size: 18px;
-
-  color: #e67e00;
-}
-
-#buildingList {
-  flex: 1;
-
-  min-height: 0;
-
-  display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-  grid-template-rows:
-    repeat(2, minmax(0, 1fr));
-
-  gap: 12px;
-
-  margin-top: 14px;
-}
-
-.buildingCard {
-  min-width: 0;
-  min-height: 0;
-
-  display: flex;
-  flex-direction: column;
-
-  gap: 10px;
-
-  padding: 13px;
-
-  overflow: hidden;
-
-  background: #f9fcff;
-
-  border: 3px solid #bde0ff;
-  border-radius: 18px;
-
-  box-shadow:
-    0 4px 0 rgba(80, 150, 210, 0.25);
-}
+.buildingCard { background: #f9fcff; }
 
 .buildingTitle {
   display: flex;
   align-items: center;
-
   gap: 10px;
 }
 
 .buildingIcon {
   width: 50px;
   height: 50px;
-
   flex-shrink: 0;
-
   display: flex;
-  justify-content: center;
   align-items: center;
-
+  justify-content: center;
   background: #fff4bf;
-
   border-radius: 14px;
-
   font-size: 28px;
 }
 
-.buildingTitle h3 {
-  margin: 0;
-
-  font-size: 18px;
-}
-
-.buildingTitle p {
-  margin: 4px 0 0;
-
-  font-size: 12px;
-  font-weight: bold;
-
-  color: #777777;
-}
+.buildingTitle h3 { margin: 0; font-size: 18px; }
+.buildingTitle p { margin: 4px 0 0; font-size: 12px; font-weight: 700; color: #777; }
 
 .buildingDetail {
   padding: 9px;
-
-  background: #ffffff;
-
+  background: #fff;
   border-radius: 12px;
 }
 
 .buildingDetail p {
   display: flex;
   justify-content: space-between;
-
   gap: 8px;
-
   margin: 5px 0;
-
   font-size: 12px;
-  font-weight: bold;
+  font-weight: 700;
 }
 
-.buildingDetail strong {
-  color: #e67e00;
-
-  text-align: right;
-}
+.buildingDetail strong { color: #e67e00; text-align: right; }
 
 .buildingBuyBtn {
   width: 100%;
-
   margin-top: auto;
-
   padding: 10px;
-
-  border: none;
+  border: 0;
   border-radius: 13px;
-
   background: #ffcc33;
-
   font-size: 14px;
-  font-weight: bold;
-
-  box-shadow:
-    0 3px 0 #d49a00;
+  font-weight: 700;
+  box-shadow: 0 3px 0 #d49a00;
 }
 
-.buildingBuyBtn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
+.buildingBuyBtn:disabled { opacity: .45; cursor: not-allowed; }
 
 .buildingPagination {
   display: grid;
-  grid-template-columns:
-    1fr auto 1fr;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-
   gap: 12px;
-
   margin-top: 14px;
-
   flex-shrink: 0;
 }
 
-.buildingPagination button {
-  padding: 11px 14px;
-
-  border: none;
-  border-radius: 14px;
-
-  background: #ffcc33;
-
-  font-size: 15px;
-  font-weight: bold;
-
-  box-shadow:
-    0 3px 0 #d49a00;
-}
-
-.buildingPagination button:last-child {
-  justify-self: end;
-}
-
-.buildingPagination button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-#buildingPageText {
-  min-width: 70px;
-
-  text-align: center;
-
-  font-size: 17px;
-  font-weight: bold;
-
-  color: #e67e00;
-}
+.buildingPagination button:last-child { justify-self: end; }
+#buildingPageText { min-width: 70px; text-align: center; font-size: 17px; font-weight: 700; color: #e67e00; }
 
 @media (max-width: 600px) {
-  #buildingPanel {
-    width: 96vw;
-    height: 88vh;
-
-    padding: 13px;
-  }
-
-  .buildingSummary {
-    gap: 8px;
-  }
-
-  .buildingSummaryItem {
-    padding: 9px 6px;
-  }
-
-  .buildingSummaryItem strong {
-    font-size: 15px;
-  }
-
-  #buildingList {
-    gap: 8px;
-  }
-
-  .buildingCard {
-    padding: 9px;
-
-    gap: 7px;
-  }
-
-  .buildingIcon {
-    width: 38px;
-    height: 38px;
-
-    font-size: 22px;
-  }
-
-  .buildingTitle {
-    gap: 7px;
-  }
-
-  .buildingTitle h3 {
-    font-size: 14px;
-  }
-
-  .buildingTitle p {
-    font-size: 10px;
-  }
-
-  .buildingDetail {
-    padding: 6px;
-  }
-
-  .buildingDetail p {
-    display: block;
-
-    margin: 4px 0;
-
-    font-size: 10px;
-  }
-
-  .buildingDetail strong {
-    display: block;
-
-    margin-top: 2px;
-
-    text-align: left;
-  }
-
-  .buildingBuyBtn {
-    padding: 8px 5px;
-
-    font-size: 11px;
-  }
-
-  .buildingPagination {
-    margin-top: 10px;
-
-    gap: 7px;
-  }
-
-  .buildingPagination button {
-    padding: 9px 8px;
-
-    font-size: 12px;
-  }
-
-  #buildingPageText {
-    min-width: 52px;
-
-    font-size: 14px;
-  }
+  .buildingIcon { width: 38px; height: 38px; font-size: 22px; }
+  .buildingTitle { gap: 7px; }
+  .buildingTitle h3 { font-size: 14px; }
+  .buildingTitle p { font-size: 10px; }
+  .buildingDetail { padding: 6px; }
+  .buildingDetail p { display: block; margin: 4px 0; font-size: 10px; }
+  .buildingDetail strong { display: block; margin-top: 2px; text-align: left; }
+  .buildingBuyBtn { padding: 8px 5px; font-size: 11px; }
+  .buildingPagination { margin-top: 10px; gap: 7px; }
+  .buildingPagination button { padding: 9px 8px; font-size: 12px; }
+  #buildingPageText { min-width: 52px; font-size: 14px; }
 }

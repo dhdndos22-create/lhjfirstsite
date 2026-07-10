@@ -179,6 +179,7 @@ function earnMoneyByClick(event) {
   updateMainUI();
   updateJobUI();
   updateGamblingUI();
+  updateBuildingUI();
 }
 
 /* =========================
@@ -202,6 +203,7 @@ function startIncomeTimer() {
       updateMainUI();
       updateJobUI();
       updateGamblingUI();
+      updateBuildingUI();
     },
     1000
   );

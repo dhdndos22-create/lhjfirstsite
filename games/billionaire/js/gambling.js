@@ -1,1078 +1,298 @@
-import {
-  GAMBLING_CONFIG
-} from "./config.js";
+import { GAMBLING_CONFIG } from "./config.js";
+import { state } from "./state.js";
+import { elements, updateMainUI, formatMoney, formatPlainNumber } from "./ui.js";
+import { saveGameData } from "./database.js";
 
-import {
-  state
-} from "./state.js";
-
-import {
-  elements,
-  updateMainUI,
-  formatMoney,
-  formatPlainNumber
-} from "./ui.js";
-
-import {
-  saveGameData
-} from "./database.js";
-
-/* =========================
-   도박 화면 요소
-========================= */
-
-let gamblingElements = null;
-
-/*
-  HTML이 만들어진 뒤 initializeGambling()을 호출할 때
-  필요한 요소들을 찾는다.
-
-  모듈을 불러오는 순간 바로 찾지 않기 때문에,
-  HTML 요소가 아직 없을 때 전체 JS가 중단되는 문제를 줄인다.
-*/
-function getGamblingElements() {
-  return {
-    gamblingMenuBtn:
-      document.getElementById("gamblingMenuBtn"),
-
-    gamblingPanel:
-      document.getElementById("gamblingPanel"),
-
-    gamblingPanelCloseBtn:
-      document.getElementById(
-        "gamblingPanelCloseBtn"
-      ),
-
-    gamblingTabButtons:
-      document.querySelectorAll(
-        ".gamblingTabBtn"
-      ),
-
-    gamblingSections:
-      document.querySelectorAll(
-        ".gamblingSection"
-      ),
-
-    /* 홀짝게임 */
-    oddEvenBetInput:
-      document.getElementById(
-        "oddEvenBetInput"
-      ),
-
-    oddChoiceBtn:
-      document.getElementById(
-        "oddChoiceBtn"
-      ),
-
-    evenChoiceBtn:
-      document.getElementById(
-        "evenChoiceBtn"
-      ),
-
-    oddEvenPlayBtn:
-      document.getElementById(
-        "oddEvenPlayBtn"
-      ),
-
-    oddEvenCooldownText:
-      document.getElementById(
-        "oddEvenCooldownText"
-      ),
-
-    oddEvenResultText:
-      document.getElementById(
-        "oddEvenResultText"
-      ),
-
-    oddEvenStatsText:
-      document.getElementById(
-        "oddEvenStatsText"
-      ),
-
-    /* 주사위 게임 */
-    diceBetInput:
-      document.getElementById(
-        "diceBetInput"
-      ),
-
-    diceNumberButtons:
-      document.querySelectorAll(
-        ".diceNumberBtn"
-      ),
-
-    dicePlayBtn:
-      document.getElementById(
-        "dicePlayBtn"
-      ),
-
-    diceCooldownText:
-      document.getElementById(
-        "diceCooldownText"
-      ),
-
-    diceResultText:
-      document.getElementById(
-        "diceResultText"
-      ),
-
-    diceStatsText:
-      document.getElementById(
-        "diceStatsText"
-      ),
-
-    /* 거지로또 */
-    beggarLotteryBuyBtn:
-      document.getElementById(
-        "beggarLotteryBuyBtn"
-      ),
-
-    beggarLotteryCooldownText:
-      document.getElementById(
-        "beggarLotteryCooldownText"
-      ),
-
-    beggarLotteryResultText:
-      document.getElementById(
-        "beggarLotteryResultText"
-      ),
-
-    beggarLotteryStatsText:
-      document.getElementById(
-        "beggarLotteryStatsText"
-      )
-  };
-}
-
-/* =========================
-   현재 선택 상태
-========================= */
-
+let ui = null;
 let selectedOddEven = null;
 let selectedDiceNumber = null;
-
 let cooldownTimer = null;
 let isProcessing = false;
 
-/* =========================
-   초기화
-========================= */
+function getElements() {
+  return {
+    menuBtn: document.getElementById("gamblingMenuBtn"),
+    panel: document.getElementById("gamblingPanel"),
+    closeBtn: document.getElementById("gamblingPanelCloseBtn"),
+    home: document.getElementById("gamblingHome"),
+    cards: document.querySelectorAll(".gamblingGameCard[data-section]"),
+    backBtns: document.querySelectorAll(".gamblingBackBtn"),
+    sections: document.querySelectorAll(".gamblingDetail"),
+    totalPlays: document.getElementById("gamblingTotalPlaysText"),
+    totalWins: document.getElementById("gamblingTotalWinsText"),
+    oddEvenCardCooldown: document.getElementById("oddEvenCardCooldown"),
+    diceCardCooldown: document.getElementById("diceCardCooldown"),
+    lotteryCardCooldown: document.getElementById("lotteryCardCooldown"),
+
+    oddEvenBetInput: document.getElementById("oddEvenBetInput"),
+    oddChoiceBtn: document.getElementById("oddChoiceBtn"),
+    evenChoiceBtn: document.getElementById("evenChoiceBtn"),
+    oddEvenPlayBtn: document.getElementById("oddEvenPlayBtn"),
+    oddEvenCooldownText: document.getElementById("oddEvenCooldownText"),
+    oddEvenResultText: document.getElementById("oddEvenResultText"),
+    oddEvenStatsText: document.getElementById("oddEvenStatsText"),
+
+    diceBetInput: document.getElementById("diceBetInput"),
+    diceNumberButtons: document.querySelectorAll(".diceNumberBtn"),
+    dicePlayBtn: document.getElementById("dicePlayBtn"),
+    diceCooldownText: document.getElementById("diceCooldownText"),
+    diceResultText: document.getElementById("diceResultText"),
+    diceStatsText: document.getElementById("diceStatsText"),
+
+    beggarLotteryBuyBtn: document.getElementById("beggarLotteryBuyBtn"),
+    beggarLotteryCooldownText: document.getElementById("beggarLotteryCooldownText"),
+    beggarLotteryResultText: document.getElementById("beggarLotteryResultText"),
+    beggarLotteryStatsText: document.getElementById("beggarLotteryStatsText")
+  };
+}
 
 export function initializeGambling() {
-  gamblingElements =
-    getGamblingElements();
-
-  const requiredElements = [
-    "gamblingMenuBtn",
-    "gamblingPanel",
-    "gamblingPanelCloseBtn",
-    "oddEvenBetInput",
-    "oddChoiceBtn",
-    "evenChoiceBtn",
-    "oddEvenPlayBtn",
-    "oddEvenCooldownText",
-    "oddEvenResultText",
-    "diceBetInput",
-    "dicePlayBtn",
-    "diceCooldownText",
-    "diceResultText",
-    "beggarLotteryBuyBtn",
-    "beggarLotteryCooldownText",
-    "beggarLotteryResultText"
+  ui = getElements();
+  const required = [
+    "menuBtn", "panel", "closeBtn", "home",
+    "oddEvenBetInput", "oddChoiceBtn", "evenChoiceBtn", "oddEvenPlayBtn",
+    "diceBetInput", "dicePlayBtn", "beggarLotteryBuyBtn"
   ];
-
-  const missingElements =
-    requiredElements.filter(
-      function (name) {
-        return !gamblingElements[name];
-      }
-    );
-
-  if (missingElements.length > 0) {
-    console.error(
-      "도박 HTML 요소가 없습니다:",
-      missingElements
-    );
-
+  const missing = required.filter((key) => !ui[key]);
+  if (missing.length) {
+    console.error("도박 HTML 요소가 없습니다:", missing);
     return;
   }
 
-  gamblingElements.gamblingMenuBtn
-    .addEventListener(
-      "click",
-      openGamblingPanel
-    );
+  ui.menuBtn.addEventListener("click", openPanel);
+  ui.closeBtn.addEventListener("click", closePanel);
+  ui.panel.addEventListener("click", (event) => event.stopPropagation());
+  ui.cards.forEach((card) => card.addEventListener("click", () => showSection(card.dataset.section)));
+  ui.backBtns.forEach((button) => button.addEventListener("click", showHome));
 
-  gamblingElements.gamblingPanelCloseBtn
-    .addEventListener(
-      "click",
-      closeGamblingPanel
-    );
+  ui.oddChoiceBtn.addEventListener("click", () => selectOddEven("odd"));
+  ui.evenChoiceBtn.addEventListener("click", () => selectOddEven("even"));
+  ui.oddEvenPlayBtn.addEventListener("click", playOddEven);
+  ui.oddEvenBetInput.addEventListener("input", updateGamblingUI);
 
-  gamblingElements.gamblingPanel
-    .addEventListener(
-      "click",
-      function (event) {
-        event.stopPropagation();
-      }
-    );
+  ui.diceNumberButtons.forEach((button) => {
+    button.addEventListener("click", () => selectDiceNumber(Number(button.dataset.number)));
+  });
+  ui.dicePlayBtn.addEventListener("click", playDice);
+  ui.diceBetInput.addEventListener("input", updateGamblingUI);
 
-  initializeTabs();
-  initializeOddEvenGame();
-  initializeDiceGame();
-  initializeBeggarLottery();
+  ui.beggarLotteryBuyBtn.addEventListener("click", buyBeggarLottery);
 
+  showHome();
   updateGamblingUI();
-  startCooldownTimer();
+  cooldownTimer = setInterval(updateGamblingUI, 1000);
 }
 
-/* =========================
-   도박 패널
-========================= */
-
-function openGamblingPanel(event) {
+function openPanel(event) {
   event.stopPropagation();
-
-  elements.gameMenuPanel.classList.add(
-    "hidden"
-  );
-
-  gamblingElements.gamblingPanel
-    .classList.remove("hidden");
-
+  elements.gameMenuPanel.classList.add("hidden");
+  ui.panel.classList.remove("hidden");
+  showHome();
   updateGamblingUI();
 }
 
-function closeGamblingPanel() {
-  gamblingElements.gamblingPanel
-    .classList.add("hidden");
+function closePanel() {
+  ui.panel.classList.add("hidden");
 }
 
-/* =========================
-   탭
-========================= */
-
-function initializeTabs() {
-  gamblingElements.gamblingTabButtons
-    .forEach(function (button) {
-      button.addEventListener(
-        "click",
-        function () {
-          const targetId =
-            button.dataset.target;
-
-          showGamblingSection(
-            targetId
-          );
-        }
-      );
-    });
+function showHome() {
+  ui.home.classList.remove("hidden");
+  ui.sections.forEach((section) => section.classList.add("hidden"));
 }
 
-function showGamblingSection(targetId) {
-  gamblingElements.gamblingSections
-    .forEach(function (section) {
-      section.classList.toggle(
-        "hidden",
-        section.id !== targetId
-      );
-    });
-
-  gamblingElements.gamblingTabButtons
-    .forEach(function (button) {
-      button.classList.toggle(
-        "active",
-        button.dataset.target === targetId
-      );
-    });
-}
-
-/* =========================
-   홀짝게임 초기화
-========================= */
-
-function initializeOddEvenGame() {
-  gamblingElements.oddChoiceBtn
-    .addEventListener(
-      "click",
-      function () {
-        selectOddEven("odd");
-      }
-    );
-
-  gamblingElements.evenChoiceBtn
-    .addEventListener(
-      "click",
-      function () {
-        selectOddEven("even");
-      }
-    );
-
-  gamblingElements.oddEvenPlayBtn
-    .addEventListener(
-      "click",
-      playOddEven
-    );
-
-  gamblingElements.oddEvenBetInput
-    .addEventListener(
-      "input",
-      updateGamblingUI
-    );
+function showSection(sectionId) {
+  ui.home.classList.add("hidden");
+  ui.sections.forEach((section) => section.classList.toggle("hidden", section.id !== sectionId));
+  updateGamblingUI();
 }
 
 function selectOddEven(choice) {
   selectedOddEven = choice;
-
-  gamblingElements.oddChoiceBtn
-    .classList.toggle(
-      "selected",
-      choice === "odd"
-    );
-
-  gamblingElements.evenChoiceBtn
-    .classList.toggle(
-      "selected",
-      choice === "even"
-    );
-
+  ui.oddChoiceBtn.classList.toggle("selected", choice === "odd");
+  ui.evenChoiceBtn.classList.toggle("selected", choice === "even");
   updateGamblingUI();
-}
-
-/* =========================
-   홀짝게임 실행
-========================= */
-
-async function playOddEven() {
-  if (isProcessing) return;
-
-  const cooldownRemaining =
-    getCooldownRemaining(
-      state.gamblingData
-        .odd_even_last_played_at,
-      GAMBLING_CONFIG
-        .oddEven.cooldownMs
-    );
-
-  if (cooldownRemaining > 0) {
-    showResult(
-      gamblingElements
-        .oddEvenResultText,
-      `아직 ${formatRemainingTime(
-        cooldownRemaining
-      )} 남았습니다.`,
-      false
-    );
-
-    return;
-  }
-
-  const betAmount =
-    getValidBetAmount(
-      gamblingElements
-        .oddEvenBetInput.value
-    );
-
-  if (!betAmount) return;
-
-  if (!selectedOddEven) {
-    showResult(
-      gamblingElements
-        .oddEvenResultText,
-      "홀 또는 짝을 선택해주세요.",
-      false
-    );
-
-    return;
-  }
-
-  isProcessing = true;
-
-  try {
-    /*
-      베팅 금액을 먼저 차감한다.
-    */
-    state.money -= betAmount;
-
-    const computerNumber =
-      Math.floor(
-        Math.random() * 100
-      ) + 1;
-
-    const computerChoice =
-      computerNumber % 2 === 0
-        ? "even"
-        : "odd";
-
-    const success =
-      computerChoice ===
-      selectedOddEven;
-
-    state.gamblingData.stats
-      .odd_even_plays++;
-
-    if (success) {
-      const reward =
-        betAmount *
-        GAMBLING_CONFIG
-          .oddEven.rewardMultiplier;
-
-      state.money += reward;
-
-      state.gamblingData.stats
-        .odd_even_wins++;
-
-      showResult(
-        gamblingElements
-          .oddEvenResultText,
-        `성공! 컴퓨터 숫자는 ` +
-        `${computerNumber}(${getOddEvenKorean(
-          computerChoice
-        )})입니다. ` +
-        `${formatMoney(reward)}을 받았습니다.`,
-        true
-      );
-    } else {
-      showResult(
-        gamblingElements
-          .oddEvenResultText,
-        `실패! 컴퓨터 숫자는 ` +
-        `${computerNumber}(${getOddEvenKorean(
-          computerChoice
-        )})입니다. ` +
-        `${formatMoney(betAmount)}을 잃었습니다.`,
-        false
-      );
-    }
-
-    state.gamblingData
-      .odd_even_last_played_at =
-        new Date().toISOString();
-
-    gamblingElements
-      .oddEvenBetInput.value = "";
-
-    selectedOddEven = null;
-
-    gamblingElements.oddChoiceBtn
-      .classList.remove("selected");
-
-    gamblingElements.evenChoiceBtn
-      .classList.remove("selected");
-
-    updateMainUI();
-    updateGamblingUI();
-
-    await saveGameData();
-  } finally {
-    isProcessing = false;
-  }
-}
-
-/* =========================
-   주사위 게임 초기화
-========================= */
-
-function initializeDiceGame() {
-  gamblingElements.diceNumberButtons
-    .forEach(function (button) {
-      button.addEventListener(
-        "click",
-        function () {
-          selectDiceNumber(
-            Number(
-              button.dataset.number
-            )
-          );
-        }
-      );
-    });
-
-  gamblingElements.dicePlayBtn
-    .addEventListener(
-      "click",
-      playDice
-    );
-
-  gamblingElements.diceBetInput
-    .addEventListener(
-      "input",
-      updateGamblingUI
-    );
 }
 
 function selectDiceNumber(number) {
   selectedDiceNumber = number;
-
-  gamblingElements.diceNumberButtons
-    .forEach(function (button) {
-      button.classList.toggle(
-        "selected",
-        Number(
-          button.dataset.number
-        ) === number
-      );
-    });
-
+  ui.diceNumberButtons.forEach((button) => {
+    button.classList.toggle("selected", Number(button.dataset.number) === number);
+  });
   updateGamblingUI();
 }
 
-/* =========================
-   주사위 게임 실행
-========================= */
+async function playOddEven() {
+  if (isProcessing) return;
+  const remaining = getCooldownRemaining(state.gamblingData.odd_even_last_played_at, GAMBLING_CONFIG.oddEven.cooldownMs);
+  if (remaining > 0) return showResult(ui.oddEvenResultText, `아직 ${formatRemainingTime(remaining)} 남았습니다.`, false);
+
+  const bet = getValidBetAmount(ui.oddEvenBetInput.value, ui.oddEvenResultText);
+  if (!bet) return;
+  if (!selectedOddEven) return showResult(ui.oddEvenResultText, "홀 또는 짝을 선택해주세요.", false);
+
+  isProcessing = true;
+  try {
+    state.money -= bet;
+    const number = Math.floor(Math.random() * 100) + 1;
+    const result = number % 2 === 0 ? "even" : "odd";
+    const success = result === selectedOddEven;
+    state.gamblingData.stats.odd_even_plays++;
+
+    if (success) {
+      const reward = bet * GAMBLING_CONFIG.oddEven.rewardMultiplier;
+      state.money += reward;
+      state.gamblingData.stats.odd_even_wins++;
+      showResult(ui.oddEvenResultText, `성공! ${number}(${result === "odd" ? "홀" : "짝"}) · ${formatMoney(reward)} 지급`, true);
+    } else {
+      showResult(ui.oddEvenResultText, `실패! ${number}(${result === "odd" ? "홀" : "짝"}) · ${formatMoney(bet)} 손실`, false);
+    }
+
+    state.gamblingData.odd_even_last_played_at = new Date().toISOString();
+    ui.oddEvenBetInput.value = "";
+    selectedOddEven = null;
+    ui.oddChoiceBtn.classList.remove("selected");
+    ui.evenChoiceBtn.classList.remove("selected");
+    updateMainUI();
+    updateGamblingUI();
+    await saveGameData();
+  } finally {
+    isProcessing = false;
+  }
+}
 
 async function playDice() {
   if (isProcessing) return;
+  const remaining = getCooldownRemaining(state.gamblingData.dice_last_played_at, GAMBLING_CONFIG.dice.cooldownMs);
+  if (remaining > 0) return showResult(ui.diceResultText, `아직 ${formatRemainingTime(remaining)} 남았습니다.`, false);
 
-  const cooldownRemaining =
-    getCooldownRemaining(
-      state.gamblingData
-        .dice_last_played_at,
-      GAMBLING_CONFIG
-        .dice.cooldownMs
-    );
-
-  if (cooldownRemaining > 0) {
-    showResult(
-      gamblingElements
-        .diceResultText,
-      `아직 ${formatRemainingTime(
-        cooldownRemaining
-      )} 남았습니다.`,
-      false
-    );
-
-    return;
-  }
-
-  const betAmount =
-    getValidBetAmount(
-      gamblingElements
-        .diceBetInput.value
-    );
-
-  if (!betAmount) return;
-
-  if (
-    !Number.isInteger(
-      selectedDiceNumber
-    ) ||
-    selectedDiceNumber <
-      GAMBLING_CONFIG
-        .dice.minNumber ||
-    selectedDiceNumber >
-      GAMBLING_CONFIG
-        .dice.maxNumber
-  ) {
-    showResult(
-      gamblingElements
-        .diceResultText,
-      "1부터 6 중 하나를 선택해주세요.",
-      false
-    );
-
-    return;
-  }
+  const bet = getValidBetAmount(ui.diceBetInput.value, ui.diceResultText);
+  if (!bet) return;
+  if (!Number.isInteger(selectedDiceNumber)) return showResult(ui.diceResultText, "1부터 6 중 하나를 선택해주세요.", false);
 
   isProcessing = true;
-
   try {
-    state.money -= betAmount;
-
-    const computerDice =
-      Math.floor(
-        Math.random() *
-        (
-          GAMBLING_CONFIG
-            .dice.maxNumber -
-          GAMBLING_CONFIG
-            .dice.minNumber +
-          1
-        )
-      ) +
-      GAMBLING_CONFIG
-        .dice.minNumber;
-
-    const success =
-      computerDice ===
-      selectedDiceNumber;
-
-    state.gamblingData.stats
-      .dice_plays++;
+    state.money -= bet;
+    const result = Math.floor(Math.random() * 6) + 1;
+    const success = result === selectedDiceNumber;
+    state.gamblingData.stats.dice_plays++;
 
     if (success) {
-      const reward =
-        betAmount *
-        GAMBLING_CONFIG
-          .dice.rewardMultiplier;
-
+      const reward = bet * GAMBLING_CONFIG.dice.rewardMultiplier;
       state.money += reward;
-
-      state.gamblingData.stats
-        .dice_wins++;
-
-      showResult(
-        gamblingElements
-          .diceResultText,
-        `성공! 주사위는 ${computerDice}입니다. ` +
-        `${formatMoney(reward)}을 받았습니다.`,
-        true
-      );
+      state.gamblingData.stats.dice_wins++;
+      showResult(ui.diceResultText, `성공! 주사위 ${result} · ${formatMoney(reward)} 지급`, true);
     } else {
-      showResult(
-        gamblingElements
-          .diceResultText,
-        `실패! 주사위는 ${computerDice}입니다. ` +
-        `${formatMoney(betAmount)}을 잃었습니다.`,
-        false
-      );
+      showResult(ui.diceResultText, `실패! 주사위 ${result} · ${formatMoney(bet)} 손실`, false);
     }
 
-    state.gamblingData
-      .dice_last_played_at =
-        new Date().toISOString();
-
-    gamblingElements
-      .diceBetInput.value = "";
-
+    state.gamblingData.dice_last_played_at = new Date().toISOString();
+    ui.diceBetInput.value = "";
     selectedDiceNumber = null;
-
-    gamblingElements.diceNumberButtons
-      .forEach(function (button) {
-        button.classList.remove(
-          "selected"
-        );
-      });
-
+    ui.diceNumberButtons.forEach((button) => button.classList.remove("selected"));
     updateMainUI();
     updateGamblingUI();
-
     await saveGameData();
   } finally {
     isProcessing = false;
   }
 }
-
-/* =========================
-   거지로또 초기화
-========================= */
-
-function initializeBeggarLottery() {
-  gamblingElements
-    .beggarLotteryBuyBtn
-    .addEventListener(
-      "click",
-      buyBeggarLottery
-    );
-}
-
-/* =========================
-   거지로또 구매
-========================= */
 
 async function buyBeggarLottery() {
   if (isProcessing) return;
-
-  const config =
-    GAMBLING_CONFIG
-      .beggarLottery;
-
-  const cooldownRemaining =
-    getCooldownRemaining(
-      state.gamblingData
-        .beggar_lottery_last_bought_at,
-      config.cooldownMs
-    );
-
-  if (cooldownRemaining > 0) {
-    showResult(
-      gamblingElements
-        .beggarLotteryResultText,
-      `아직 ${formatRemainingTime(
-        cooldownRemaining
-      )} 남았습니다.`,
-      false
-    );
-
-    return;
-  }
-
-  if (state.money < config.price) {
-    showResult(
-      gamblingElements
-        .beggarLotteryResultText,
-      `거지로또 구매에는 ` +
-      `${formatMoney(config.price)}이 필요합니다.`,
-      false
-    );
-
-    return;
-  }
+  const config = GAMBLING_CONFIG.beggarLottery;
+  const remaining = getCooldownRemaining(state.gamblingData.beggar_lottery_last_bought_at, config.cooldownMs);
+  if (remaining > 0) return showResult(ui.beggarLotteryResultText, `아직 ${formatRemainingTime(remaining)} 남았습니다.`, false);
+  if (state.money < config.price) return showResult(ui.beggarLotteryResultText, `${formatMoney(config.price)}이 필요합니다.`, false);
 
   isProcessing = true;
-
   try {
     state.money -= config.price;
-
-    const randomValue =
-      Math.random() * 100;
-
-    const result =
-      config.rewards.find(
-        function (rewardData) {
-          return (
-            randomValue >=
-              rewardData.min &&
-            randomValue <
-              rewardData.max
-          );
-        }
-      );
-
-    const reward =
-      result?.reward ?? 0;
-
+    const random = Math.random() * 100;
+    const result = config.rewards.find((item) => random >= item.min && random < item.max);
+    const reward = result?.reward ?? 0;
     state.money += reward;
 
-    state.gamblingData.lottery
-      .beggar_ticket_count++;
+    const lottery = state.gamblingData.lottery;
+    lottery.beggar_ticket_count++;
+    lottery.beggar_total_spent += config.price;
+    lottery.beggar_total_won += reward;
+    state.gamblingData.beggar_lottery_last_bought_at = new Date().toISOString();
 
-    state.gamblingData.lottery
-      .beggar_total_spent +=
-        config.price;
-
-    state.gamblingData.lottery
-      .beggar_total_won +=
-        reward;
-
-    state.gamblingData
-      .beggar_lottery_last_bought_at =
-        new Date().toISOString();
-
-    if (reward > 0) {
-      showResult(
-        gamblingElements
-          .beggarLotteryResultText,
-        `축하합니다! ${result.label}!`,
-        true
-      );
-    } else {
-      showResult(
-        gamblingElements
-          .beggarLotteryResultText,
-        "아쉽지만 꽝입니다.",
-        false
-      );
-    }
-
+    showResult(ui.beggarLotteryResultText, reward > 0 ? `축하합니다! ${result.label}!` : "아쉽지만 꽝입니다.", reward > 0);
     updateMainUI();
     updateGamblingUI();
-
     await saveGameData();
   } finally {
     isProcessing = false;
   }
 }
 
-/* =========================
-   도박 UI 갱신
-========================= */
-
 export function updateGamblingUI() {
-  if (!gamblingElements) return;
+  if (!ui) return;
+  const oddRemaining = getCooldownRemaining(state.gamblingData.odd_even_last_played_at, GAMBLING_CONFIG.oddEven.cooldownMs);
+  const diceRemaining = getCooldownRemaining(state.gamblingData.dice_last_played_at, GAMBLING_CONFIG.dice.cooldownMs);
+  const lotteryRemaining = getCooldownRemaining(state.gamblingData.beggar_lottery_last_bought_at, GAMBLING_CONFIG.beggarLottery.cooldownMs);
 
-  updateOddEvenUI();
-  updateDiceUI();
-  updateBeggarLotteryUI();
-  updateGamblingStats();
+  setCooldown(ui.oddEvenCooldownText, ui.oddEvenCardCooldown, oddRemaining, "플레이");
+  setCooldown(ui.diceCooldownText, ui.diceCardCooldown, diceRemaining, "플레이");
+  setCooldown(ui.beggarLotteryCooldownText, ui.lotteryCardCooldown, lotteryRemaining, "구매");
+
+  const oddBet = Number(ui.oddEvenBetInput.value);
+  ui.oddEvenPlayBtn.disabled = oddRemaining > 0 || !selectedOddEven || !Number.isFinite(oddBet) || oddBet <= 0 || oddBet > state.money;
+
+  const diceBet = Number(ui.diceBetInput.value);
+  ui.dicePlayBtn.disabled = diceRemaining > 0 || !selectedDiceNumber || !Number.isFinite(diceBet) || diceBet <= 0 || diceBet > state.money;
+
+  ui.beggarLotteryBuyBtn.disabled = lotteryRemaining > 0 || state.money < GAMBLING_CONFIG.beggarLottery.price;
+  ui.beggarLotteryBuyBtn.textContent = `거지로또 구매 (${formatMoney(GAMBLING_CONFIG.beggarLottery.price)})`;
+
+  const stats = state.gamblingData.stats;
+  const totalPlays = stats.odd_even_plays + stats.dice_plays;
+  const totalWins = stats.odd_even_wins + stats.dice_wins;
+  ui.totalPlays.textContent = `${formatPlainNumber(totalPlays)}회`;
+  ui.totalWins.textContent = `${formatPlainNumber(totalWins)}회`;
+  ui.oddEvenStatsText.textContent = `플레이 ${formatPlainNumber(stats.odd_even_plays)}회 · 성공 ${formatPlainNumber(stats.odd_even_wins)}회`;
+  ui.diceStatsText.textContent = `플레이 ${formatPlainNumber(stats.dice_plays)}회 · 성공 ${formatPlainNumber(stats.dice_wins)}회`;
+
+  const lottery = state.gamblingData.lottery;
+  ui.beggarLotteryStatsText.textContent = `구매 ${formatPlainNumber(lottery.beggar_ticket_count)}회 · 총 사용 ${formatMoney(lottery.beggar_total_spent)} · 총 당첨 ${formatMoney(lottery.beggar_total_won)}`;
 }
 
-function updateOddEvenUI() {
-  const remaining =
-    getCooldownRemaining(
-      state.gamblingData
-        .odd_even_last_played_at,
-      GAMBLING_CONFIG
-        .oddEven.cooldownMs
-    );
-
-  gamblingElements
-    .oddEvenCooldownText
-    .textContent =
-      remaining > 0
-        ? `다음 플레이까지: ` +
-          formatRemainingTime(
-            remaining
-          )
-        : "지금 플레이 가능";
-
-  const betAmount =
-    Number(
-      gamblingElements
-        .oddEvenBetInput.value
-    );
-
-  gamblingElements
-    .oddEvenPlayBtn.disabled =
-      remaining > 0 ||
-      !selectedOddEven ||
-      !Number.isFinite(betAmount) ||
-      betAmount <= 0 ||
-      betAmount > state.money;
+function setCooldown(detailElement, cardElement, remaining, action) {
+  const text = remaining > 0 ? `다음 ${action}까지: ${formatRemainingTime(remaining)}` : `지금 ${action} 가능`;
+  if (detailElement) detailElement.textContent = text;
+  if (cardElement) cardElement.textContent = text;
 }
 
-function updateDiceUI() {
-  const remaining =
-    getCooldownRemaining(
-      state.gamblingData
-        .dice_last_played_at,
-      GAMBLING_CONFIG
-        .dice.cooldownMs
-    );
-
-  gamblingElements
-    .diceCooldownText
-    .textContent =
-      remaining > 0
-        ? `다음 플레이까지: ` +
-          formatRemainingTime(
-            remaining
-          )
-        : "지금 플레이 가능";
-
-  const betAmount =
-    Number(
-      gamblingElements
-        .diceBetInput.value
-    );
-
-  gamblingElements
-    .dicePlayBtn.disabled =
-      remaining > 0 ||
-      !selectedDiceNumber ||
-      !Number.isFinite(betAmount) ||
-      betAmount <= 0 ||
-      betAmount > state.money;
+function getCooldownRemaining(lastPlayedAt, cooldownMs) {
+  if (!lastPlayedAt) return 0;
+  const time = new Date(lastPlayedAt).getTime();
+  if (!Number.isFinite(time)) return 0;
+  return Math.max(0, time + cooldownMs - Date.now());
 }
 
-function updateBeggarLotteryUI() {
-  const config =
-    GAMBLING_CONFIG
-      .beggarLottery;
-
-  const remaining =
-    getCooldownRemaining(
-      state.gamblingData
-        .beggar_lottery_last_bought_at,
-      config.cooldownMs
-    );
-
-  gamblingElements
-    .beggarLotteryCooldownText
-    .textContent =
-      remaining > 0
-        ? `다음 구매까지: ` +
-          formatRemainingTime(
-            remaining
-          )
-        : "지금 구매 가능";
-
-  gamblingElements
-    .beggarLotteryBuyBtn.disabled =
-      remaining > 0 ||
-      state.money < config.price;
-
-  gamblingElements
-    .beggarLotteryBuyBtn.textContent =
-      `거지로또 구매 ` +
-      `(${formatMoney(config.price)})`;
+function formatRemainingTime(milliseconds) {
+  const secondsTotal = Math.ceil(milliseconds / 1000);
+  const minutes = Math.floor(secondsTotal / 60);
+  const seconds = secondsTotal % 60;
+  return minutes > 0 ? `${minutes}분 ${String(seconds).padStart(2, "0")}초` : `${seconds}초`;
 }
 
-function updateGamblingStats() {
-  if (
-    gamblingElements
-      .oddEvenStatsText
-  ) {
-    gamblingElements
-      .oddEvenStatsText
-      .textContent =
-        `플레이 ` +
-        `${formatPlainNumber(
-          state.gamblingData
-            .stats.odd_even_plays
-        )}회 · 성공 ` +
-        `${formatPlainNumber(
-          state.gamblingData
-            .stats.odd_even_wins
-        )}회`;
-  }
-
-  if (
-    gamblingElements
-      .diceStatsText
-  ) {
-    gamblingElements
-      .diceStatsText
-      .textContent =
-        `플레이 ` +
-        `${formatPlainNumber(
-          state.gamblingData
-            .stats.dice_plays
-        )}회 · 성공 ` +
-        `${formatPlainNumber(
-          state.gamblingData
-            .stats.dice_wins
-        )}회`;
-  }
-
-  if (
-    gamblingElements
-      .beggarLotteryStatsText
-  ) {
-    const lottery =
-      state.gamblingData.lottery;
-
-    gamblingElements
-      .beggarLotteryStatsText
-      .textContent =
-        `구매 ${formatPlainNumber(
-          lottery.beggar_ticket_count
-        )}회 · 총 사용 ` +
-        `${formatMoney(
-          lottery.beggar_total_spent
-        )} · 총 당첨 ` +
-        `${formatMoney(
-          lottery.beggar_total_won
-        )}`;
-  }
-}
-
-/* =========================
-   재사용 대기시간
-========================= */
-
-function startCooldownTimer() {
-  if (cooldownTimer) {
-    clearInterval(cooldownTimer);
-  }
-
-  cooldownTimer = setInterval(
-    function () {
-      updateGamblingUI();
-    },
-    1000
-  );
-}
-
-function getCooldownRemaining(
-  lastPlayedAt,
-  cooldownMs
-) {
-  if (!lastPlayedAt) {
-    return 0;
-  }
-
-  const lastPlayedTime =
-    new Date(lastPlayedAt).getTime();
-
-  if (
-    !Number.isFinite(
-      lastPlayedTime
-    )
-  ) {
-    return 0;
-  }
-
-  return Math.max(
-    0,
-    lastPlayedTime +
-      cooldownMs -
-      Date.now()
-  );
-}
-
-function formatRemainingTime(
-  milliseconds
-) {
-  const totalSeconds =
-    Math.ceil(
-      milliseconds / 1000
-    );
-
-  const minutes =
-    Math.floor(
-      totalSeconds / 60
-    );
-
-  const seconds =
-    totalSeconds % 60;
-
-  if (minutes <= 0) {
-    return `${seconds}초`;
-  }
-
-  return (
-    `${minutes}분 ` +
-    `${seconds
-      .toString()
-      .padStart(2, "0")}초`
-  );
-}
-
-/* =========================
-   공통 검증 및 표시
-========================= */
-
-function getValidBetAmount(
-  inputValue
-) {
-  const amount =
-    Math.floor(
-      Number(inputValue)
-    );
-
-  if (
-    !Number.isFinite(amount) ||
-    amount <= 0
-  ) {
-    alert(
-      "베팅 금액을 올바르게 입력해주세요."
-    );
-
+function getValidBetAmount(value, resultElement) {
+  const amount = Math.floor(Number(value));
+  if (!Number.isFinite(amount) || amount <= 0) {
+    showResult(resultElement, "베팅 금액을 올바르게 입력해주세요.", false);
     return null;
   }
-
   if (amount > state.money) {
-    alert(
-      "보유 금액보다 많이 베팅할 수 없습니다."
-    );
-
+    showResult(resultElement, "보유 금액보다 많이 베팅할 수 없습니다.", false);
     return null;
   }
-
   return amount;
 }
 
-function getOddEvenKorean(choice) {
-  return choice === "odd"
-    ? "홀"
-    : "짝";
-}
-
-function showResult(
-  element,
-  message,
-  success
-) {
+function showResult(element, message, success) {
   element.textContent = message;
-
-  element.classList.remove(
-    "success",
-    "failure"
-  );
-
-  element.classList.add(
-    success
-      ? "success"
-      : "failure"
-  );
+  element.classList.remove("success", "failure");
+  element.classList.add(success ? "success" : "failure");
 }
