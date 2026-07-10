@@ -1,134 +1,132 @@
-import { DEFAULT_GAME_STATE } from "./config.js";
+import {
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  SAVE_TABLE
+} from "./config.js";
 
-function cloneDefaultState() {
-  return JSON.parse(JSON.stringify(DEFAULT_GAME_STATE));
-}
+import {
+  state,
+  applySaveData,
+  createSavePayload,
+  getTotalAutoIncome
+} from "./state.js";
 
-export const state = cloneDefaultState();
-
-export function getTotalClickPower() {
-  return (
-    Number(state.baseClickPower) +
-    Number(state.jobData.click_bonus)
+const supabaseClient =
+  globalThis.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
   );
-}
 
-export function getTotalAutoIncome() {
-  return (
-    Number(state.baseAutoIncome) +
-    Number(state.jobData.auto_bonus)
-  );
-}
+let isSaving = false;
+let saveRequestedAgain = false;
 
-export function normalizeJobData(savedJobData) {
-  const defaultJobData =
-    cloneDefaultState().jobData;
+/* 저장 데이터 불러오기 */
+export async function loadGameData() {
+  const { data, error } = await supabaseClient
+    .from(SAVE_TABLE)
+    .select("*")
+    .eq("username", state.username)
+    .maybeSingle();
 
-  if (
-    !savedJobData ||
-    typeof savedJobData !== "object"
-  ) {
-    return defaultJobData;
+  if (error) {
+    throw error;
   }
 
+  if (!data) {
+    await createNewGameData();
+
+    return {
+      isNewUser: true,
+      lastSavedAt: null
+    };
+  }
+
+  applySaveData(data);
+
   return {
-    level: Number(
-      savedJobData.level ??
-      defaultJobData.level
-    ),
+    isNewUser: false,
+    lastSavedAt: data.last_saved_at
+  };
+}
 
-    level_up_cost: Number(
-      savedJobData.level_up_cost ??
-      defaultJobData.level_up_cost
-    ),
+/* 신규 유저 저장 데이터 생성 */
+async function createNewGameData() {
+  const { error } = await supabaseClient
+    .from(SAVE_TABLE)
+    .insert(createSavePayload());
 
-    selected_jobs: Array.isArray(
-      savedJobData.selected_jobs
+  if (error) {
+    throw error;
+  }
+}
+
+/* 게임 저장 */
+export async function saveGameData() {
+  if (!state.username) return;
+
+  if (isSaving) {
+    saveRequestedAgain = true;
+    return;
+  }
+
+  isSaving = true;
+
+  try {
+    const { error } = await supabaseClient
+      .from(SAVE_TABLE)
+      .upsert(
+        createSavePayload(),
+        {
+          onConflict: "username"
+        }
+      );
+
+    if (error) {
+      console.error(
+        "Supabase 저장 오류:",
+        error
+      );
+    }
+  } finally {
+    isSaving = false;
+
+    if (saveRequestedAgain) {
+      saveRequestedAgain = false;
+      saveGameData();
+    }
+  }
+}
+
+/* 오프라인 수익 계산 */
+export async function applyOfflineReward(
+  lastSavedAt
+) {
+  if (!lastSavedAt) return 0;
+
+  const lastTime =
+    new Date(lastSavedAt).getTime();
+
+  if (!Number.isFinite(lastTime)) {
+    return 0;
+  }
+
+  const offlineSeconds = Math.max(
+    0,
+    Math.floor(
+      (Date.now() - lastTime) / 1000
     )
-      ? savedJobData.selected_jobs
-      : [],
+  );
 
-    click_bonus: Number(
-      savedJobData.click_bonus ?? 0
-    ),
+  if (offlineSeconds <= 0) {
+    return 0;
+  }
 
-    auto_bonus: Number(
-      savedJobData.auto_bonus ?? 0
-    ),
+  const reward =
+    offlineSeconds * getTotalAutoIncome();
 
-    pending_selection_level:
-      savedJobData.pending_selection_level === null ||
-      savedJobData.pending_selection_level === undefined
-        ? null
-        : Number(
-            savedJobData.pending_selection_level
-          )
-  };
-}
+  state.money += reward;
 
-export function applySaveData(data) {
-  state.money = Number(data.money ?? 0);
-  state.level = Number(data.level ?? 1);
+  await saveGameData();
 
-  /*
-    DB의 click_power와 auto_income은
-    직업 보너스를 제외한 기본 강화 수입으로 사용한다.
-  */
-  state.baseClickPower =
-    Number(data.click_power ?? 1);
-
-  state.baseAutoIncome =
-    Number(data.auto_income ?? 0);
-
-  state.clickUpgradeLevel =
-    Number(data.click_upgrade_level ?? 0);
-
-  state.autoUpgradeLevel =
-    Number(data.auto_upgrade_level ?? 0);
-
-  state.clickUpgradeCost =
-    Number(data.click_upgrade_cost ?? 50);
-
-  state.autoUpgradeCost =
-    Number(data.auto_upgrade_cost ?? 100);
-
-  state.levelUpCost =
-    Number(data.level_up_cost ?? 500);
-
-  state.jobData =
-    normalizeJobData(data.job_data);
-}
-
-export function createSavePayload() {
-  const now = new Date().toISOString();
-
-  return {
-    username: state.username,
-
-    money: state.money,
-    level: state.level,
-
-    click_power: state.baseClickPower,
-    auto_income: state.baseAutoIncome,
-
-    click_upgrade_level:
-      state.clickUpgradeLevel,
-
-    auto_upgrade_level:
-      state.autoUpgradeLevel,
-
-    click_upgrade_cost:
-      state.clickUpgradeCost,
-
-    auto_upgrade_cost:
-      state.autoUpgradeCost,
-
-    level_up_cost:
-      state.levelUpCost,
-
-    job_data: state.jobData,
-
-    last_saved_at: now,
-    updated_at: now
-  };
+  return reward;
 }

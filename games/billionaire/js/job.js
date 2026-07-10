@@ -95,6 +95,7 @@ export function initializeJob() {
   );
 
   updateJobUI();
+  renderJobHistory();
 }
 
 function openJobPanel(event) {
@@ -109,10 +110,10 @@ function openJobPanel(event) {
   );
 
   updateJobUI();
+  renderJobHistory();
 
   if (
-    state.jobData.pending_selection_level !==
-    null
+    state.jobData.pending_selection_level !== null
   ) {
     openJobChoice();
   }
@@ -159,6 +160,7 @@ async function upgradeJobLevel() {
 
   updateMainUI();
   updateJobUI();
+  renderJobHistory();
 
   await saveGameData();
 
@@ -325,10 +327,9 @@ export function updateJobUI() {
     `;
   }
 
-  renderJobHistory();
 }
 
-function renderJobHistory() {
+export function renderJobHistory() {
   const jobs =
     state.jobData.selected_jobs;
 

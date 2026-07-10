@@ -30,7 +30,8 @@ import {
 
 import {
   initializeJob,
-  updateJobUI
+  updateJobUI,
+  renderJobHistory
 } from "./job.js";
 
 let isGameStarted = false;
@@ -85,6 +86,7 @@ async function startGame() {
 
     updateMainUI();
     updateJobUI();
+    renderJobHistory();
 
     startIncomeTimer();
     startSaveTimer();
@@ -127,8 +129,7 @@ function startIncomeTimer() {
     function () {
       if (!isGameStarted) return;
 
-      state.money +=
-        getTotalAutoIncome();
+      state.money += getTotalAutoIncome();
 
       updateMainUI();
       updateJobUI();
