@@ -251,34 +251,29 @@
       <div id="buildingPanel" class="hidden">
         <div class="buildingHeader">
           <h2>🏢 건물</h2>
-
-          <button id="buildingPanelCloseBtn" type="button">
-            ✕
-          </button>
+          <button id="buildingPanelCloseBtn" type="button">✕</button>
         </div>
 
         <div class="buildingSummary">
-
           <div class="buildingSummaryItem">
             <span>총 보유 건물</span>
-
-            <strong id="buildingTotalCountText">
-              0개
-            </strong>
+            <strong id="buildingTotalCountText">0개</strong>
           </div>
 
           <div class="buildingSummaryItem">
             <span>건물 총 초당 수입</span>
-
-            <strong id="buildingTotalIncomeText">
-              0원 / 초
-            </strong>
+            <strong id="buildingTotalIncomeText">0원 / 초</strong>
           </div>
-
         </div>
 
-        <div id="buildingList">
-          <!-- building.js에서 자동으로 생성 -->
+        <div id="buildingList"></div>
+
+        <div class="buildingPagination">
+          <button id="buildingPrevBtn" type="button">◀ 이전</button>
+
+          <span id="buildingPageText">1 / 3</span>
+
+          <button id="buildingNextBtn" type="button">다음 ▶</button>
         </div>
       </div>
 

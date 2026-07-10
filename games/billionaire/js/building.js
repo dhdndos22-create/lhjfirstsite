@@ -17,23 +17,18 @@ import {
   saveGameData
 } from "./database.js";
 
-/* =========================
-   건물 화면 요소
-========================= */
+const BUILDINGS_PER_PAGE = 4;
 
+let currentBuildingPage = 1;
 let buildingElements = null;
 
 function getBuildingElements() {
   return {
     buildingMenuBtn:
-      document.getElementById(
-        "buildingMenuBtn"
-      ),
+      document.getElementById("buildingMenuBtn"),
 
     buildingPanel:
-      document.getElementById(
-        "buildingPanel"
-      ),
+      document.getElementById("buildingPanel"),
 
     buildingPanelCloseBtn:
       document.getElementById(
@@ -41,9 +36,7 @@ function getBuildingElements() {
       ),
 
     buildingList:
-      document.getElementById(
-        "buildingList"
-      ),
+      document.getElementById("buildingList"),
 
     buildingTotalIncomeText:
       document.getElementById(
@@ -53,17 +46,27 @@ function getBuildingElements() {
     buildingTotalCountText:
       document.getElementById(
         "buildingTotalCountText"
+      ),
+
+    buildingPrevBtn:
+      document.getElementById(
+        "buildingPrevBtn"
+      ),
+
+    buildingNextBtn:
+      document.getElementById(
+        "buildingNextBtn"
+      ),
+
+    buildingPageText:
+      document.getElementById(
+        "buildingPageText"
       )
   };
 }
 
-/* =========================
-   초기화
-========================= */
-
 export function initializeBuilding() {
-  buildingElements =
-    getBuildingElements();
+  buildingElements = getBuildingElements();
 
   const requiredElements = [
     "buildingMenuBtn",
@@ -71,15 +74,16 @@ export function initializeBuilding() {
     "buildingPanelCloseBtn",
     "buildingList",
     "buildingTotalIncomeText",
-    "buildingTotalCountText"
+    "buildingTotalCountText",
+    "buildingPrevBtn",
+    "buildingNextBtn",
+    "buildingPageText"
   ];
 
   const missingElements =
-    requiredElements.filter(
-      function (name) {
-        return !buildingElements[name];
-      }
-    );
+    requiredElements.filter(function (name) {
+      return !buildingElements[name];
+    });
 
   if (missingElements.length > 0) {
     console.error(
@@ -102,6 +106,18 @@ export function initializeBuilding() {
       closeBuildingPanel
     );
 
+  buildingElements.buildingPrevBtn
+    .addEventListener(
+      "click",
+      goToPreviousBuildingPage
+    );
+
+  buildingElements.buildingNextBtn
+    .addEventListener(
+      "click",
+      goToNextBuildingPage
+    );
+
   buildingElements.buildingPanel
     .addEventListener(
       "click",
@@ -113,10 +129,6 @@ export function initializeBuilding() {
   renderBuildingList();
   updateBuildingUI();
 }
-
-/* =========================
-   패널 열고 닫기
-========================= */
 
 function openBuildingPanel(event) {
   event.stopPropagation();
@@ -137,22 +149,62 @@ function closeBuildingPanel() {
     .classList.add("hidden");
 }
 
-/* =========================
-   건물 목록 생성
-========================= */
+function getTotalPages() {
+  return Math.max(
+    1,
+    Math.ceil(
+      BUILDING_CONFIG.length /
+      BUILDINGS_PER_PAGE
+    )
+  );
+}
 
-export function renderBuildingList() {
-  if (
-    !buildingElements ||
-    !buildingElements.buildingList
-  ) {
+function goToPreviousBuildingPage() {
+  if (currentBuildingPage <= 1) {
     return;
   }
+
+  currentBuildingPage--;
+
+  renderBuildingList();
+  updatePaginationUI();
+}
+
+function goToNextBuildingPage() {
+  const totalPages = getTotalPages();
+
+  if (currentBuildingPage >= totalPages) {
+    return;
+  }
+
+  currentBuildingPage++;
+
+  renderBuildingList();
+  updatePaginationUI();
+}
+
+export function renderBuildingList() {
+  if (!buildingElements) {
+    return;
+  }
+
+  const startIndex =
+    (currentBuildingPage - 1) *
+    BUILDINGS_PER_PAGE;
+
+  const endIndex =
+    startIndex + BUILDINGS_PER_PAGE;
+
+  const pageBuildings =
+    BUILDING_CONFIG.slice(
+      startIndex,
+      endIndex
+    );
 
   buildingElements.buildingList.innerHTML =
     "";
 
-  BUILDING_CONFIG.forEach(
+  pageBuildings.forEach(
     function (building) {
       const card =
         createBuildingCard(building);
@@ -161,6 +213,8 @@ export function renderBuildingList() {
         .appendChild(card);
     }
   );
+
+  updatePaginationUI();
 }
 
 function createBuildingCard(building) {
@@ -173,7 +227,7 @@ function createBuildingCard(building) {
       ownedCount
     );
 
-  const buildingIncome =
+  const totalIncome =
     ownedCount *
     Number(building.autoIncome);
 
@@ -184,70 +238,45 @@ function createBuildingCard(building) {
   card.dataset.buildingId =
     building.id;
 
-  const infoBox =
-    document.createElement("div");
+  card.innerHTML = `
+    <div class="buildingTitle">
+      <span class="buildingIcon">
+        ${building.icon}
+      </span>
 
-  infoBox.className =
-    "buildingInfo";
+      <div>
+        <h3>${building.name}</h3>
+        <p>
+          1개당 ${formatMoney(
+            building.autoIncome
+          )} / 초
+        </p>
+      </div>
+    </div>
 
-  const title =
-    document.createElement("div");
-
-  title.className =
-    "buildingTitle";
-
-  title.innerHTML = `
-    <span class="buildingIcon">
-      ${building.icon}
-    </span>
-
-    <div>
-      <h3>${building.name}</h3>
+    <div class="buildingDetail">
+      <p>
+        <span>보유</span>
+        <strong>
+          ${ownedCount.toLocaleString()}개
+        </strong>
+      </p>
 
       <p>
-        1개당
-        ${formatMoney(
-          building.autoIncome
-        )} / 초
+        <span>현재 총수입</span>
+        <strong>
+          ${formatMoney(totalIncome)} / 초
+        </strong>
+      </p>
+
+      <p>
+        <span>다음 가격</span>
+        <strong>
+          ${formatMoney(nextPrice)}
+        </strong>
       </p>
     </div>
   `;
-
-  const detail =
-    document.createElement("div");
-
-  detail.className =
-    "buildingDetail";
-
-  detail.innerHTML = `
-    <p>
-      보유
-      <strong>
-        ${ownedCount.toLocaleString()}개
-      </strong>
-    </p>
-
-    <p>
-      현재 총수입
-      <strong>
-        ${formatMoney(
-          buildingIncome
-        )} / 초
-      </strong>
-    </p>
-
-    <p>
-      다음 구매 가격
-      <strong>
-        ${formatMoney(
-          nextPrice
-        )}
-      </strong>
-    </p>
-  `;
-
-  infoBox.appendChild(title);
-  infoBox.appendChild(detail);
 
   const buyButton =
     document.createElement("button");
@@ -273,15 +302,10 @@ function createBuildingCard(building) {
     }
   );
 
-  card.appendChild(infoBox);
   card.appendChild(buyButton);
 
   return card;
 }
-
-/* =========================
-   건물 구매
-========================= */
 
 async function buyBuilding(buildingId) {
   const building =
@@ -292,11 +316,6 @@ async function buyBuilding(buildingId) {
     );
 
   if (!building) {
-    console.error(
-      "존재하지 않는 건물입니다:",
-      buildingId
-    );
-
     return;
   }
 
@@ -312,10 +331,7 @@ async function buyBuilding(buildingId) {
     );
 
   if (state.money < price) {
-    alert(
-      "보유금이 부족합니다."
-    );
-
+    alert("보유금이 부족합니다.");
     return;
   }
 
@@ -329,15 +345,11 @@ async function buyBuilding(buildingId) {
     .total_purchases++;
 
   updateMainUI();
-  renderBuildingList();
   updateBuildingUI();
+  renderBuildingList();
 
   await saveGameData();
 }
-
-/* =========================
-   가격 계산
-========================= */
 
 export function calculateBuildingPrice(
   building,
@@ -349,32 +361,21 @@ export function calculateBuildingPrice(
   const growth =
     Number(building.priceGrowth);
 
-  const count =
-    Math.max(
-      0,
-      Math.floor(
-        Number(ownedCount) || 0
-      )
-    );
-
-  const calculatedPrice =
-    basePrice *
-    Math.pow(
-      growth,
-      count
-    );
+  const count = Math.max(
+    0,
+    Math.floor(
+      Number(ownedCount) || 0
+    )
+  );
 
   return Math.max(
     1,
     Math.floor(
-      calculatedPrice
+      basePrice *
+      Math.pow(growth, count)
     )
   );
 }
-
-/* =========================
-   건물 UI 갱신
-========================= */
 
 export function updateBuildingUI() {
   if (!buildingElements) {
@@ -395,71 +396,84 @@ export function updateBuildingUI() {
   buildingElements
     .buildingTotalIncomeText
     .textContent =
-      `${formatMoney(
-        totalIncome
-      )} / 초`;
+      `${formatMoney(totalIncome)} / 초`;
 
-  updateBuildingPurchaseButtons();
+  updateVisiblePurchaseButtons();
+  updatePaginationUI();
 }
 
-/*
-  매초 전체 건물 목록을 다시 만들지 않고,
-  현재 존재하는 구매 버튼의 활성화 상태만 갱신한다.
-*/
-function updateBuildingPurchaseButtons() {
+function updateVisiblePurchaseButtons() {
   const cards =
     buildingElements.buildingList
       .querySelectorAll(
         ".buildingCard"
       );
 
-  cards.forEach(
-    function (card) {
-      const buildingId =
-        card.dataset.buildingId;
+  cards.forEach(function (card) {
+    const buildingId =
+      card.dataset.buildingId;
 
-      const building =
-        BUILDING_CONFIG.find(
-          function (item) {
-            return (
-              item.id === buildingId
-            );
-          }
-        );
+    const building =
+      BUILDING_CONFIG.find(
+        function (item) {
+          return item.id === buildingId;
+        }
+      );
 
-      if (!building) {
-        return;
-      }
-
-      const ownedCount =
-        getOwnedBuildingCount(
-          building.id
-        );
-
-      const nextPrice =
-        calculateBuildingPrice(
-          building,
-          ownedCount
-        );
-
-      const buyButton =
-        card.querySelector(
-          ".buildingBuyBtn"
-        );
-
-      if (!buyButton) {
-        return;
-      }
-
-      buyButton.disabled =
-        state.money < nextPrice;
+    if (!building) {
+      return;
     }
-  );
+
+    const ownedCount =
+      getOwnedBuildingCount(
+        building.id
+      );
+
+    const nextPrice =
+      calculateBuildingPrice(
+        building,
+        ownedCount
+      );
+
+    const buyButton =
+      card.querySelector(
+        ".buildingBuyBtn"
+      );
+
+    if (!buyButton) {
+      return;
+    }
+
+    buyButton.disabled =
+      state.money < nextPrice;
+  });
 }
 
-/* =========================
-   보유 수량 계산
-========================= */
+function updatePaginationUI() {
+  if (!buildingElements) {
+    return;
+  }
+
+  const totalPages =
+    getTotalPages();
+
+  if (currentBuildingPage > totalPages) {
+    currentBuildingPage = totalPages;
+  }
+
+  buildingElements
+    .buildingPageText
+    .textContent =
+      `${currentBuildingPage} / ${totalPages}`;
+
+  buildingElements
+    .buildingPrevBtn.disabled =
+      currentBuildingPage <= 1;
+
+  buildingElements
+    .buildingNextBtn.disabled =
+      currentBuildingPage >= totalPages;
+}
 
 function getOwnedBuildingCount(
   buildingId

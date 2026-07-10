@@ -1,22 +1,21 @@
-/* =========================
-   건물 패널
-========================= */
-
 #buildingPanel {
   position: fixed;
-  top: 90px;
+  top: 50%;
   left: 50%;
 
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
 
-  width: min(96vw, 760px);
-  max-height: calc(100vh - 120px);
-
-  overflow-y: auto;
+  width: min(94vw, 760px);
+  height: min(88vh, 720px);
 
   z-index: 450;
 
+  display: flex;
+  flex-direction: column;
+
   padding: 20px;
+
+  overflow: hidden;
 
   background: #ffffff;
 
@@ -24,19 +23,15 @@
   border-radius: 24px;
 
   box-shadow:
-    0 10px 0 rgba(212, 154, 0, 0.7);
+    0 12px 30px rgba(0, 0, 0, 0.28);
 }
-
-/* =========================
-   건물 패널 헤더
-========================= */
 
 .buildingHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  gap: 12px;
+  flex-shrink: 0;
 }
 
 .buildingHeader h2 {
@@ -49,8 +44,6 @@
   width: 42px;
   height: 42px;
 
-  flex-shrink: 0;
-
   border: none;
   border-radius: 50%;
 
@@ -60,21 +53,19 @@
   font-weight: bold;
 }
 
-/* =========================
-   건물 전체 현황
-========================= */
-
 .buildingSummary {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
 
   gap: 12px;
 
-  margin-top: 18px;
+  margin-top: 14px;
+
+  flex-shrink: 0;
 }
 
 .buildingSummaryItem {
-  padding: 14px;
+  padding: 12px;
 
   background: #fff8d7;
 
@@ -86,7 +77,7 @@
 .buildingSummaryItem span {
   display: block;
 
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
 
   color: #666666;
@@ -95,116 +86,107 @@
 .buildingSummaryItem strong {
   display: block;
 
-  margin-top: 5px;
+  margin-top: 4px;
 
-  font-size: 20px;
+  font-size: 18px;
 
   color: #e67e00;
 }
 
-/* =========================
-   건물 목록
-========================= */
-
 #buildingList {
+  flex: 1;
+
+  min-height: 0;
+
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  grid-template-rows:
+    repeat(2, minmax(0, 1fr));
 
-  gap: 14px;
+  gap: 12px;
 
-  margin-top: 20px;
+  margin-top: 14px;
 }
 
-/* =========================
-   건물 카드
-========================= */
-
 .buildingCard {
+  min-width: 0;
+  min-height: 0;
+
   display: flex;
   flex-direction: column;
 
-  gap: 14px;
+  gap: 10px;
 
-  padding: 16px;
+  padding: 13px;
+
+  overflow: hidden;
 
   background: #f9fcff;
 
   border: 3px solid #bde0ff;
-  border-radius: 20px;
+  border-radius: 18px;
 
   box-shadow:
-    0 5px 0 rgba(80, 150, 210, 0.28);
-}
-
-.buildingInfo {
-  display: flex;
-  flex-direction: column;
-
-  gap: 14px;
+    0 4px 0 rgba(80, 150, 210, 0.25);
 }
 
 .buildingTitle {
   display: flex;
   align-items: center;
 
-  gap: 12px;
+  gap: 10px;
 }
 
 .buildingIcon {
+  width: 50px;
+  height: 50px;
+
+  flex-shrink: 0;
+
   display: flex;
   justify-content: center;
   align-items: center;
 
-  width: 58px;
-  height: 58px;
-
-  flex-shrink: 0;
-
   background: #fff4bf;
 
-  border-radius: 16px;
+  border-radius: 14px;
 
-  font-size: 34px;
+  font-size: 28px;
 }
 
 .buildingTitle h3 {
   margin: 0;
 
-  font-size: 20px;
-
-  color: #333333;
+  font-size: 18px;
 }
 
 .buildingTitle p {
-  margin: 5px 0 0;
+  margin: 4px 0 0;
 
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
 
   color: #777777;
 }
 
-/* =========================
-   건물 상세 정보
-========================= */
-
 .buildingDetail {
-  padding: 12px;
+  padding: 9px;
 
   background: #ffffff;
 
-  border-radius: 14px;
+  border-radius: 12px;
 }
 
 .buildingDetail p {
   display: flex;
   justify-content: space-between;
 
-  gap: 12px;
+  gap: 8px;
 
-  margin: 8px 0;
+  margin: 5px 0;
 
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
 }
 
@@ -214,34 +196,23 @@
   text-align: right;
 }
 
-/* =========================
-   건물 구매 버튼
-========================= */
-
 .buildingBuyBtn {
   width: 100%;
 
   margin-top: auto;
 
-  padding: 13px;
+  padding: 10px;
 
   border: none;
-  border-radius: 15px;
+  border-radius: 13px;
 
   background: #ffcc33;
 
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
 
   box-shadow:
-    0 4px 0 #d49a00;
-}
-
-.buildingBuyBtn:active:not(:disabled) {
-  transform: translateY(3px);
-
-  box-shadow:
-    0 1px 0 #d49a00;
+    0 3px 0 #d49a00;
 }
 
 .buildingBuyBtn:disabled {
@@ -249,37 +220,144 @@
   cursor: not-allowed;
 }
 
-/* =========================
-   모바일
-========================= */
+.buildingPagination {
+  display: grid;
+  grid-template-columns:
+    1fr auto 1fr;
+  align-items: center;
 
-@media (max-width: 700px) {
+  gap: 12px;
+
+  margin-top: 14px;
+
+  flex-shrink: 0;
+}
+
+.buildingPagination button {
+  padding: 11px 14px;
+
+  border: none;
+  border-radius: 14px;
+
+  background: #ffcc33;
+
+  font-size: 15px;
+  font-weight: bold;
+
+  box-shadow:
+    0 3px 0 #d49a00;
+}
+
+.buildingPagination button:last-child {
+  justify-self: end;
+}
+
+.buildingPagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+#buildingPageText {
+  min-width: 70px;
+
+  text-align: center;
+
+  font-size: 17px;
+  font-weight: bold;
+
+  color: #e67e00;
+}
+
+@media (max-width: 600px) {
   #buildingPanel {
-    top: 75px;
-
     width: 96vw;
-    max-height: calc(100vh - 95px);
+    height: 88vh;
 
-    padding: 15px;
+    padding: 13px;
   }
 
   .buildingSummary {
-    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .buildingSummaryItem {
+    padding: 9px 6px;
+  }
+
+  .buildingSummaryItem strong {
+    font-size: 15px;
   }
 
   #buildingList {
-    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .buildingCard {
+    padding: 9px;
+
+    gap: 7px;
+  }
+
+  .buildingIcon {
+    width: 38px;
+    height: 38px;
+
+    font-size: 22px;
+  }
+
+  .buildingTitle {
+    gap: 7px;
   }
 
   .buildingTitle h3 {
-    font-size: 18px;
+    font-size: 14px;
+  }
+
+  .buildingTitle p {
+    font-size: 10px;
+  }
+
+  .buildingDetail {
+    padding: 6px;
   }
 
   .buildingDetail p {
-    font-size: 13px;
+    display: block;
+
+    margin: 4px 0;
+
+    font-size: 10px;
+  }
+
+  .buildingDetail strong {
+    display: block;
+
+    margin-top: 2px;
+
+    text-align: left;
   }
 
   .buildingBuyBtn {
-    font-size: 15px;
+    padding: 8px 5px;
+
+    font-size: 11px;
+  }
+
+  .buildingPagination {
+    margin-top: 10px;
+
+    gap: 7px;
+  }
+
+  .buildingPagination button {
+    padding: 9px 8px;
+
+    font-size: 12px;
+  }
+
+  #buildingPageText {
+    min-width: 52px;
+
+    font-size: 14px;
   }
 }
