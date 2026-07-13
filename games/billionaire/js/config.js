@@ -264,6 +264,57 @@ export const GAMBLING_CONFIG = {
   다음 구매 가격에 적용되는 배율
 */
 
+/* =========================
+   알바 설정
+========================= */
+
+export const EMPLOYEE_CONFIG = [
+  {
+    id: "recycler_grandmother",
+    name: "폐지줍는 할머니",
+    icon: "👵",
+    hireCost: 1000000,
+    baseAutoIncome: 100,
+    upgradeGrowth: 1.6
+  },
+
+  {
+    id: "delivery_driver",
+    name: "배달기사",
+    icon: "🛵",
+    hireCost: 50000000,
+    baseAutoIncome: 3000,
+    upgradeGrowth: 1.65
+  },
+
+  {
+    id: "baek_jong_won",
+    name: "백종원",
+    icon: "👨‍🍳",
+    hireCost: 1000000000,
+    baseAutoIncome: 40000,
+    upgradeGrowth: 1.7
+  },
+
+  {
+    id: "faker",
+    name: "페이커",
+    icon: "🎮",
+    hireCost: 100000000000,
+    baseAutoIncome: 250000,
+    upgradeGrowth: 1.75
+  },
+
+  {
+    id: "ronaldo",
+    name: "호날두",
+    icon: "⚽",
+    hireCost: 1000000000000,
+    baseAutoIncome: 1500000,
+    upgradeGrowth: 1.8
+  }
+];
+
 export const BUILDING_CONFIG = [
   {
     id: "street_stall",

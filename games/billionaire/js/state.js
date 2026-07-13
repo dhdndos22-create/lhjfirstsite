@@ -1,6 +1,7 @@
 import {
   DEFAULT_GAME_STATE,
-  BUILDING_CONFIG
+  BUILDING_CONFIG,
+  EMPLOYEE_CONFIG
 } from "./config.js";
 
 /* =========================
@@ -35,19 +36,55 @@ export function getBuildingAutoIncome() {
     function (totalIncome, building) {
       const ownedCount = Number(
         state.buildingData.owned[
-          building.id
+        building.id
         ] ?? 0
       );
 
       return (
         totalIncome +
         ownedCount *
-          Number(building.autoIncome)
+        Number(building.autoIncome)
       );
     },
     0
   );
 }
+
+
+export function getEmployeeAutoIncome() {
+  return EMPLOYEE_CONFIG.reduce(
+    function (totalIncome, employee) {
+      const savedEmployee =
+        state.employeeData.employees[
+        employee.id
+        ];
+
+      if (
+        !savedEmployee ||
+        !savedEmployee.hired
+      ) {
+        return totalIncome;
+      }
+
+      const level = Math.max(
+        1,
+        Math.floor(
+          Number(savedEmployee.level) || 1
+        )
+      );
+
+      return (
+        totalIncome +
+        Number(employee.baseAutoIncome) *
+        level
+      );
+    },
+    0
+  );
+}
+
+
+
 
 /* =========================
    전체 초당 수입 계산
@@ -57,7 +94,8 @@ export function getTotalAutoIncome() {
   return (
     Number(state.baseAutoIncome) +
     Number(state.jobData.auto_bonus) +
-    getBuildingAutoIncome()
+    getBuildingAutoIncome()  +
+    getEmployeeAutoIncome()
   );
 }
 
@@ -106,13 +144,13 @@ export function normalizeJobData(
     pending_selection_level:
       savedJobData.pending_selection_level ===
         null ||
-      savedJobData.pending_selection_level ===
+        savedJobData.pending_selection_level ===
         undefined
         ? null
         : Number(
-            savedJobData
-              .pending_selection_level
-          )
+          savedJobData
+            .pending_selection_level
+        )
   };
 }
 
@@ -135,14 +173,14 @@ export function normalizeGamblingData(
 
   const savedLottery =
     savedGamblingData.lottery &&
-    typeof savedGamblingData.lottery ===
+      typeof savedGamblingData.lottery ===
       "object"
       ? savedGamblingData.lottery
       : {};
 
   const savedStats =
     savedGamblingData.stats &&
-    typeof savedGamblingData.stats ===
+      typeof savedGamblingData.stats ===
       "object"
       ? savedGamblingData.stats
       : {};
@@ -233,7 +271,7 @@ export function normalizeBuildingData(
 
   const savedOwned =
     savedBuildingData.owned &&
-    typeof savedBuildingData.owned ===
+      typeof savedBuildingData.owned ===
       "object"
       ? savedBuildingData.owned
       : {};
@@ -253,7 +291,7 @@ export function normalizeBuildingData(
             Number(
               savedOwned[building.id] ??
               defaultBuildingData.owned[
-                building.id
+              building.id
               ] ??
               0
             )
@@ -279,6 +317,70 @@ export function normalizeBuildingData(
     )
   };
 }
+
+export function normalizeEmployeeData(
+  savedEmployeeData
+) {
+  const defaultEmployeeData =
+    cloneDefaultState().employeeData;
+
+  if (
+    !savedEmployeeData ||
+    typeof savedEmployeeData !== "object"
+  ) {
+    return defaultEmployeeData;
+  }
+
+  const savedEmployees =
+    savedEmployeeData.employees &&
+      typeof savedEmployeeData.employees ===
+      "object"
+      ? savedEmployeeData.employees
+      : {};
+
+  const normalizedEmployees = {};
+
+  EMPLOYEE_CONFIG.forEach(
+    function (employee) {
+      const savedEmployee =
+        savedEmployees[employee.id];
+
+      const hired =
+        savedEmployee?.hired === true;
+
+      normalizedEmployees[employee.id] = {
+        hired,
+
+        level: hired
+          ? Math.max(
+            1,
+            Math.floor(
+              Number(
+                savedEmployee?.level
+              ) || 1
+            )
+          )
+          : 0
+      };
+    }
+  );
+
+  return {
+    employees: normalizedEmployees,
+
+    total_hired: Math.max(
+      0,
+      Math.floor(
+        Number(
+          savedEmployeeData.total_hired ??
+          defaultEmployeeData.total_hired ??
+          0
+        )
+      )
+    )
+  };
+}
+
 
 /* =========================
    DB 데이터 적용
@@ -340,6 +442,11 @@ export function applySaveData(data) {
     normalizeBuildingData(
       data.building_data
     );
+
+  state.employeeData =
+    normalizeEmployeeData(
+      data.employee_data
+    );
 }
 
 /* =========================
@@ -385,6 +492,10 @@ export function createSavePayload() {
 
     building_data:
       state.buildingData,
+
+
+    employee_data:
+      state.employeeData,
 
     last_saved_at: now,
     updated_at: now

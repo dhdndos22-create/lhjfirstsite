@@ -16,7 +16,7 @@ import {
 } from "./database.js";
 
 /* =========================
-   강화 기능 초기화
+   강화 초기화
 ========================= */
 
 export function initializeUpgrade() {
@@ -37,7 +37,7 @@ export function initializeUpgrade() {
 }
 
 /* =========================
-   구간별 증가율 선택
+   구간별 비용 증가율
 ========================= */
 
 function getGrowthByLevel(
@@ -60,6 +60,24 @@ function getGrowthByLevel(
 }
 
 /* =========================
+   비율 강화 증가량 계산
+========================= */
+
+function calculateIncrease(
+  currentValue,
+  increaseRate,
+  minimumIncrease
+) {
+  return Math.max(
+    minimumIncrease,
+    Math.ceil(
+      Number(currentValue) *
+      Number(increaseRate)
+    )
+  );
+}
+
+/* =========================
    클릭 강화
 ========================= */
 
@@ -78,16 +96,15 @@ async function upgradeClickPower(event) {
 
   state.clickUpgradeLevel++;
 
-  const bonusInterval =
-    GAME_BALANCE
-      .CLICK_UPGRADE
-      .BONUS_INTERVAL;
-
   const increase =
-    1 +
-    Math.floor(
-      state.clickUpgradeLevel /
-      bonusInterval
+    calculateIncrease(
+      state.baseClickPower,
+      GAME_BALANCE
+        .CLICK_UPGRADE
+        .INCREASE_RATE,
+      GAME_BALANCE
+        .CLICK_UPGRADE
+        .MIN_INCREASE
     );
 
   state.baseClickPower +=
@@ -134,16 +151,15 @@ async function upgradeAutoIncome(event) {
 
   state.autoUpgradeLevel++;
 
-  const bonusInterval =
-    GAME_BALANCE
-      .AUTO_UPGRADE
-      .BONUS_INTERVAL;
-
   const increase =
-    1 +
-    Math.floor(
-      state.autoUpgradeLevel /
-      bonusInterval
+    calculateIncrease(
+      state.baseAutoIncome,
+      GAME_BALANCE
+        .AUTO_UPGRADE
+        .INCREASE_RATE,
+      GAME_BALANCE
+        .AUTO_UPGRADE
+        .MIN_INCREASE
     );
 
   state.baseAutoIncome +=

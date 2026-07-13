@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="css/gambling.css" />
   <link rel="stylesheet" href="css/responsive.css" />
   <link rel="stylesheet" href="css/offline.css" />
+  <link rel="stylesheet" href="css/employee.css" />
 </head>
 
 <body>
@@ -53,7 +54,7 @@
 
       <button class="menuItem" id="jobMenuBtn">💼 직업</button>
       <button class="menuItem" id="buildingMenuBtn">💼 사업</button>
-      <button class="menuItem preparing">👥 고용</button>
+      <button class="menuItem preparing">👷 알바 고용</button>
       <button class="menuItem preparing">🐶 펫</button>
       <button class="menuItem preparing">🛒 상점</button>
       <button class="menuItem preparing">⚔ 장비</button>
@@ -132,6 +133,53 @@
         <button id="buildingNextBtn" class="standardPrimaryBtn" type="button">다음 ▶</button>
       </div>
     </div>
+
+    <!-- 알바 고용 패널 -->
+    <div id="employeePanel" class="standardPanel hidden">
+      <div class="standardPanelHeader">
+        <h2>👷 알바 고용</h2>
+
+        <button id="employeePanelCloseBtn" class="standardCloseBtn" type="button">
+          ✕
+        </button>
+      </div>
+
+      <div class="standardSummary">
+        <div class="standardSummaryItem">
+          <span>고용한 알바</span>
+          <strong id="employeeTotalCountText">
+            0명
+          </strong>
+        </div>
+
+        <div class="standardSummaryItem">
+          <span>알바 총 초당 수입</span>
+          <strong id="employeeTotalIncomeText">
+            0원 / 초
+          </strong>
+        </div>
+      </div>
+
+      <div id="employeeList" class="standardCardGrid"></div>
+
+      <div class="employeePagination">
+        <button id="employeePrevBtn" class="standardPrimaryBtn" type="button">
+          ◀ 이전
+        </button>
+
+        <span id="employeePageText">
+          1 / 2
+        </span>
+
+        <button id="employeeNextBtn" class="standardPrimaryBtn" type="button">
+          다음 ▶
+        </button>
+      </div>
+    </div>
+
+
+
+
 
     <!-- 도박 패널 -->
     <div id="gamblingPanel" class="standardPanel hidden">

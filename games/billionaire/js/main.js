@@ -8,6 +8,11 @@ import {
 } from "./building.js";
 
 import {
+  initializeEmployee,
+  updateEmployeeUI
+} from "./employee.js";
+
+import {
   state,
   getTotalClickPower,
   getTotalAutoIncome
@@ -83,6 +88,7 @@ initializeUpgrade();
 initializeJob();
 initializeGambling();
 initializeBuilding();
+initializeEmployee();
 
 /* =========================
    기본 이벤트 등록
@@ -165,6 +171,7 @@ async function startGame() {
     updateJobUI();
     renderJobHistory();
     updateGamblingUI();
+    updateEmployeeUI();
     updateBuildingUI();
 
     if (offlineResult.reward > 0) {
@@ -218,6 +225,7 @@ function earnMoneyByClick(event) {
   updateJobUI();
   updateGamblingUI();
   updateBuildingUI();
+  updateEmployeeUI();
 }
 
 /* =========================
@@ -239,6 +247,7 @@ function startIncomeTimer() {
         getTotalAutoIncome();
 
       updateMainUI();
+      updateEmployeeUI();
       updateJobUI();
       updateGamblingUI();
       updateBuildingUI();
