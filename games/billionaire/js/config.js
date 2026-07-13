@@ -378,7 +378,7 @@ export const EMPLOYEE_CONFIG = [
     icon: "👵",
 
     hireCost: 1000000,
-    baseAutoIncome: 50,
+    baseAutoIncome: 500,
     incomeGrowth: 1.45,
     upgradeGrowth: 1.75
   },
@@ -389,7 +389,7 @@ export const EMPLOYEE_CONFIG = [
     icon: "🛵",
 
     hireCost: 30000000,
-    baseAutoIncome: 600,
+    baseAutoIncome: 2000,
     incomeGrowth: 1.47,
     upgradeGrowth: 1.80
   },
@@ -400,7 +400,7 @@ export const EMPLOYEE_CONFIG = [
     icon: "👨‍🍳",
 
     hireCost: 500000000,
-    baseAutoIncome: 10000,
+    baseAutoIncome: 30000,
     incomeGrowth: 1.50,
     upgradeGrowth: 1.85
   },
@@ -411,7 +411,7 @@ export const EMPLOYEE_CONFIG = [
     icon: "🎮",
 
     hireCost: 10000000000,
-    baseAutoIncome: 180000,
+    baseAutoIncome: 150000,
     incomeGrowth: 1.52,
     upgradeGrowth: 1.90
   },
@@ -423,7 +423,7 @@ export const EMPLOYEE_CONFIG = [
 
     /* 1,000억 */
     hireCost: 100000000000,
-    baseAutoIncome: 2000000,
+    baseAutoIncome: 5000000,
     incomeGrowth: 1.55,
     upgradeGrowth: 1.95
   }
