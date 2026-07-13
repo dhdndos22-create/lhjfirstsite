@@ -39,8 +39,8 @@ export const GAME_BALANCE = {
     START_COST: 50,
 
     /* 강화 레벨이 높아질수록 비용 증가율도 조금씩 상승 */
-    BASE_GROWTH: 1.30,
-    GROWTH_PER_LEVEL: 0.006,
+    BASE_GROWTH: 1.20,
+    GROWTH_PER_LEVEL: 0.003,
     MAX_GROWTH: 2.20,
 
     /* 현재 기본 터치 수익의 20% 증가 */
@@ -53,8 +53,8 @@ export const GAME_BALANCE = {
     START_COST: 300,
 
     /* 터치 강화와 마찬가지로 연속 증가 공식 사용 */
-    BASE_GROWTH: 1.28,
-    GROWTH_PER_LEVEL: 0.0055,
+    BASE_GROWTH: 1.18,
+    GROWTH_PER_LEVEL: 0.0030,
     MAX_GROWTH: 2.10,
 
     /* 현재 기본 초당 수입의 30%증가 */
