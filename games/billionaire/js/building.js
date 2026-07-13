@@ -3,6 +3,10 @@ import {
 } from "./config.js";
 
 import {
+  showConfirm
+} from "./confirm.js";
+
+import {
   state,
   getBuildingAutoIncome
 } from "./state.js";
@@ -248,8 +252,8 @@ function createBuildingCard(building) {
         <h3>${building.name}</h3>
         <p>
           1개당 ${formatMoney(
-            building.autoIncome
-          )} / 초
+    building.autoIncome
+  )} / 초
         </p>
       </div>
     </div>
@@ -335,6 +339,38 @@ async function buyBuilding(buildingId) {
     return;
   }
 
+  const confirmed =
+    await showConfirm({
+      icon: building.icon,
+      title: "사업 구매",
+      message:
+        `${building.name} 사업을 구매하시겠습니까?`,
+
+      detail: `
+      구매 가격:
+      <strong>${formatMoney(price)}</strong>
+      <br>
+
+      현재 보유금:
+      <strong>${formatMoney(state.money)}</strong>
+      <br>
+
+      초당 수입:
+      <strong>
+        +${formatMoney(
+        building.autoIncome
+      )} / 초
+      </strong>
+    `,
+
+      acceptText: "구매하기",
+      cancelText: "취소"
+    });
+
+  if (!confirmed) {
+    return;
+  }
+
   state.money -= price;
 
   state.buildingData.owned[
@@ -391,12 +427,12 @@ export function updateBuildingUI() {
   buildingElements
     .buildingTotalCountText
     .textContent =
-      `${totalCount.toLocaleString()}개`;
+    `${totalCount.toLocaleString()}개`;
 
   buildingElements
     .buildingTotalIncomeText
     .textContent =
-      `${formatMoney(totalIncome)} / 초`;
+    `${formatMoney(totalIncome)} / 초`;
 
   updateVisiblePurchaseButtons();
   updatePaginationUI();
@@ -464,15 +500,15 @@ function updatePaginationUI() {
   buildingElements
     .buildingPageText
     .textContent =
-      `${currentBuildingPage} / ${totalPages}`;
+    `${currentBuildingPage} / ${totalPages}`;
 
   buildingElements
     .buildingPrevBtn.disabled =
-      currentBuildingPage <= 1;
+    currentBuildingPage <= 1;
 
   buildingElements
     .buildingNextBtn.disabled =
-      currentBuildingPage >= totalPages;
+    currentBuildingPage >= totalPages;
 }
 
 function getOwnedBuildingCount(

@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="css/gambling.css" />
   <link rel="stylesheet" href="css/responsive.css" />
   <link rel="stylesheet" href="css/offline.css" />
+  <link rel="stylesheet" href="css/confirm.css" />
   <link rel="stylesheet" href="css/employee.css" />
 </head>
 
@@ -303,6 +304,34 @@
         <div id="beggarLotteryResultText" class="resultBox">거지로또를 구매해보세요.</div>
         <div id="beggarLotteryStatsText" class="statsBox">구매 0회 · 총 사용 0원 · 총 당첨 0원</div>
       </section>
+    </div>
+
+
+    <!-- 효종월드 공용 확인 팝업 -->
+    <div id="confirmOverlay" class="confirmOverlay hidden">
+      <div class="confirmModal">
+        <div id="confirmIcon" class="confirmIcon">💼</div>
+
+        <h2 id="confirmTitle">
+          확인
+        </h2>
+
+        <p id="confirmMessage">
+          진행하시겠습니까?
+        </p>
+
+        <div id="confirmDetail" class="confirmDetail"></div>
+
+        <div class="confirmButtonArea">
+          <button id="confirmCancelBtn" class="confirmCancelBtn" type="button">
+            아니요
+          </button>
+
+          <button id="confirmAcceptBtn" class="confirmAcceptBtn" type="button">
+            예
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- 비접속 수익 팝업 -->
