@@ -1,4 +1,4 @@
-import { EMPLOYEE_CONFIG } from "./config.js";
+import { EMPLOYEE_CONFIG, GAME_BALANCE } from "./config.js";
 import { state, getEmployeeAutoIncome } from "./state.js";
 import { elements, updateMainUI, formatMoney } from "./ui.js";
 import { saveGameData } from "./database.js";
@@ -201,12 +201,22 @@ async function upgradeEmployee(employeeId) {
 
 export function calculateEmployeeIncome(employee, level) {
   const safeLevel = Math.max(1, Math.floor(Number(level) || 1));
-  return Math.floor(Number(employee.baseAutoIncome) * safeLevel);
+  const incomeGrowth = Number(employee.incomeGrowth || 1);
+
+  return Math.max(
+    1,
+    Math.floor(
+      Number(employee.baseAutoIncome) *
+      Math.pow(incomeGrowth, safeLevel - 1)
+    )
+  );
 }
 
 export function calculateEmployeeUpgradeCost(employee, currentLevel) {
   const safeLevel = Math.max(1, Math.floor(Number(currentLevel) || 1));
-  const baseUpgradeCost = Number(employee.hireCost) * 0.5;
+  const baseUpgradeCost =
+    Number(employee.hireCost) *
+    Number(GAME_BALANCE.EMPLOYEE.UPGRADE_BASE_RATE);
   return Math.max(
     1,
     Math.floor(baseUpgradeCost * Math.pow(Number(employee.upgradeGrowth), safeLevel - 1))

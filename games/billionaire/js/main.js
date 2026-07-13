@@ -36,13 +36,19 @@ import {
 } from "./effects.js";
 
 import {
-  initializeUpgrade
+  initializeUpgrade,
+  calculateLevelUpCost,
+  calculateClickUpgradeCost,
+  calculateAutoUpgradeCost,
+  calculateClickPower,
+  calculateAutoIncome
 } from "./upgrade.js";
 
 import {
   initializeJob,
   updateJobUI,
-  renderJobHistory
+  renderJobHistory,
+  refreshJobOpportunity
 } from "./job.js";
 
 import {
@@ -139,6 +145,35 @@ async function startGame() {
     */
     const loadResult =
       await loadGameData();
+
+    /*
+      기존 저장값과 관계없이 현재 밸런스 공식으로
+      강화 수입과 다음 강화 비용을 보정한다.
+    */
+    state.baseClickPower = calculateClickPower(
+      state.clickUpgradeLevel
+    );
+
+    state.baseAutoIncome = calculateAutoIncome(
+      state.autoUpgradeLevel
+    );
+
+    state.clickUpgradeCost = calculateClickUpgradeCost(
+      state.clickUpgradeLevel
+    );
+
+    state.autoUpgradeCost = calculateAutoUpgradeCost(
+      state.autoUpgradeLevel
+    );
+
+    state.levelUpCost =
+      calculateLevelUpCost(state.level) ?? 0;
+
+    /* 놓친 10레벨 단위 취업 기회를 복구한다. */
+    await refreshJobOpportunity({
+      openChoice: false,
+      save: false
+    });
 
     /*
       마지막 저장 시점부터 현재까지의

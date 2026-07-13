@@ -22,68 +22,99 @@ export const AUTO_SAVE_INTERVAL = 5000;
 ========================= */
 
 export const GAME_BALANCE = {
-  /* 클릭 수익 강화 */
+  /*
+    1차 경제 밸런스 목표
+
+    - 하루 20~30분 정도 직접 플레이
+    - 나머지 시간은 비접속 수익 20% 적용
+    - 첫 1억: 약 7일
+    - 첫 1,000억: 약 30일
+
+    실제 도달 시간은 클릭 횟수, 도박 결과,
+    구매 순서에 따라 달라질 수 있다.
+  */
+
+  /* 터치 수익 강화 */
   CLICK_UPGRADE: {
     START_COST: 50,
 
-    /*
-      클릭 강화 비용 증가율 공식:
-
-      증가율 =
-      BASE_GROWTH +
-      강화 레벨 × GROWTH_PER_LEVEL
-
-      Lv.1   = 1.306
-      Lv.10  = 1.36
-      Lv.20  = 1.42
-      Lv.50  = 1.60
-      Lv.100 = 1.90
-    */
-    BASE_GROWTH: 1.3,
+    /* 강화 레벨이 높아질수록 비용 증가율도 조금씩 상승 */
+    BASE_GROWTH: 1.30,
     GROWTH_PER_LEVEL: 0.006,
+    MAX_GROWTH: 2.20,
 
-    /*
-      지나치게 높은 강화 레벨에서
-      비용 배율이 무한히 커지는 것을 막는다.
-    */
-    MAX_GROWTH: 2.2,
-
-    /*
-      현재 기본 클릭 수입의 20% 증가
-    */
-    INCREASE_RATE: 0.2,
+    /* 현재 기본 터치 수익의 20% 증가 */
+    INCREASE_RATE: 0.20,
     MIN_INCREASE: 1
   },
 
   /* 초당 수입 강화 */
   AUTO_UPGRADE: {
-    START_COST: 150,
+    START_COST: 300,
 
-    GROWTH: [
-      1.35,
-      1.46,
-      1.57,
-      1.68
-    ],
+    /* 터치 강화와 마찬가지로 연속 증가 공식 사용 */
+    BASE_GROWTH: 1.28,
+    GROWTH_PER_LEVEL: 0.0055,
+    MAX_GROWTH: 2.10,
 
-    /*
-      현재 기본 초당 수입의 20% 증가
-    */
-    INCREASE_RATE: 0.2,
+    /* 현재 기본 초당 수입의 18% 증가 */
+    INCREASE_RATE: 0.18,
     MIN_INCREASE: 1
   },
 
-  /* 메인 레벨업 */
+  /* 플레이어 레벨 */
   LEVEL: {
-    START_COST: 500,
+    MIN_LEVEL: 1,
+    MAX_LEVEL: 200,
 
-    GROWTH: [
-      1.45,
-      1.6,
-      1.78,
-      1.95
+    /* 기준점 사이는 로그 보간하여 자연스럽게 증가 */
+    COST_ANCHORS: [
+      { level: 1, cost: 100 },
+      { level: 5, cost: 220 },
+      { level: 10, cost: 600 },
+      { level: 20, cost: 3000 },
+      { level: 30, cost: 10000 },
+      { level: 40, cost: 35000 },
+      { level: 50, cost: 100000 },
+      { level: 60, cost: 300000 },
+      { level: 70, cost: 800000 },
+      { level: 80, cost: 2000000 },
+      { level: 90, cost: 5000000 },
+      { level: 100, cost: 12000000 },
+      { level: 125, cost: 150000000 },
+      { level: 150, cost: 1500000000 },
+      { level: 175, cost: 22000000000 },
+      { level: 190, cost: 70000000000 },
+      { level: 199, cost: 100000000000 }
     ]
+  },
+
+  /* 직업은 Lv.10~100에서 총 10번 선택 */
+  JOB: {
+    FIRST_LEVEL: 10,
+    LAST_LEVEL: 100,
+    INTERVAL: 10,
+
+    /* 10레벨 단위마다 직업 보너스가 2배씩 성장 */
+    TIER_MULTIPLIER: 2
+  },
+
+  /* 알바 업그레이드 공통 설정 */
+  EMPLOYEE: {
+    /* 첫 업그레이드 비용 = 고용비의 70% */
+    UPGRADE_BASE_RATE: 0.70
   }
+};
+
+/* =========================
+   콘텐츠 해금 레벨
+========================= */
+
+export const CONTENT_UNLOCK_LEVELS = {
+  GAMBLING: 1,
+  JOB: 10,
+  BUILDING: 20,
+  EMPLOYEE: 30
 };
 
 /* =========================
@@ -114,7 +145,7 @@ export const DEFAULT_GAME_STATE = {
     GAME_BALANCE.AUTO_UPGRADE.START_COST,
 
   levelUpCost:
-    GAME_BALANCE.LEVEL.START_COST,
+    GAME_BALANCE.LEVEL.COST_ANCHORS[0].cost,
 
   /* 직업 데이터 */
   jobData: {
@@ -226,8 +257,9 @@ export const JOB_CHOICES = [
     name: "배달기사",
     icon: "🛵",
 
-    clickBonus: 1000,
-    autoBonus: 0
+    /* Lv.10 기준 보너스 */
+    baseClickBonus: 10,
+    baseAutoBonus: 0
   },
 
   {
@@ -235,8 +267,9 @@ export const JOB_CHOICES = [
     name: "서빙알바",
     icon: "🍽️",
 
-    clickBonus: 0,
-    autoBonus: 100
+    /* Lv.10 기준 보너스 */
+    baseClickBonus: 0,
+    baseAutoBonus: 2
   },
 
   {
@@ -244,10 +277,34 @@ export const JOB_CHOICES = [
     name: "요리사",
     icon: "👨‍🍳",
 
-    clickBonus: 500,
-    autoBonus: 50
+    /* Lv.10 기준 보너스 */
+    baseClickBonus: 5,
+    baseAutoBonus: 1
   }
 ];
+
+/*
+  선택 레벨에 맞는 실제 직업 보너스를 계산한다.
+  Lv.10은 1배, Lv.20은 2배, ... Lv.100은 512배다.
+*/
+export function calculateJobReward(job, selectedLevel) {
+  const balance = GAME_BALANCE.JOB;
+  const safeLevel = Math.min(
+    balance.LAST_LEVEL,
+    Math.max(balance.FIRST_LEVEL, Math.floor(Number(selectedLevel) || balance.FIRST_LEVEL))
+  );
+
+  const tier = Math.floor(
+    (safeLevel - balance.FIRST_LEVEL) / balance.INTERVAL
+  );
+
+  const multiplier = Math.pow(balance.TIER_MULTIPLIER, tier);
+
+  return {
+    clickBonus: Math.floor(Number(job.baseClickBonus || 0) * multiplier),
+    autoBonus: Math.floor(Number(job.baseAutoBonus || 0) * multiplier)
+  };
+}
 
 /* =========================
    도박 게임 설정
@@ -324,9 +381,9 @@ export const EMPLOYEE_CONFIG = [
     icon: "👵",
 
     hireCost: 1000000,
-    baseAutoIncome: 100,
-
-    upgradeGrowth: 1.6
+    baseAutoIncome: 50,
+    incomeGrowth: 1.45,
+    upgradeGrowth: 1.75
   },
 
   {
@@ -334,10 +391,10 @@ export const EMPLOYEE_CONFIG = [
     name: "배달기사",
     icon: "🛵",
 
-    hireCost: 50000000,
-    baseAutoIncome: 3000,
-
-    upgradeGrowth: 1.65
+    hireCost: 30000000,
+    baseAutoIncome: 600,
+    incomeGrowth: 1.47,
+    upgradeGrowth: 1.80
   },
 
   {
@@ -345,10 +402,10 @@ export const EMPLOYEE_CONFIG = [
     name: "백종원",
     icon: "👨‍🍳",
 
-    hireCost: 1000000000,
-    baseAutoIncome: 40000,
-
-    upgradeGrowth: 1.7
+    hireCost: 500000000,
+    baseAutoIncome: 10000,
+    incomeGrowth: 1.50,
+    upgradeGrowth: 1.85
   },
 
   {
@@ -356,10 +413,10 @@ export const EMPLOYEE_CONFIG = [
     name: "페이커",
     icon: "🎮",
 
-    hireCost: 100000000000,
-    baseAutoIncome: 250000,
-
-    upgradeGrowth: 1.75
+    hireCost: 10000000000,
+    baseAutoIncome: 180000,
+    incomeGrowth: 1.52,
+    upgradeGrowth: 1.90
   },
 
   {
@@ -367,10 +424,11 @@ export const EMPLOYEE_CONFIG = [
     name: "호날두",
     icon: "⚽",
 
-    hireCost: 1000000000000,
-    baseAutoIncome: 1500000,
-
-    upgradeGrowth: 1.8
+    /* 1,000억 */
+    hireCost: 100000000000,
+    baseAutoIncome: 2000000,
+    incomeGrowth: 1.55,
+    upgradeGrowth: 1.95
   }
 ];
 
@@ -395,131 +453,107 @@ export const BUILDING_CONFIG = [
     id: "street_stall",
     name: "포장마차",
     icon: "🍢",
-
-    basePrice: 10000,
-    autoIncome: 3,
-
-    priceGrowth: 1.15
+    basePrice: 30000,
+    autoIncome: 4,
+    priceGrowth: 1.22
   },
 
   {
     id: "small_store",
     name: "구멍가게",
     icon: "🏪",
-
-    basePrice: 50000,
-    autoIncome: 13,
-
-    priceGrowth: 1.2
+    basePrice: 150000,
+    autoIncome: 15,
+    priceGrowth: 1.22
   },
 
   {
     id: "snack_bar",
     name: "분식집",
     icon: "🍜",
-
-    basePrice: 200000,
-    autoIncome: 50,
-
-    priceGrowth: 1.2
+    basePrice: 700000,
+    autoIncome: 60,
+    priceGrowth: 1.23
   },
 
   {
     id: "cafe",
     name: "카페",
     icon: "☕",
-
-    basePrice: 1000000,
-    autoIncome: 200,
-
-    priceGrowth: 1.2
+    basePrice: 3000000,
+    autoIncome: 220,
+    priceGrowth: 1.23
   },
 
   {
     id: "restaurant",
     name: "식당",
     icon: "🍽️",
-
-    basePrice: 5000000,
-    autoIncome: 833,
-
-    priceGrowth: 1.2
+    basePrice: 12000000,
+    autoIncome: 800,
+    priceGrowth: 1.24
   },
 
   {
     id: "studio_room",
     name: "원룸",
     icon: "🏠",
-
-    basePrice: 20000000,
-    autoIncome: 2667,
-
-    priceGrowth: 1.2
+    basePrice: 50000000,
+    autoIncome: 3000,
+    priceGrowth: 1.24
   },
 
   {
     id: "meat_restaurant",
     name: "고기집",
     icon: "🥩",
-
-    basePrice: 100000000,
-    autoIncome: 10000,
-
-    priceGrowth: 1.2
+    basePrice: 200000000,
+    autoIncome: 11000,
+    priceGrowth: 1.25
   },
 
   {
     id: "villa",
     name: "빌라",
     icon: "🏘️",
-
-    basePrice: 500000000,
+    basePrice: 1000000000,
     autoIncome: 40000,
-
-    priceGrowth: 1.2
+    priceGrowth: 1.25
   },
 
   {
     id: "apartment",
     name: "아파트",
     icon: "🏢",
-
-    basePrice: 2000000000,
-    autoIncome: 166667,
-
-    priceGrowth: 1.2
+    basePrice: 5000000000,
+    autoIncome: 150000,
+    priceGrowth: 1.26
   },
 
   {
     id: "building",
     name: "빌딩",
     icon: "🏙️",
-
-    basePrice: 10000000000,
-    autoIncome: 666667,
-
-    priceGrowth: 1.2
+    basePrice: 25000000000,
+    autoIncome: 550000,
+    priceGrowth: 1.26
   },
 
   {
     id: "baseball_stadium",
     name: "야구장",
     icon: "⚾",
-
-    basePrice: 50000000000,
-    autoIncome: 2666667,
-
-    priceGrowth: 1.2
+    basePrice: 100000000000,
+    autoIncome: 2000000,
+    priceGrowth: 1.27
   },
 
   {
     id: "soccer_stadium",
     name: "축구장",
     icon: "⚽",
-
-    basePrice: 200000000000,
-    autoIncome: 10000000,
-
-    priceGrowth: 1.2
+    basePrice: 400000000000,
+    autoIncome: 7000000,
+    priceGrowth: 1.28
   }
 ];

@@ -106,3 +106,23 @@
   opacity: 0.55;
   cursor: not-allowed;
 }
+
+.lockedMenuItem {
+  opacity: 0.68;
+  cursor: not-allowed;
+  background: #e4e7eb;
+  color: #666;
+  box-shadow: 0 3px 0 #aeb4ba;
+}
+
+.lockedMenuItem:active {
+  transform: none;
+  box-shadow: 0 3px 0 #aeb4ba;
+}
+
+.unlockLevelGuide {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #8a6a00;
+}

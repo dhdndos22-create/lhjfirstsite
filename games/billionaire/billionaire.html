@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="css/offline.css" />
   <link rel="stylesheet" href="css/confirm.css" />
   <link rel="stylesheet" href="css/employee.css" />
+  <link rel="stylesheet" href="css/unlock.css" />
 </head>
 
 <body>
@@ -49,8 +50,8 @@
         <button class="subMenuItem" id="clickUpgradeBtn">클릭 강화<br><span id="clickUpgradeCostText">비용:
             50원</span></button>
         <button class="subMenuItem" id="autoUpgradeBtn">초당 수입 강화<br><span id="autoUpgradeCostText">비용:
-            150원</span></button>
-        <button class="subMenuItem" id="levelUpBtn">레벨업<br><span id="levelUpCostText">비용: 500원</span></button>
+            300원</span></button>
+        <button class="subMenuItem" id="levelUpBtn">레벨업<br><span id="levelUpCostText">비용: 100원</span></button>
       </div>
 
       <button class="menuItem" id="jobMenuBtn">💼 직업</button>
@@ -78,31 +79,32 @@
     <div id="jobPanel" class="contentPanel hidden">
       <div class="contentPanelHeader">
         <h2>💼 직업</h2>
-        <button id="jobPanelCloseBtn">✕</button>
+        <button id="jobPanelCloseBtn" type="button">✕</button>
       </div>
 
       <div class="jobStatusBox">
-        <p>직업 레벨 <strong id="jobLevelText">1</strong></p>
-        <p>다음 취업 <strong id="nextJobLevelText">레벨 10</strong></p>
+        <p>플레이어 레벨 <strong id="jobPlayerLevelText">1</strong></p>
+        <p>다음 취업 <strong id="nextJobLevelText">Lv.10</strong></p>
+        <p>취업 완료 <strong id="jobClaimedCountText">0 / 10회</strong></p>
         <p>직업 클릭 보너스 <strong id="jobClickBonusText">0원</strong></p>
         <p>직업 초당 보너스 <strong id="jobAutoBonusText">0원 / 초</strong></p>
       </div>
 
-      <button id="jobLevelUpBtn" class="jobLevelUpBtn">
-        직업 레벨업
-        <span id="jobLevelUpCostText">비용: 100원</span>
+      <button id="jobChoiceOpenBtn" class="jobLevelUpBtn hidden" type="button">
+        취업 선택하기
+        <span>달성한 레벨의 직업을 선택하세요.</span>
       </button>
 
       <div class="jobHistoryBox">
         <h3>취업 기록</h3>
-        <div id="jobHistoryList">아직 직업이 없습니다.</div>
+        <div id="jobHistoryList">아직 선택한 직업이 없습니다.</div>
       </div>
     </div>
 
     <div id="jobChoiceOverlay" class="jobChoiceOverlay hidden">
       <div class="jobChoiceModal">
         <h2>🎉 취업할 수 있습니다!</h2>
-        <p id="jobChoiceLevelText">직업 레벨 10 달성</p>
+        <p id="jobChoiceLevelText">플레이어 레벨 10 달성</p>
         <p class="jobChoiceGuide">세 가지 직업 중 하나를 선택하세요.</p>
         <div id="jobChoiceList" class="jobChoiceList"></div>
       </div>
@@ -306,6 +308,17 @@
       </section>
     </div>
 
+
+
+    <!-- 콘텐츠 해금 팝업 -->
+    <div id="unlockOverlay" class="unlockOverlay hidden">
+      <div class="unlockModal">
+        <div id="unlockIcon" class="unlockIcon">🎉</div>
+        <h2 id="unlockTitle">새 콘텐츠 해금!</h2>
+        <p id="unlockMessage">새로운 콘텐츠가 열렸습니다.</p>
+        <button id="unlockCloseBtn" type="button">확인</button>
+      </div>
+    </div>
 
     <!-- 효종월드 공용 확인 팝업 -->
     <div id="confirmOverlay" class="confirmOverlay hidden">

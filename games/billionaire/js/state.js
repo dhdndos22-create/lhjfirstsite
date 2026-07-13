@@ -1,7 +1,9 @@
 import {
   DEFAULT_GAME_STATE,
   BUILDING_CONFIG,
-  EMPLOYEE_CONFIG
+  EMPLOYEE_CONFIG,
+  JOB_CHOICES,
+  calculateJobReward
 } from "./config.js";
 
 /* =========================
@@ -73,10 +75,15 @@ export function getEmployeeAutoIncome() {
         )
       );
 
+      const incomeGrowth =
+        Number(employee.incomeGrowth || 1);
+
       return (
         totalIncome +
-        Number(employee.baseAutoIncome) *
-        level
+        Math.floor(
+          Number(employee.baseAutoIncome) *
+          Math.pow(incomeGrowth, level - 1)
+        )
       );
     },
     0
@@ -172,6 +179,36 @@ export function normalizeJobData(savedJobData) {
         return a - b;
       });
 
+  /*
+    밸런스 패치 전 저장된 직업 보너스도
+    현재 config 기준으로 다시 계산한다.
+  */
+  let recalculatedClickBonus = 0;
+  let recalculatedAutoBonus = 0;
+
+  selectedJobs.forEach(function (savedJob) {
+    const jobConfig = JOB_CHOICES.find(
+      function (job) {
+        return job.id === savedJob.id;
+      }
+    );
+
+    if (!jobConfig) {
+      return;
+    }
+
+    const reward = calculateJobReward(
+      jobConfig,
+      Number(savedJob.level)
+    );
+
+    savedJob.click_bonus = reward.clickBonus;
+    savedJob.auto_bonus = reward.autoBonus;
+
+    recalculatedClickBonus += reward.clickBonus;
+    recalculatedAutoBonus += reward.autoBonus;
+  });
+
   const pendingSelectionLevel =
     savedJobData.pending_selection_level ===
       null ||
@@ -186,13 +223,9 @@ export function normalizeJobData(savedJobData) {
   return {
     selected_jobs: selectedJobs,
 
-    click_bonus: Number(
-      savedJobData.click_bonus ?? 0
-    ),
+    click_bonus: recalculatedClickBonus,
 
-    auto_bonus: Number(
-      savedJobData.auto_bonus ?? 0
-    ),
+    auto_bonus: recalculatedAutoBonus,
 
     pending_selection_level:
       Number.isInteger(

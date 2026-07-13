@@ -1,218 +1,227 @@
 import {
-  GAME_BALANCE
+  GAME_BALANCE,
+  CONTENT_UNLOCK_LEVELS
 } from "./config.js";
 
-import {
-  state
-} from "./state.js";
-
-import {
-  elements,
-  updateMainUI
-} from "./ui.js";
-
-import {
-  saveGameData
-} from "./database.js";
-
-/* =========================
-   강화 초기화
-========================= */
+import { state } from "./state.js";
+import { elements, updateMainUI } from "./ui.js";
+import { saveGameData } from "./database.js";
+import { refreshJobOpportunity } from "./job.js";
+import { showUnlockNotification } from "./unlock.js";
 
 export function initializeUpgrade() {
-  elements.clickUpgradeBtn.addEventListener(
-    "click",
-    upgradeClickPower
-  );
-
-  elements.autoUpgradeBtn.addEventListener(
-    "click",
-    upgradeAutoIncome
-  );
-
-  elements.levelUpBtn.addEventListener(
-    "click",
-    upgradeMainLevel
-  );
+  elements.clickUpgradeBtn.addEventListener("click", upgradeClickPower);
+  elements.autoUpgradeBtn.addEventListener("click", upgradeAutoIncome);
+  elements.levelUpBtn.addEventListener("click", upgradeMainLevel);
 }
-
-/* =========================
-   구간별 비용 증가율
-========================= */
 
 function getClickUpgradeGrowth(level) {
   const growth =
     GAME_BALANCE.CLICK_UPGRADE.BASE_GROWTH +
-    level *
-      GAME_BALANCE.CLICK_UPGRADE.GROWTH_PER_LEVEL;
+    level * GAME_BALANCE.CLICK_UPGRADE.GROWTH_PER_LEVEL;
+
+  return Math.min(growth, GAME_BALANCE.CLICK_UPGRADE.MAX_GROWTH);
+}
+
+function getAutoUpgradeGrowth(level) {
+  const growth =
+    GAME_BALANCE.AUTO_UPGRADE.BASE_GROWTH +
+    level * GAME_BALANCE.AUTO_UPGRADE.GROWTH_PER_LEVEL;
 
   return Math.min(
     growth,
-    GAME_BALANCE.CLICK_UPGRADE.MAX_GROWTH
+    GAME_BALANCE.AUTO_UPGRADE.MAX_GROWTH
   );
 }
-/* =========================
-   비율 강화 증가량 계산
-========================= */
 
-function calculateIncrease(
-  currentValue,
-  increaseRate,
-  minimumIncrease
-) {
+function calculateIncrease(currentValue, increaseRate, minimumIncrease) {
   return Math.max(
     minimumIncrease,
-    Math.ceil(
-      Number(currentValue) *
-      Number(increaseRate)
-    )
+    Math.ceil(Number(currentValue) * Number(increaseRate))
   );
 }
 
-/* =========================
-   클릭 강화
-========================= */
+
+/*
+  완료한 강화 횟수를 기준으로 다음 강화 비용을 다시 계산한다.
+  밸런스 패치 전 계정도 같은 공식으로 보정할 때 사용한다.
+*/
+export function calculateClickUpgradeCost(completedLevel) {
+  const safeLevel = Math.max(0, Math.floor(Number(completedLevel) || 0));
+  let cost = GAME_BALANCE.CLICK_UPGRADE.START_COST;
+
+  for (let level = 1; level <= safeLevel; level++) {
+    const growth = getClickUpgradeGrowth(level);
+    cost = Math.max(cost + 1, Math.floor(cost * growth));
+  }
+
+  return cost;
+}
+
+export function calculateAutoUpgradeCost(completedLevel) {
+  const safeLevel = Math.max(0, Math.floor(Number(completedLevel) || 0));
+  let cost = GAME_BALANCE.AUTO_UPGRADE.START_COST;
+
+  for (let level = 1; level <= safeLevel; level++) {
+    const growth = getAutoUpgradeGrowth(level);
+    cost = Math.max(cost + 1, Math.floor(cost * growth));
+  }
+
+  return cost;
+}
+
+export function calculateClickPower(completedLevel) {
+  const safeLevel = Math.max(0, Math.floor(Number(completedLevel) || 0));
+  let value = 1;
+
+  for (let level = 1; level <= safeLevel; level++) {
+    value += calculateIncrease(
+      value,
+      GAME_BALANCE.CLICK_UPGRADE.INCREASE_RATE,
+      GAME_BALANCE.CLICK_UPGRADE.MIN_INCREASE
+    );
+  }
+
+  return value;
+}
+
+export function calculateAutoIncome(completedLevel) {
+  const safeLevel = Math.max(0, Math.floor(Number(completedLevel) || 0));
+  let value = 0;
+
+  for (let level = 1; level <= safeLevel; level++) {
+    value += calculateIncrease(
+      value,
+      GAME_BALANCE.AUTO_UPGRADE.INCREASE_RATE,
+      GAME_BALANCE.AUTO_UPGRADE.MIN_INCREASE
+    );
+  }
+
+  return value;
+}
+
+/*
+  현재 레벨에서 다음 레벨로 올라갈 때 필요한 비용을 계산한다.
+  지정된 기준점 사이를 로그 보간하여 매 레벨 자연스럽게 증가한다.
+*/
+export function calculateLevelUpCost(currentLevel) {
+  const { MIN_LEVEL, MAX_LEVEL, COST_ANCHORS } = GAME_BALANCE.LEVEL;
+  const level = Math.floor(Number(currentLevel));
+
+  if (!Number.isFinite(level) || level < MIN_LEVEL) {
+    return COST_ANCHORS[0].cost;
+  }
+
+  if (level >= MAX_LEVEL) {
+    return null;
+  }
+
+  for (let i = 0; i < COST_ANCHORS.length - 1; i++) {
+    const left = COST_ANCHORS[i];
+    const right = COST_ANCHORS[i + 1];
+
+    if (level >= left.level && level <= right.level) {
+      if (level === left.level) return left.cost;
+      if (level === right.level) return right.cost;
+
+      const progress =
+        (level - left.level) /
+        (right.level - left.level);
+
+      const logCost =
+        Math.log(left.cost) +
+        (Math.log(right.cost) - Math.log(left.cost)) * progress;
+
+      return Math.max(1, Math.round(Math.exp(logCost)));
+    }
+  }
+
+  return COST_ANCHORS[COST_ANCHORS.length - 1].cost;
+}
+
+function getUnlockedContent(level) {
+  const content = [];
+
+  if (level === CONTENT_UNLOCK_LEVELS.JOB) {
+    content.push({ icon: "💼", title: "직업", message: "이제 레벨 10마다 새로운 직업을 선택할 수 있습니다." });
+  }
+
+  if (level === CONTENT_UNLOCK_LEVELS.BUILDING) {
+    content.push({ icon: "🏢", title: "사업", message: "사업을 구매해 초당 수입을 늘릴 수 있습니다." });
+  }
+
+  if (level === CONTENT_UNLOCK_LEVELS.EMPLOYEE) {
+    content.push({ icon: "👷", title: "알바 고용", message: "알바를 고용하고 업그레이드할 수 있습니다." });
+  }
+
+  return content;
+}
 
 async function upgradeClickPower(event) {
   event.stopPropagation();
+  if (state.money < state.clickUpgradeCost) return;
 
-  if (
-    state.money <
-    state.clickUpgradeCost
-  ) {
-    return;
-  }
-
-  state.money -=
-    state.clickUpgradeCost;
-
+  state.money -= state.clickUpgradeCost;
   state.clickUpgradeLevel++;
 
-  const increase =
-    calculateIncrease(
-      state.baseClickPower,
-      GAME_BALANCE
-        .CLICK_UPGRADE
-        .INCREASE_RATE,
-      GAME_BALANCE
-        .CLICK_UPGRADE
-        .MIN_INCREASE
-    );
+  const increase = calculateIncrease(
+    state.baseClickPower,
+    GAME_BALANCE.CLICK_UPGRADE.INCREASE_RATE,
+    GAME_BALANCE.CLICK_UPGRADE.MIN_INCREASE
+  );
 
-  state.baseClickPower +=
-    increase;
+  state.baseClickPower += increase;
 
-  const growth =
-    getClickUpgradeGrowth(
-      state.clickUpgradeLevel
-    );
-
-  state.clickUpgradeCost =
-    Math.max(
-      state.clickUpgradeCost + 1,
-      Math.floor(
-        state.clickUpgradeCost *
-        growth
-      )
-    );
+  state.clickUpgradeCost = calculateClickUpgradeCost(
+    state.clickUpgradeLevel
+  );
 
   updateMainUI();
-
   await saveGameData();
 }
-
-/* =========================
-   초당 수입 강화
-========================= */
 
 async function upgradeAutoIncome(event) {
   event.stopPropagation();
+  if (state.money < state.autoUpgradeCost) return;
 
-  if (
-    state.money <
-    state.autoUpgradeCost
-  ) {
-    return;
-  }
-
-  state.money -=
-    state.autoUpgradeCost;
-
+  state.money -= state.autoUpgradeCost;
   state.autoUpgradeLevel++;
 
-  const increase =
-    calculateIncrease(
-      state.baseAutoIncome,
-      GAME_BALANCE
-        .AUTO_UPGRADE
-        .INCREASE_RATE,
-      GAME_BALANCE
-        .AUTO_UPGRADE
-        .MIN_INCREASE
-    );
+  const increase = calculateIncrease(
+    state.baseAutoIncome,
+    GAME_BALANCE.AUTO_UPGRADE.INCREASE_RATE,
+    GAME_BALANCE.AUTO_UPGRADE.MIN_INCREASE
+  );
 
-  state.baseAutoIncome +=
-    increase;
+  state.baseAutoIncome += increase;
 
-  const growth =
-    getGrowthByLevel(
-      state.autoUpgradeLevel,
-      GAME_BALANCE
-        .AUTO_UPGRADE
-        .GROWTH
-    );
-
-  state.autoUpgradeCost =
-    Math.max(
-      state.autoUpgradeCost + 1,
-      Math.floor(
-        state.autoUpgradeCost *
-        growth
-      )
-    );
+  state.autoUpgradeCost = calculateAutoUpgradeCost(
+    state.autoUpgradeLevel
+  );
 
   updateMainUI();
-
   await saveGameData();
 }
-
-/* =========================
-   메인 레벨업
-========================= */
 
 async function upgradeMainLevel(event) {
   event.stopPropagation();
 
-  if (
-    state.money <
-    state.levelUpCost
-  ) {
-    return;
-  }
+  const maxLevel = GAME_BALANCE.LEVEL.MAX_LEVEL;
+  if (state.level >= maxLevel) return;
 
-  state.money -=
-    state.levelUpCost;
+  const currentCost = calculateLevelUpCost(state.level);
+  if (currentCost === null || state.money < currentCost) return;
 
+  state.money -= currentCost;
   state.level++;
-
-  const growth =
-    getGrowthByLevel(
-      state.level,
-      GAME_BALANCE
-        .LEVEL
-        .GROWTH
-    );
-
-  state.levelUpCost =
-    Math.max(
-      state.levelUpCost + 1,
-      Math.floor(
-        state.levelUpCost *
-        growth
-      )
-    );
+  state.levelUpCost = calculateLevelUpCost(state.level) ?? 0;
 
   updateMainUI();
-
   await saveGameData();
+
+  for (const unlocked of getUnlockedContent(state.level)) {
+    await showUnlockNotification(unlocked);
+  }
+
+  await refreshJobOpportunity({ openChoice: true, save: true });
 }
