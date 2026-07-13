@@ -40,25 +40,17 @@ export function initializeUpgrade() {
    구간별 비용 증가율
 ========================= */
 
-function getGrowthByLevel(
-  level,
-  growthList
-) {
-  if (level < 10) {
-    return growthList[0];
-  }
+function getClickUpgradeGrowth(level) {
+  const growth =
+    GAME_BALANCE.CLICK_UPGRADE.BASE_GROWTH +
+    level *
+      GAME_BALANCE.CLICK_UPGRADE.GROWTH_PER_LEVEL;
 
-  if (level < 25) {
-    return growthList[1];
-  }
-
-  if (level < 50) {
-    return growthList[2];
-  }
-
-  return growthList[3];
+  return Math.min(
+    growth,
+    GAME_BALANCE.CLICK_UPGRADE.MAX_GROWTH
+  );
 }
-
 /* =========================
    비율 강화 증가량 계산
 ========================= */
@@ -111,11 +103,8 @@ async function upgradeClickPower(event) {
     increase;
 
   const growth =
-    getGrowthByLevel(
-      state.clickUpgradeLevel,
-      GAME_BALANCE
-        .CLICK_UPGRADE
-        .GROWTH
+    getClickUpgradeGrowth(
+      state.clickUpgradeLevel
     );
 
   state.clickUpgradeCost =

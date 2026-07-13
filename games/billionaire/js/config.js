@@ -22,22 +22,36 @@ export const AUTO_SAVE_INTERVAL = 5000;
 ========================= */
 
 export const GAME_BALANCE = {
-  /* 클릭 강화 */
+  /* 클릭 수익 강화 */
   CLICK_UPGRADE: {
     START_COST: 50,
 
-    GROWTH: [
-      1.32,
-      1.42,
-      1.52,
-      1.62
-    ],
+    /*
+      클릭 강화 비용 증가율 공식:
+
+      증가율 =
+      BASE_GROWTH +
+      강화 레벨 × GROWTH_PER_LEVEL
+
+      Lv.1   = 1.306
+      Lv.10  = 1.36
+      Lv.20  = 1.42
+      Lv.50  = 1.60
+      Lv.100 = 1.90
+    */
+    BASE_GROWTH: 1.3,
+    GROWTH_PER_LEVEL: 0.006,
 
     /*
-      현재 기본 클릭 수입의 12%만큼 증가.
-      계산 결과가 작으면 최소 1 증가.
+      지나치게 높은 강화 레벨에서
+      비용 배율이 무한히 커지는 것을 막는다.
     */
-    INCREASE_RATE: 0.12,
+    MAX_GROWTH: 2.2,
+
+    /*
+      현재 기본 클릭 수입의 20% 증가
+    */
+    INCREASE_RATE: 0.2,
     MIN_INCREASE: 1
   },
 
@@ -53,10 +67,9 @@ export const GAME_BALANCE = {
     ],
 
     /*
-      현재 기본 초당 수입의 15%만큼 증가.
-      계산 결과가 작으면 최소 1 증가.
+      현재 기본 초당 수입의 20% 증가
     */
-    INCREASE_RATE: 0.15,
+    INCREASE_RATE: 0.2,
     MIN_INCREASE: 1
   },
 
@@ -66,7 +79,7 @@ export const GAME_BALANCE = {
 
     GROWTH: [
       1.45,
-      1.60,
+      1.6,
       1.78,
       1.95
     ]
@@ -105,15 +118,28 @@ export const DEFAULT_GAME_STATE = {
 
   /* 직업 데이터 */
   jobData: {
-    level: 1,
-    level_up_cost: 100,
-
+    /*
+      지금까지 선택한 직업 기록
+    */
     selected_jobs: [],
 
+    /*
+      직업으로 얻은 누적 보너스
+    */
     click_bonus: 0,
     auto_bonus: 0,
 
-    pending_selection_level: null
+    /*
+      현재 선택해야 하는 플레이어 레벨.
+      선택할 직업이 없으면 null.
+    */
+    pending_selection_level: null,
+
+    /*
+      이미 취업 선택을 완료한
+      플레이어 레벨 목록.
+    */
+    claimed_levels: []
   },
 
   /* 도박 데이터 */
@@ -252,7 +278,6 @@ export const GAMBLING_CONFIG = {
       {
         min: 0,
         max: 30,
-
         reward: 0,
         label: "꽝"
       },
@@ -260,7 +285,6 @@ export const GAMBLING_CONFIG = {
       {
         min: 30,
         max: 70,
-
         reward: 10000,
         label: "10,000원 당첨"
       },
@@ -268,7 +292,6 @@ export const GAMBLING_CONFIG = {
       {
         min: 70,
         max: 90,
-
         reward: 20000,
         label: "20,000원 당첨"
       },
@@ -276,7 +299,6 @@ export const GAMBLING_CONFIG = {
       {
         min: 90,
         max: 95,
-
         reward: 50000,
         label: "50,000원 당첨"
       },
@@ -284,7 +306,6 @@ export const GAMBLING_CONFIG = {
       {
         min: 95,
         max: 100,
-
         reward: 100000,
         label: "100,000원 당첨"
       }
@@ -376,7 +397,7 @@ export const BUILDING_CONFIG = [
     icon: "🍢",
 
     basePrice: 10000,
-    autoIncome: 7,
+    autoIncome: 3,
 
     priceGrowth: 1.15
   },
@@ -387,7 +408,7 @@ export const BUILDING_CONFIG = [
     icon: "🏪",
 
     basePrice: 50000,
-    autoIncome: 27,
+    autoIncome: 13,
 
     priceGrowth: 1.2
   },
@@ -398,7 +419,7 @@ export const BUILDING_CONFIG = [
     icon: "🍜",
 
     basePrice: 200000,
-    autoIncome: 100,
+    autoIncome: 50,
 
     priceGrowth: 1.2
   },
@@ -409,7 +430,7 @@ export const BUILDING_CONFIG = [
     icon: "☕",
 
     basePrice: 1000000,
-    autoIncome: 400,
+    autoIncome: 200,
 
     priceGrowth: 1.2
   },
@@ -420,7 +441,7 @@ export const BUILDING_CONFIG = [
     icon: "🍽️",
 
     basePrice: 5000000,
-    autoIncome: 1667,
+    autoIncome: 833,
 
     priceGrowth: 1.2
   },
@@ -431,7 +452,7 @@ export const BUILDING_CONFIG = [
     icon: "🏠",
 
     basePrice: 20000000,
-    autoIncome: 5333,
+    autoIncome: 2667,
 
     priceGrowth: 1.2
   },
@@ -442,7 +463,7 @@ export const BUILDING_CONFIG = [
     icon: "🥩",
 
     basePrice: 100000000,
-    autoIncome: 20000,
+    autoIncome: 10000,
 
     priceGrowth: 1.2
   },
@@ -453,7 +474,7 @@ export const BUILDING_CONFIG = [
     icon: "🏘️",
 
     basePrice: 500000000,
-    autoIncome: 80000,
+    autoIncome: 40000,
 
     priceGrowth: 1.2
   },
@@ -464,7 +485,7 @@ export const BUILDING_CONFIG = [
     icon: "🏢",
 
     basePrice: 2000000000,
-    autoIncome: 333333,
+    autoIncome: 166667,
 
     priceGrowth: 1.2
   },
@@ -475,7 +496,7 @@ export const BUILDING_CONFIG = [
     icon: "🏙️",
 
     basePrice: 10000000000,
-    autoIncome: 1333333,
+    autoIncome: 666667,
 
     priceGrowth: 1.2
   },
@@ -486,7 +507,7 @@ export const BUILDING_CONFIG = [
     icon: "⚾",
 
     basePrice: 50000000000,
-    autoIncome: 5333333,
+    autoIncome: 2666667,
 
     priceGrowth: 1.2
   },
@@ -497,7 +518,7 @@ export const BUILDING_CONFIG = [
     icon: "⚽",
 
     basePrice: 200000000000,
-    autoIncome: 20000000,
+    autoIncome: 10000000,
 
     priceGrowth: 1.2
   }

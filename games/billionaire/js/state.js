@@ -94,7 +94,7 @@ export function getTotalAutoIncome() {
   return (
     Number(state.baseAutoIncome) +
     Number(state.jobData.auto_bonus) +
-    getBuildingAutoIncome()  +
+    getBuildingAutoIncome() +
     getEmployeeAutoIncome()
   );
 }
@@ -103,9 +103,7 @@ export function getTotalAutoIncome() {
    직업 데이터 정규화
 ========================= */
 
-export function normalizeJobData(
-  savedJobData
-) {
+export function normalizeJobData(savedJobData) {
   const defaultJobData =
     cloneDefaultState().jobData;
 
@@ -116,22 +114,77 @@ export function normalizeJobData(
     return defaultJobData;
   }
 
-  return {
-    level: Number(
-      savedJobData.level ??
-      defaultJobData.level
-    ),
-
-    level_up_cost: Number(
-      savedJobData.level_up_cost ??
-      defaultJobData.level_up_cost
-    ),
-
-    selected_jobs: Array.isArray(
+  const selectedJobs =
+    Array.isArray(
       savedJobData.selected_jobs
     )
       ? savedJobData.selected_jobs
-      : [],
+      : [];
+
+  /*
+    기존 데이터에 claimed_levels가 없더라도
+    selected_jobs의 level 값을 이용해 복구한다.
+  */
+  const restoredClaimedLevels =
+    selectedJobs
+      .map(function (job) {
+        return Number(job.level);
+      })
+      .filter(function (level) {
+        return (
+          Number.isInteger(level) &&
+          level >= 10 &&
+          level <= 100 &&
+          level % 10 === 0
+        );
+      });
+
+  const savedClaimedLevels =
+    Array.isArray(
+      savedJobData.claimed_levels
+    )
+      ? savedJobData.claimed_levels
+      : [];
+
+  const claimedLevels =
+    [
+      ...savedClaimedLevels,
+      ...restoredClaimedLevels
+    ]
+      .map(function (level) {
+        return Number(level);
+      })
+      .filter(function (level) {
+        return (
+          Number.isInteger(level) &&
+          level >= 10 &&
+          level <= 100 &&
+          level % 10 === 0
+        );
+      });
+
+  /*
+    중복 레벨 제거 후 오름차순 정렬
+  */
+  const uniqueClaimedLevels =
+    [...new Set(claimedLevels)]
+      .sort(function (a, b) {
+        return a - b;
+      });
+
+  const pendingSelectionLevel =
+    savedJobData.pending_selection_level ===
+      null ||
+      savedJobData.pending_selection_level ===
+      undefined
+      ? null
+      : Number(
+        savedJobData
+          .pending_selection_level
+      );
+
+  return {
+    selected_jobs: selectedJobs,
 
     click_bonus: Number(
       savedJobData.click_bonus ?? 0
@@ -142,16 +195,44 @@ export function normalizeJobData(
     ),
 
     pending_selection_level:
-      savedJobData.pending_selection_level ===
-        null ||
-        savedJobData.pending_selection_level ===
-        undefined
-        ? null
-        : Number(
-          savedJobData
-            .pending_selection_level
-        )
+      Number.isInteger(
+        pendingSelectionLevel
+      ) &&
+        pendingSelectionLevel >= 10 &&
+        pendingSelectionLevel <= 100 &&
+        pendingSelectionLevel % 10 === 0
+        ? pendingSelectionLevel
+        : null,
+
+    claimed_levels:
+      uniqueClaimedLevels
   };
+}
+
+export function getNextAvailableJobLevel() {
+  const claimedLevels =
+    Array.isArray(
+      state.jobData.claimed_levels
+    )
+      ? state.jobData.claimed_levels
+      : [];
+
+  for (
+    let targetLevel = 10;
+    targetLevel <= 100;
+    targetLevel += 10
+  ) {
+    if (
+      state.level >= targetLevel &&
+      !claimedLevels.includes(
+        targetLevel
+      )
+    ) {
+      return targetLevel;
+    }
+  }
+
+  return null;
 }
 
 /* =========================
@@ -433,6 +514,20 @@ export function applySaveData(data) {
       data.job_data
     );
 
+    
+  const nextJobLevel =
+    getNextAvailableJobLevel();
+
+  if (
+    state.jobData
+      .pending_selection_level === null &&
+    nextJobLevel !== null
+  ) {
+    state.jobData
+      .pending_selection_level =
+      nextJobLevel;
+  }
+
   state.gamblingData =
     normalizeGamblingData(
       data.gambling_data
@@ -447,6 +542,8 @@ export function applySaveData(data) {
     normalizeEmployeeData(
       data.employee_data
     );
+
+
 }
 
 /* =========================
