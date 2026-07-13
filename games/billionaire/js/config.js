@@ -15,21 +15,15 @@ export const SAVE_TABLE =
    공통 게임 설정
 ========================= */
 
-export const AUTO_SAVE_INTERVAL =
-  5000;
+export const AUTO_SAVE_INTERVAL = 5000;
 
 /* =========================
-   기본 게임 데이터
+   게임 밸런스
 ========================= */
 
 export const GAME_BALANCE = {
-
-  /*
-    강화
-  */
-
+  /* 클릭 강화 */
   CLICK_UPGRADE: {
-
     START_COST: 50,
 
     GROWTH: [
@@ -39,13 +33,16 @@ export const GAME_BALANCE = {
       1.62
     ],
 
-    BONUS_INTERVAL: 25
+    /*
+      현재 기본 클릭 수입의 12%만큼 증가.
+      계산 결과가 작으면 최소 1 증가.
+    */
+    INCREASE_RATE: 0.12,
+    MIN_INCREASE: 1
   },
 
-
-
+  /* 초당 수입 강화 */
   AUTO_UPGRADE: {
-
     START_COST: 150,
 
     GROWTH: [
@@ -55,13 +52,16 @@ export const GAME_BALANCE = {
       1.68
     ],
 
-    BONUS_INTERVAL: 30
+    /*
+      현재 기본 초당 수입의 15%만큼 증가.
+      계산 결과가 작으면 최소 1 증가.
+    */
+    INCREASE_RATE: 0.15,
+    MIN_INCREASE: 1
   },
 
-
-
+  /* 메인 레벨업 */
   LEVEL: {
-
     START_COST: 500,
 
     GROWTH: [
@@ -71,10 +71,11 @@ export const GAME_BALANCE = {
       1.95
     ]
   }
-
 };
 
-
+/* =========================
+   기본 게임 데이터
+========================= */
 
 export const DEFAULT_GAME_STATE = {
   username: "guest",
@@ -83,9 +84,9 @@ export const DEFAULT_GAME_STATE = {
   level: 1,
 
   /*
-    강화로 얻는 기본 수입.
-    직업·건물 등 콘텐츠 보너스는
-    별도로 더해서 계산한다.
+    강화로 얻은 기본 수입.
+    직업·사업·알바 보너스는
+    state.js에서 별도로 더한다.
   */
   baseClickPower: 1,
   baseAutoIncome: 0,
@@ -101,7 +102,6 @@ export const DEFAULT_GAME_STATE = {
 
   levelUpCost:
     GAME_BALANCE.LEVEL.START_COST,
-
 
   /* 직업 데이터 */
   jobData: {
@@ -137,7 +137,7 @@ export const DEFAULT_GAME_STATE = {
     }
   },
 
-  /* 건물 데이터 */
+  /* 사업 데이터 */
   buildingData: {
     owned: {
       street_stall: 0,
@@ -155,6 +155,38 @@ export const DEFAULT_GAME_STATE = {
     },
 
     total_purchases: 0
+  },
+
+  /* 알바 고용 데이터 */
+  employeeData: {
+    employees: {
+      recycler_grandmother: {
+        hired: false,
+        level: 0
+      },
+
+      delivery_driver: {
+        hired: false,
+        level: 0
+      },
+
+      baek_jong_won: {
+        hired: false,
+        level: 0
+      },
+
+      faker: {
+        hired: false,
+        level: 0
+      },
+
+      ronaldo: {
+        hired: false,
+        level: 0
+      }
+    },
+
+    total_hired: 0
   }
 };
 
@@ -167,6 +199,7 @@ export const JOB_CHOICES = [
     id: "delivery_driver",
     name: "배달기사",
     icon: "🛵",
+
     clickBonus: 1000,
     autoBonus: 0
   },
@@ -175,6 +208,7 @@ export const JOB_CHOICES = [
     id: "server",
     name: "서빙알바",
     icon: "🍽️",
+
     clickBonus: 0,
     autoBonus: 100
   },
@@ -183,6 +217,7 @@ export const JOB_CHOICES = [
     id: "cook",
     name: "요리사",
     icon: "👨‍🍳",
+
     clickBonus: 500,
     autoBonus: 50
   }
@@ -193,18 +228,22 @@ export const JOB_CHOICES = [
 ========================= */
 
 export const GAMBLING_CONFIG = {
+  /* 홀짝게임 */
   oddEven: {
     cooldownMs: 60 * 1000,
     rewardMultiplier: 2
   },
 
+  /* 주사위 게임 */
   dice: {
     cooldownMs: 5 * 60 * 1000,
     rewardMultiplier: 10,
+
     minNumber: 1,
     maxNumber: 6
   },
 
+  /* 거지로또 */
   beggarLottery: {
     price: 5000,
     cooldownMs: 3 * 60 * 1000,
@@ -213,6 +252,7 @@ export const GAMBLING_CONFIG = {
       {
         min: 0,
         max: 30,
+
         reward: 0,
         label: "꽝"
       },
@@ -220,6 +260,7 @@ export const GAMBLING_CONFIG = {
       {
         min: 30,
         max: 70,
+
         reward: 10000,
         label: "10,000원 당첨"
       },
@@ -227,6 +268,7 @@ export const GAMBLING_CONFIG = {
       {
         min: 70,
         max: 90,
+
         reward: 20000,
         label: "20,000원 당첨"
       },
@@ -234,6 +276,7 @@ export const GAMBLING_CONFIG = {
       {
         min: 90,
         max: 95,
+
         reward: 50000,
         label: "50,000원 당첨"
       },
@@ -241,28 +284,13 @@ export const GAMBLING_CONFIG = {
       {
         min: 95,
         max: 100,
+
         reward: 100000,
         label: "100,000원 당첨"
       }
     ]
   }
 };
-
-/* =========================
-   건물 설정
-========================= */
-
-/*
-  basePrice:
-  첫 번째 건물 구매 가격
-
-  autoIncome:
-  건물 1개당 초당 수입
-
-  priceGrowth:
-  보유 개수가 늘어날 때마다
-  다음 구매 가격에 적용되는 배율
-*/
 
 /* =========================
    알바 설정
@@ -273,8 +301,10 @@ export const EMPLOYEE_CONFIG = [
     id: "recycler_grandmother",
     name: "폐지줍는 할머니",
     icon: "👵",
+
     hireCost: 1000000,
     baseAutoIncome: 100,
+
     upgradeGrowth: 1.6
   },
 
@@ -282,8 +312,10 @@ export const EMPLOYEE_CONFIG = [
     id: "delivery_driver",
     name: "배달기사",
     icon: "🛵",
+
     hireCost: 50000000,
     baseAutoIncome: 3000,
+
     upgradeGrowth: 1.65
   },
 
@@ -291,8 +323,10 @@ export const EMPLOYEE_CONFIG = [
     id: "baek_jong_won",
     name: "백종원",
     icon: "👨‍🍳",
+
     hireCost: 1000000000,
     baseAutoIncome: 40000,
+
     upgradeGrowth: 1.7
   },
 
@@ -300,8 +334,10 @@ export const EMPLOYEE_CONFIG = [
     id: "faker",
     name: "페이커",
     icon: "🎮",
+
     hireCost: 100000000000,
     baseAutoIncome: 250000,
+
     upgradeGrowth: 1.75
   },
 
@@ -309,11 +345,29 @@ export const EMPLOYEE_CONFIG = [
     id: "ronaldo",
     name: "호날두",
     icon: "⚽",
+
     hireCost: 1000000000000,
     baseAutoIncome: 1500000,
+
     upgradeGrowth: 1.8
   }
 ];
+
+/* =========================
+   사업 설정
+========================= */
+
+/*
+  basePrice:
+  첫 구매 가격
+
+  autoIncome:
+  사업 1개당 초당 수입
+
+  priceGrowth:
+  보유 수량 증가에 따른
+  다음 구매 가격 증가율
+*/
 
 export const BUILDING_CONFIG = [
   {
@@ -322,7 +376,7 @@ export const BUILDING_CONFIG = [
     icon: "🍢",
     basePrice: 10000,
     autoIncome: 10,
-    priceGrowth: 1.15
+    priceGrowth: 1.20
   },
 
   {
