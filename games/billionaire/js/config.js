@@ -374,112 +374,131 @@ export const BUILDING_CONFIG = [
     id: "street_stall",
     name: "포장마차",
     icon: "🍢",
+
     basePrice: 10000,
-    autoIncome: 10,
-    priceGrowth: 1.20
+    autoIncome: 7,
+
+    priceGrowth: 1.15
   },
 
   {
     id: "small_store",
     name: "구멍가게",
     icon: "🏪",
+
     basePrice: 50000,
-    autoIncome: 50,
-    priceGrowth: 1.20
+    autoIncome: 27,
+
+    priceGrowth: 1.2
   },
 
   {
     id: "snack_bar",
     name: "분식집",
     icon: "🍜",
+
     basePrice: 200000,
     autoIncome: 100,
-    priceGrowth: 1.20
+
+    priceGrowth: 1.2
   },
 
   {
     id: "cafe",
     name: "카페",
     icon: "☕",
+
     basePrice: 1000000,
     autoIncome: 400,
-    priceGrowth: 1.20
+
+    priceGrowth: 1.2
   },
 
   {
     id: "restaurant",
     name: "식당",
     icon: "🍽️",
+
     basePrice: 5000000,
-    autoIncome: 1600,
-    priceGrowth: 1.20
+    autoIncome: 1667,
+
+    priceGrowth: 1.2
   },
 
   {
     id: "studio_room",
     name: "원룸",
     icon: "🏠",
+
     basePrice: 20000000,
-    autoIncome: 5000,
-    priceGrowth: 1.20
+    autoIncome: 5333,
+
+    priceGrowth: 1.2
   },
 
   {
     id: "meat_restaurant",
     name: "고기집",
     icon: "🥩",
+
     basePrice: 100000000,
     autoIncome: 20000,
-    priceGrowth: 1.20
+
+    priceGrowth: 1.2
   },
 
   {
     id: "villa",
     name: "빌라",
     icon: "🏘️",
+
     basePrice: 500000000,
     autoIncome: 80000,
-    priceGrowth: 1.20
+
+    priceGrowth: 1.2
   },
 
   {
     id: "apartment",
     name: "아파트",
     icon: "🏢",
+
     basePrice: 2000000000,
-    autoIncome: 300000,
-    priceGrowth: 1.20
+    autoIncome: 333333,
+
+    priceGrowth: 1.2
   },
 
   {
     id: "building",
     name: "빌딩",
     icon: "🏙️",
+
     basePrice: 10000000000,
-    autoIncome: 1300000,
-    priceGrowth: 1.20
+    autoIncome: 1333333,
+
+    priceGrowth: 1.2
   },
 
   {
     id: "baseball_stadium",
     name: "야구장",
     icon: "⚾",
+
     basePrice: 50000000000,
-    autoIncome: 5000000,
-    priceGrowth: 1.20
+    autoIncome: 5333333,
+
+    priceGrowth: 1.2
   },
 
   {
     id: "soccer_stadium",
     name: "축구장",
     icon: "⚽",
+
     basePrice: 200000000000,
     autoIncome: 20000000,
-    priceGrowth: 1.20
+
+    priceGrowth: 1.2
   }
 ];
-
-/* ===========================
-   게임 밸런스
-=========================== */
-
