@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,6 +18,7 @@
   <link rel="stylesheet" href="css/responsive.css" />
   <link rel="stylesheet" href="css/offline.css" />
 </head>
+
 <body>
   <section id="startScreen">
     <h1>💰 억만장자 💰</h1>
@@ -42,8 +44,10 @@
     <div id="gameMenuPanel" class="hidden">
       <button class="menuItem" id="upgradeMenuBtn">💪 강화</button>
       <div id="upgradeSubMenu" class="hidden">
-        <button class="subMenuItem" id="clickUpgradeBtn">클릭 강화<br><span id="clickUpgradeCostText">비용: 50원</span></button>
-        <button class="subMenuItem" id="autoUpgradeBtn">초당 수입 강화<br><span id="autoUpgradeCostText">비용: 100원</span></button>
+        <button class="subMenuItem" id="clickUpgradeBtn">클릭 강화<br><span id="clickUpgradeCostText">비용:
+            50원</span></button>
+        <button class="subMenuItem" id="autoUpgradeBtn">초당 수입 강화<br><span id="autoUpgradeCostText">비용:
+            150원</span></button>
         <button class="subMenuItem" id="levelUpBtn">레벨업<br><span id="levelUpCostText">비용: 500원</span></button>
       </div>
 
@@ -152,7 +156,10 @@
           <button class="standardCard gamblingGameCard" data-section="oddEvenSection" type="button">
             <div class="gamblingCardTop">
               <span class="gamblingCardIcon">🔴</span>
-              <div><h3>홀짝게임</h3><p>성공 시 베팅금 2배</p></div>
+              <div>
+                <h3>홀짝게임</h3>
+                <p>성공 시 베팅금 2배</p>
+              </div>
             </div>
             <p class="gamblingCardDescription">홀 또는 짝을 선택하고 결과를 맞혀보세요.</p>
             <div id="oddEvenCardCooldown" class="gamblingCardCooldown">지금 플레이 가능</div>
@@ -161,7 +168,10 @@
           <button class="standardCard gamblingGameCard" data-section="diceSection" type="button">
             <div class="gamblingCardTop">
               <span class="gamblingCardIcon">🎲</span>
-              <div><h3>주사위 게임</h3><p>성공 시 베팅금 10배</p></div>
+              <div>
+                <h3>주사위 게임</h3>
+                <p>성공 시 베팅금 10배</p>
+              </div>
             </div>
             <p class="gamblingCardDescription">1~6 중 하나를 골라 주사위 숫자를 맞혀보세요.</p>
             <div id="diceCardCooldown" class="gamblingCardCooldown">지금 플레이 가능</div>
@@ -170,7 +180,10 @@
           <button class="standardCard gamblingGameCard" data-section="lotterySection" type="button">
             <div class="gamblingCardTop">
               <span class="gamblingCardIcon">🎟️</span>
-              <div><h3>거지로또</h3><p>구매비 5,000원</p></div>
+              <div>
+                <h3>거지로또</h3>
+                <p>구매비 5,000원</p>
+              </div>
             </div>
             <p class="gamblingCardDescription">최대 100,000원까지 당첨되는 로또입니다.</p>
             <div id="lotteryCardCooldown" class="gamblingCardCooldown">지금 구매 가능</div>
@@ -179,7 +192,10 @@
           <div class="standardCard gamblingGameCard preparingCard">
             <div class="gamblingCardTop">
               <span class="gamblingCardIcon">🔒</span>
-              <div><h3>준비중</h3><p>새로운 도박 게임</p></div>
+              <div>
+                <h3>준비중</h3>
+                <p>새로운 도박 게임</p>
+              </div>
             </div>
             <p class="gamblingCardDescription">추후 새로운 게임이 추가됩니다.</p>
           </div>
@@ -208,7 +224,8 @@
           <button class="standardSecondaryBtn gamblingBackBtn" type="button">◀ 목록</button>
           <h3>🎲 주사위 게임</h3>
         </div>
-        <div class="gamblingDescription">베팅 후 1~6 중 하나를 선택하세요. 숫자를 맞히면 베팅금의 10배를 받고, 틀리면 베팅금을 잃습니다. 5분에 한 번 플레이할 수 있습니다.</div>
+        <div class="gamblingDescription">베팅 후 1~6 중 하나를 선택하세요. 숫자를 맞히면 베팅금의 10배를 받고, 틀리면 베팅금을 잃습니다. 5분에 한 번 플레이할 수 있습니다.
+        </div>
         <input id="diceBetInput" class="gamblingInput" type="number" min="1" step="1" placeholder="베팅 금액 입력">
         <div class="diceButtons">
           <button class="standardPrimaryBtn diceNumberBtn" data-number="1" type="button">1</button>
@@ -239,9 +256,33 @@
         <div id="beggarLotteryStatsText" class="statsBox">구매 0회 · 총 사용 0원 · 총 당첨 0원</div>
       </section>
     </div>
+
+    <!-- 비접속 수익 팝업 -->
+    <div id="offlineRewardOverlay" class="offlineRewardOverlay hidden">
+      <div class="offlineRewardModal">
+        <h2>💰 오프라인 수익</h2>
+
+        <p id="offlineTimeText">
+          비접속 시간: 0초
+        </p>
+
+        <p class="offlineRewardMessage">
+          접속하지 않은 동안 정상 수익의 20%를 받았습니다.
+        </p>
+
+        <strong id="offlineRewardText">
+          0원
+        </strong>
+
+        <button id="offlineRewardCloseBtn" type="button">
+          확인
+        </button>
+      </div>
+    </div>
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module" src="js/main.js"></script>
 </body>
+
 </html>
