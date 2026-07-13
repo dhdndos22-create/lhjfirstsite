@@ -44,7 +44,7 @@ export const GAME_BALANCE = {
     MAX_GROWTH: 2.20,
 
     /* 현재 기본 터치 수익의 20% 증가 */
-    INCREASE_RATE: 0.2,
+    INCREASE_RATE: 0.25,
     MIN_INCREASE: 1
   },
 
@@ -57,8 +57,8 @@ export const GAME_BALANCE = {
     GROWTH_PER_LEVEL: 0.0055,
     MAX_GROWTH: 2.10,
 
-    /* 현재 기본 초당 수입의 28%증가 */
-    INCREASE_RATE: 0.28,
+    /* 현재 기본 초당 수입의 30%증가 */
+    INCREASE_RATE: 0.30,
     MIN_INCREASE: 1
   },
 
@@ -95,8 +95,8 @@ export const GAME_BALANCE = {
     LAST_LEVEL: 100,
     INTERVAL: 10,
 
-    /* 10레벨 단위마다 직업 보너스가 2배씩 성장 */
-    TIER_MULTIPLIER: 2
+    /* 10레벨 단위마다 직업 보너스가 3배씩 성장 */
+    TIER_MULTIPLIER: 3
   },
 
   /* 알바 업그레이드 공통 설정 */
@@ -267,7 +267,7 @@ export const JOB_CHOICES = [
     icon: "🍽️",
 
     baseClickBonus: 0,
-    baseAutoBonus: 4      // 2 → 4
+    baseAutoBonus: 10      // 2 → 4
   },
 
   {
@@ -276,7 +276,7 @@ export const JOB_CHOICES = [
     icon: "👨‍🍳",
 
     baseClickBonus: 10,   // 5 → 10
-    baseAutoBonus: 2      // 1 → 2
+    baseAutoBonus: 5      // 1 → 2
   }
 ];
 
