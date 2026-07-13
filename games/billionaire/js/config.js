@@ -57,8 +57,8 @@ export const GAME_BALANCE = {
     GROWTH_PER_LEVEL: 0.0055,
     MAX_GROWTH: 2.10,
 
-    /* 현재 기본 초당 수입의 18% 증가 */
-    INCREASE_RATE: 0.18,
+    /* 현재 기본 초당 수입의 28%증가 */
+    INCREASE_RATE: 0.28
     MIN_INCREASE: 1
   },
 
