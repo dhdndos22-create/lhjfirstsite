@@ -22,7 +22,8 @@ import {
 import {
   elements,
   initializeMainMenu,
-  updateMainUI
+  updateMainUI,
+  formatMoney
 } from "./ui.js";
 
 import {
@@ -43,6 +44,26 @@ import {
   initializeGambling,
   updateGamblingUI
 } from "./gambling.js";
+
+const offlineRewardOverlay =
+  document.getElementById(
+    "offlineRewardOverlay"
+  );
+
+const offlineTimeText =
+  document.getElementById(
+    "offlineTimeText"
+  );
+
+const offlineRewardText =
+  document.getElementById(
+    "offlineRewardText"
+  );
+
+const offlineRewardCloseBtn =
+  document.getElementById(
+    "offlineRewardCloseBtn"
+  );
 
 /* =========================
    게임 실행 상태
@@ -82,6 +103,15 @@ elements.clickArea.addEventListener(
   earnMoneyByClick
 );
 
+offlineRewardCloseBtn.addEventListener(
+  "click",
+  function () {
+    offlineRewardOverlay.classList.add(
+      "hidden"
+    );
+  }
+);
+
 /* =========================
    게임 시작
 ========================= */
@@ -108,9 +138,10 @@ async function startGame() {
       마지막 저장 시점부터 현재까지의
       오프라인 자동 수입을 계산한다.
     */
-    await applyOfflineReward(
-      loadResult.lastSavedAt
-    );
+    const offlineResult =
+      await applyOfflineReward(
+        loadResult.lastSavedAt
+      );
 
     /*
       시작 화면을 숨기고
@@ -135,6 +166,13 @@ async function startGame() {
     renderJobHistory();
     updateGamblingUI();
     updateBuildingUI();
+
+    if (offlineResult.reward > 0) {
+      showOfflineRewardPopup(
+        offlineResult
+      );
+    }
+
 
     startIncomeTimer();
     startSaveTimer();
@@ -253,10 +291,73 @@ document.addEventListener(
   function () {
     if (
       document.visibilityState ===
-        "hidden" &&
+      "hidden" &&
       isGameStarted
     ) {
       saveGameData();
     }
   }
 );
+
+function showOfflineRewardPopup(
+  offlineResult
+) {
+  offlineTimeText.textContent =
+    `비접속 시간: ${formatOfflineTime(
+      offlineResult.offlineSeconds
+    )}`;
+
+  offlineRewardText.textContent =
+    formatMoney(
+      offlineResult.reward
+    );
+
+  offlineRewardOverlay.classList.remove(
+    "hidden"
+  );
+}
+
+function formatOfflineTime(
+  totalSeconds
+) {
+  const days =
+    Math.floor(
+      totalSeconds / 86400
+    );
+
+  const hours =
+    Math.floor(
+      (totalSeconds % 86400) / 3600
+    );
+
+  const minutes =
+    Math.floor(
+      (totalSeconds % 3600) / 60
+    );
+
+  const seconds =
+    totalSeconds % 60;
+
+  const parts = [];
+
+  if (days > 0) {
+    parts.push(`${days}일`);
+  }
+
+  if (hours > 0) {
+    parts.push(`${hours}시간`);
+  }
+
+  if (minutes > 0) {
+    parts.push(`${minutes}분`);
+  }
+
+  if (
+    days === 0 &&
+    hours === 0
+  ) {
+    parts.push(`${seconds}초`);
+  }
+
+  return parts.join(" ");
+}

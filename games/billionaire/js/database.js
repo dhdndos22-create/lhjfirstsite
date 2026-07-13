@@ -174,14 +174,20 @@ export async function applyOfflineReward(
   lastSavedAt
 ) {
   if (!lastSavedAt) {
-    return 0;
+    return {
+      reward: 0,
+      offlineSeconds: 0
+    };
   }
 
   const lastTime =
     new Date(lastSavedAt).getTime();
 
   if (!Number.isFinite(lastTime)) {
-    return 0;
+    return {
+      reward: 0,
+      offlineSeconds: 0
+    };
   }
 
   const offlineSeconds = Math.max(
@@ -192,18 +198,28 @@ export async function applyOfflineReward(
   );
 
   if (offlineSeconds <= 0) {
-    return 0;
+    return {
+      reward: 0,
+      offlineSeconds: 0
+    };
   }
 
-  const autoIncome =
+  const normalReward =
+    offlineSeconds *
     getTotalAutoIncome();
 
-  const reward =
-    offlineSeconds * autoIncome;
+  /*
+    비접속 수입은 정상 수입의 1/5
+  */
+  const offlineReward =
+    Math.floor(normalReward / 5);
 
-  state.money += reward;
+  state.money += offlineReward;
 
   await saveGameData();
 
-  return reward;
+  return {
+    reward: offlineReward,
+    offlineSeconds
+  };
 }
