@@ -22,6 +22,60 @@ export const AUTO_SAVE_INTERVAL =
    기본 게임 데이터
 ========================= */
 
+export const GAME_BALANCE = {
+
+  /*
+    강화
+  */
+
+  CLICK_UPGRADE: {
+
+    START_COST: 50,
+
+    GROWTH: [
+      1.32,
+      1.42,
+      1.52,
+      1.62
+    ],
+
+    BONUS_INTERVAL: 25
+  },
+
+
+
+  AUTO_UPGRADE: {
+
+    START_COST: 150,
+
+    GROWTH: [
+      1.35,
+      1.46,
+      1.57,
+      1.68
+    ],
+
+    BONUS_INTERVAL: 30
+  },
+
+
+
+  LEVEL: {
+
+    START_COST: 500,
+
+    GROWTH: [
+      1.45,
+      1.60,
+      1.78,
+      1.95
+    ]
+  }
+
+};
+
+
+
 export const DEFAULT_GAME_STATE = {
   username: "guest",
 
@@ -39,9 +93,15 @@ export const DEFAULT_GAME_STATE = {
   clickUpgradeLevel: 0,
   autoUpgradeLevel: 0,
 
-  clickUpgradeCost: 50,
-  autoUpgradeCost: 100,
-  levelUpCost: 500,
+  clickUpgradeCost:
+    GAME_BALANCE.CLICK_UPGRADE.START_COST,
+
+  autoUpgradeCost:
+    GAME_BALANCE.AUTO_UPGRADE.START_COST,
+
+  levelUpCost:
+    GAME_BALANCE.LEVEL.START_COST,
+
 
   /* 직업 데이터 */
   jobData: {
@@ -313,3 +373,8 @@ export const BUILDING_CONFIG = [
     priceGrowth: 1.15
   }
 ];
+
+/* ===========================
+   게임 밸런스
+=========================== */
+

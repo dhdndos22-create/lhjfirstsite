@@ -1,6 +1,23 @@
-import { state } from "./state.js";
-import { elements, updateMainUI } from "./ui.js";
-import { saveGameData } from "./database.js";
+import {
+  GAME_BALANCE
+} from "./config.js";
+
+import {
+  state
+} from "./state.js";
+
+import {
+  elements,
+  updateMainUI
+} from "./ui.js";
+
+import {
+  saveGameData
+} from "./database.js";
+
+/* =========================
+   강화 기능 초기화
+========================= */
 
 export function initializeUpgrade() {
   elements.clickUpgradeBtn.addEventListener(
@@ -19,6 +36,33 @@ export function initializeUpgrade() {
   );
 }
 
+/* =========================
+   구간별 증가율 선택
+========================= */
+
+function getGrowthByLevel(
+  level,
+  growthList
+) {
+  if (level < 10) {
+    return growthList[0];
+  }
+
+  if (level < 25) {
+    return growthList[1];
+  }
+
+  if (level < 50) {
+    return growthList[2];
+  }
+
+  return growthList[3];
+}
+
+/* =========================
+   클릭 강화
+========================= */
+
 async function upgradeClickPower(event) {
   event.stopPropagation();
 
@@ -29,23 +73,51 @@ async function upgradeClickPower(event) {
     return;
   }
 
-  state.money -= state.clickUpgradeCost;
+  state.money -=
+    state.clickUpgradeCost;
+
   state.clickUpgradeLevel++;
 
-  state.baseClickPower +=
+  const bonusInterval =
+    GAME_BALANCE
+      .CLICK_UPGRADE
+      .BONUS_INTERVAL;
+
+  const increase =
     1 +
     Math.floor(
-      state.clickUpgradeLevel / 5
+      state.clickUpgradeLevel /
+      bonusInterval
+    );
+
+  state.baseClickPower +=
+    increase;
+
+  const growth =
+    getGrowthByLevel(
+      state.clickUpgradeLevel,
+      GAME_BALANCE
+        .CLICK_UPGRADE
+        .GROWTH
     );
 
   state.clickUpgradeCost =
-    Math.floor(
-      state.clickUpgradeCost * 1.35
+    Math.max(
+      state.clickUpgradeCost + 1,
+      Math.floor(
+        state.clickUpgradeCost *
+        growth
+      )
     );
 
   updateMainUI();
+
   await saveGameData();
 }
+
+/* =========================
+   초당 수입 강화
+========================= */
 
 async function upgradeAutoIncome(event) {
   event.stopPropagation();
@@ -57,23 +129,51 @@ async function upgradeAutoIncome(event) {
     return;
   }
 
-  state.money -= state.autoUpgradeCost;
+  state.money -=
+    state.autoUpgradeCost;
+
   state.autoUpgradeLevel++;
 
-  state.baseAutoIncome +=
+  const bonusInterval =
+    GAME_BALANCE
+      .AUTO_UPGRADE
+      .BONUS_INTERVAL;
+
+  const increase =
     1 +
     Math.floor(
-      state.autoUpgradeLevel / 4
+      state.autoUpgradeLevel /
+      bonusInterval
+    );
+
+  state.baseAutoIncome +=
+    increase;
+
+  const growth =
+    getGrowthByLevel(
+      state.autoUpgradeLevel,
+      GAME_BALANCE
+        .AUTO_UPGRADE
+        .GROWTH
     );
 
   state.autoUpgradeCost =
-    Math.floor(
-      state.autoUpgradeCost * 1.4
+    Math.max(
+      state.autoUpgradeCost + 1,
+      Math.floor(
+        state.autoUpgradeCost *
+        growth
+      )
     );
 
   updateMainUI();
+
   await saveGameData();
 }
+
+/* =========================
+   메인 레벨업
+========================= */
 
 async function upgradeMainLevel(event) {
   event.stopPropagation();
@@ -85,14 +185,29 @@ async function upgradeMainLevel(event) {
     return;
   }
 
-  state.money -= state.levelUpCost;
+  state.money -=
+    state.levelUpCost;
+
   state.level++;
 
+  const growth =
+    getGrowthByLevel(
+      state.level,
+      GAME_BALANCE
+        .LEVEL
+        .GROWTH
+    );
+
   state.levelUpCost =
-    Math.floor(
-      state.levelUpCost * 1.8
+    Math.max(
+      state.levelUpCost + 1,
+      Math.floor(
+        state.levelUpCost *
+        growth
+      )
     );
 
   updateMainUI();
+
   await saveGameData();
 }
