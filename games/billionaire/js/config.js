@@ -330,8 +330,8 @@ export const BUILDING_CONFIG = [
     name: "구멍가게",
     icon: "🏪",
     basePrice: 50000,
-    autoIncome: 40,
-    priceGrowth: 1.15
+    autoIncome: 50,
+    priceGrowth: 1.20
   },
 
   {
@@ -339,8 +339,8 @@ export const BUILDING_CONFIG = [
     name: "분식집",
     icon: "🍜",
     basePrice: 200000,
-    autoIncome: 150,
-    priceGrowth: 1.15
+    autoIncome: 100,
+    priceGrowth: 1.20
   },
 
   {
@@ -348,8 +348,8 @@ export const BUILDING_CONFIG = [
     name: "카페",
     icon: "☕",
     basePrice: 1000000,
-    autoIncome: 600,
-    priceGrowth: 1.15
+    autoIncome: 400,
+    priceGrowth: 1.20
   },
 
   {
@@ -357,8 +357,8 @@ export const BUILDING_CONFIG = [
     name: "식당",
     icon: "🍽️",
     basePrice: 5000000,
-    autoIncome: 2500,
-    priceGrowth: 1.15
+    autoIncome: 1600,
+    priceGrowth: 1.20
   },
 
   {
@@ -366,8 +366,8 @@ export const BUILDING_CONFIG = [
     name: "원룸",
     icon: "🏠",
     basePrice: 20000000,
-    autoIncome: 8000,
-    priceGrowth: 1.15
+    autoIncome: 5000,
+    priceGrowth: 1.20
   },
 
   {
@@ -375,8 +375,8 @@ export const BUILDING_CONFIG = [
     name: "고기집",
     icon: "🥩",
     basePrice: 100000000,
-    autoIncome: 30000,
-    priceGrowth: 1.15
+    autoIncome: 20000,
+    priceGrowth: 1.20
   },
 
   {
@@ -384,8 +384,8 @@ export const BUILDING_CONFIG = [
     name: "빌라",
     icon: "🏘️",
     basePrice: 500000000,
-    autoIncome: 120000,
-    priceGrowth: 1.15
+    autoIncome: 80000,
+    priceGrowth: 1.20
   },
 
   {
@@ -393,8 +393,8 @@ export const BUILDING_CONFIG = [
     name: "아파트",
     icon: "🏢",
     basePrice: 2000000000,
-    autoIncome: 500000,
-    priceGrowth: 1.15
+    autoIncome: 300000,
+    priceGrowth: 1.20
   },
 
   {
@@ -402,8 +402,8 @@ export const BUILDING_CONFIG = [
     name: "빌딩",
     icon: "🏙️",
     basePrice: 10000000000,
-    autoIncome: 2000000,
-    priceGrowth: 1.15
+    autoIncome: 1300000,
+    priceGrowth: 1.20
   },
 
   {
@@ -411,8 +411,8 @@ export const BUILDING_CONFIG = [
     name: "야구장",
     icon: "⚾",
     basePrice: 50000000000,
-    autoIncome: 8000000,
-    priceGrowth: 1.15
+    autoIncome: 5000000,
+    priceGrowth: 1.20
   },
 
   {
@@ -420,8 +420,8 @@ export const BUILDING_CONFIG = [
     name: "축구장",
     icon: "⚽",
     basePrice: 200000000000,
-    autoIncome: 30000000,
-    priceGrowth: 1.15
+    autoIncome: 20000000,
+    priceGrowth: 1.20
   }
 ];
 
