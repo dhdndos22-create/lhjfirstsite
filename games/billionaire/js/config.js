@@ -72,7 +72,7 @@ export const GAME_BALANCE = {
       { level: 1, cost: 100 },
       { level: 5, cost: 1000 },
       { level: 10, cost: 5000 },
-      { level: 20, cost: 500000 },
+      { level: 20, cost: 50000 },
       { level: 30, cost: 100000 },
       { level: 40, cost: 300000 },
       { level: 50, cost: 1000000 },
