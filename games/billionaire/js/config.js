@@ -43,8 +43,8 @@ export const GAME_BALANCE = {
     GROWTH_PER_LEVEL: 0.006,
     MAX_GROWTH: 2.20,
 
-    /* 현재 기본 터치 수익의 35% 증가 */
-    INCREASE_RATE: 0.35,
+    /* 현재 기본 터치 수익의 20% 증가 */
+    INCREASE_RATE: 0.2,
     MIN_INCREASE: 1
   },
 
@@ -70,20 +70,20 @@ export const GAME_BALANCE = {
     /* 기준점 사이는 로그 보간하여 자연스럽게 증가 */
     COST_ANCHORS: [
       { level: 1, cost: 100 },
-      { level: 5, cost: 220 },
-      { level: 10, cost: 600 },
-      { level: 20, cost: 3000 },
-      { level: 30, cost: 10000 },
-      { level: 40, cost: 35000 },
-      { level: 50, cost: 100000 },
-      { level: 60, cost: 300000 },
-      { level: 70, cost: 800000 },
-      { level: 80, cost: 2000000 },
-      { level: 90, cost: 5000000 },
-      { level: 100, cost: 12000000 },
-      { level: 125, cost: 150000000 },
-      { level: 150, cost: 1500000000 },
-      { level: 175, cost: 22000000000 },
+      { level: 5, cost: 1000 },
+      { level: 10, cost: 5000 },
+      { level: 20, cost: 100000 },
+      { level: 30, cost: 400000 },
+      { level: 40, cost: 1000000 },
+      { level: 50, cost: 4500000 },
+      { level: 60, cost: 10000000 },
+      { level: 70, cost: 10000000 },
+      { level: 80, cost: 30000000 },
+      { level: 90, cost: 100000000 },
+      { level: 100, cost: 200000000 },
+      { level: 125, cost: 4000000000 },
+      { level: 150, cost: 8000000000 },
+      { level: 175, cost: 20000000000 },
       { level: 190, cost: 70000000000 },
       { level: 199, cost: 100000000000 }
     ]
