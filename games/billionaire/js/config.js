@@ -257,8 +257,7 @@ export const JOB_CHOICES = [
     name: "배달기사",
     icon: "🛵",
 
-    /* Lv.10 기준 보너스 */
-    baseClickBonus: 10,
+    baseClickBonus: 20,   // 10 → 20
     baseAutoBonus: 0
   },
 
@@ -267,9 +266,8 @@ export const JOB_CHOICES = [
     name: "서빙알바",
     icon: "🍽️",
 
-    /* Lv.10 기준 보너스 */
     baseClickBonus: 0,
-    baseAutoBonus: 2
+    baseAutoBonus: 4      // 2 → 4
   },
 
   {
@@ -277,9 +275,8 @@ export const JOB_CHOICES = [
     name: "요리사",
     icon: "👨‍🍳",
 
-    /* Lv.10 기준 보너스 */
-    baseClickBonus: 5,
-    baseAutoBonus: 1
+    baseClickBonus: 10,   // 5 → 10
+    baseAutoBonus: 2      // 1 → 2
   }
 ];
 
