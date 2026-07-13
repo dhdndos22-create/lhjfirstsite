@@ -468,8 +468,8 @@ export const BUILDING_CONFIG = [
     id: "snack_bar",
     name: "분식집",
     icon: "🍜",
-    basePrice: 700000,
-    autoIncome: 180,         // 60 → 180
+    basePrice: 500000,
+    autoIncome: 200,         // 60 → 180
     priceGrowth: 1.23
   },
 
@@ -477,7 +477,7 @@ export const BUILDING_CONFIG = [
     id: "cafe",
     name: "카페",
     icon: "☕",
-    basePrice: 3000000,
+    basePrice: 800000,
     autoIncome: 660,         // 220 → 660
     priceGrowth: 1.23
   },
@@ -486,7 +486,7 @@ export const BUILDING_CONFIG = [
     id: "restaurant",
     name: "식당",
     icon: "🍽️",
-    basePrice: 12000000,
+    basePrice: 2000000,
     autoIncome: 2400,        // 800 → 2400
     priceGrowth: 1.24
   },
@@ -505,7 +505,7 @@ export const BUILDING_CONFIG = [
     name: "고기집",
     icon: "🥩",
     basePrice: 200000000,
-    autoIncome: 33000,       // 11000 → 33000
+    autoIncome: 40000,       // 11000 → 33000
     priceGrowth: 1.25
   },
 
@@ -514,7 +514,7 @@ export const BUILDING_CONFIG = [
     name: "빌라",
     icon: "🏘️",
     basePrice: 1000000000,
-    autoIncome: 120000,      // 40000 → 120000
+    autoIncome: 300000,      // 40000 → 120000
     priceGrowth: 1.25
   },
 
@@ -523,7 +523,7 @@ export const BUILDING_CONFIG = [
     name: "아파트",
     icon: "🏢",
     basePrice: 5000000000,
-    autoIncome: 450000,      // 150000 → 450000
+    autoIncome: 1000000,      // 150000 → 450000
     priceGrowth: 1.26
   },
 
@@ -531,8 +531,8 @@ export const BUILDING_CONFIG = [
     id: "building",
     name: "빌딩",
     icon: "🏙️",
-    basePrice: 25000000000,
-    autoIncome: 1650000,     // 550000 → 1650000
+    basePrice: 20000000000,
+    autoIncome: 200000,     // 550000 → 1650000
     priceGrowth: 1.26
   },
 
