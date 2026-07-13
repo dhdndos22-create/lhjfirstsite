@@ -43,8 +43,8 @@ export const GAME_BALANCE = {
     GROWTH_PER_LEVEL: 0.006,
     MAX_GROWTH: 2.20,
 
-    /* 현재 기본 터치 수익의 20% 증가 */
-    INCREASE_RATE: 0.20,
+    /* 현재 기본 터치 수익의 35% 증가 */
+    INCREASE_RATE: 0.35,
     MIN_INCREASE: 1
   },
 
