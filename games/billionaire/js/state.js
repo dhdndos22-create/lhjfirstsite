@@ -3,7 +3,8 @@ import {
   BUILDING_CONFIG,
   EMPLOYEE_CONFIG,
   JOB_CHOICES,
-  calculateJobReward
+  calculateJobReward,
+  getJobChoicesByLevel
 } from "./config.js";
 
 /* =========================
@@ -111,161 +112,100 @@ export function getTotalAutoIncome() {
 ========================= */
 
 export function normalizeJobData(savedJobData) {
-  const defaultJobData =
-    cloneDefaultState().jobData;
+  const defaultJobData = cloneDefaultState().jobData;
 
-  if (
-    !savedJobData ||
-    typeof savedJobData !== "object"
-  ) {
+  if (!savedJobData || typeof savedJobData !== "object") {
     return defaultJobData;
   }
 
-  const selectedJobs =
-    Array.isArray(
-      savedJobData.selected_jobs
-    )
-      ? savedJobData.selected_jobs
-      : [];
+  const rawSelectedJobs = Array.isArray(savedJobData.selected_jobs)
+    ? savedJobData.selected_jobs
+    : [];
 
-  /*
-    기존 데이터에 claimed_levels가 없더라도
-    selected_jobs의 level 값을 이용해 복구한다.
-  */
-  const restoredClaimedLevels =
-    selectedJobs
-      .map(function (job) {
-        return Number(job.level);
-      })
-      .filter(function (level) {
-        return (
-          Number.isInteger(level) &&
-          level >= 10 &&
-          level <= 100 &&
-          level % 10 === 0
-        );
-      });
+  const normalizedJobs = [];
 
-  const savedClaimedLevels =
-    Array.isArray(
-      savedJobData.claimed_levels
-    )
-      ? savedJobData.claimed_levels
-      : [];
+  rawSelectedJobs.forEach(function (savedJob) {
+    if (!savedJob || typeof savedJob !== "object") return;
 
-  const claimedLevels =
-    [
-      ...savedClaimedLevels,
-      ...restoredClaimedLevels
-    ]
-      .map(function (level) {
-        return Number(level);
-      })
-      .filter(function (level) {
-        return (
-          Number.isInteger(level) &&
-          level >= 10 &&
-          level <= 100 &&
-          level % 10 === 0
-        );
-      });
+    const level = Number(savedJob.selected_level ?? savedJob.level);
+    if (!Number.isInteger(level)) return;
 
-  /*
-    중복 레벨 제거 후 오름차순 정렬
-  */
-  const uniqueClaimedLevels =
-    [...new Set(claimedLevels)]
-      .sort(function (a, b) {
-        return a - b;
-      });
-
-  /*
-    밸런스 패치 전 저장된 직업 보너스도
-    현재 config 기준으로 다시 계산한다.
-  */
-  let recalculatedClickBonus = 0;
-  let recalculatedAutoBonus = 0;
-
-  selectedJobs.forEach(function (savedJob) {
-    const jobConfig = JOB_CHOICES.find(
-      function (job) {
-        return job.id === savedJob.id;
-      }
+    const jobConfig = getJobChoicesByLevel(level).find(
+      job => job.id === savedJob.id
     );
 
-    if (!jobConfig) {
-      return;
-    }
+    if (!jobConfig) return;
 
-    const reward = calculateJobReward(
-      jobConfig,
-      Number(savedJob.level)
-    );
-
-    savedJob.click_bonus = reward.clickBonus;
-    savedJob.auto_bonus = reward.autoBonus;
-
-    recalculatedClickBonus += reward.clickBonus;
-    recalculatedAutoBonus += reward.autoBonus;
+    const reward = calculateJobReward(jobConfig);
+    normalizedJobs.push({
+      id: jobConfig.id,
+      name: jobConfig.name,
+      icon: jobConfig.icon,
+      level,
+      selected_level: level,
+      click_bonus: reward.clickBonus,
+      auto_bonus: reward.autoBonus
+    });
   });
 
-  const pendingSelectionLevel =
-    savedJobData.pending_selection_level ===
-      null ||
-      savedJobData.pending_selection_level ===
-      undefined
-      ? null
-      : Number(
-        savedJobData
-          .pending_selection_level
-      );
+  // 같은 레벨의 중복 기록이 있으면 마지막 선택만 남긴다.
+  const jobsByLevel = new Map();
+  normalizedJobs.forEach(job => jobsByLevel.set(job.selected_level, job));
+  const selectedJobs = [...jobsByLevel.values()]
+    .sort((a, b) => a.selected_level - b.selected_level);
+
+  const savedClaimedLevels = Array.isArray(savedJobData.claimed_levels)
+    ? savedJobData.claimed_levels
+    : [];
+
+  const configuredLevels = Object.keys(JOB_CHOICES).map(Number);
+  const claimedLevels = [
+    ...savedClaimedLevels.map(Number),
+    ...selectedJobs.map(job => job.selected_level)
+  ].filter(level => configuredLevels.includes(level));
+
+  const uniqueClaimedLevels = [...new Set(claimedLevels)]
+    .sort((a, b) => a - b);
+
+  // 새 방식에서는 가장 높은 단계의 직업 하나만 실제 효과를 가진다.
+  const currentJob = selectedJobs.length > 0
+    ? selectedJobs[selectedJobs.length - 1]
+    : null;
+
+  const pendingValue = savedJobData.pending_selection_level;
+  const pendingSelectionLevel = pendingValue === null || pendingValue === undefined
+    ? null
+    : Number(pendingValue);
 
   return {
     selected_jobs: selectedJobs,
-
-    click_bonus: recalculatedClickBonus,
-
-    auto_bonus: recalculatedAutoBonus,
-
+    current_job: currentJob,
+    click_bonus: currentJob ? currentJob.click_bonus : 0,
+    auto_bonus: currentJob ? currentJob.auto_bonus : 0,
     pending_selection_level:
-      Number.isInteger(
-        pendingSelectionLevel
-      ) &&
-        pendingSelectionLevel >= 10 &&
-        pendingSelectionLevel <= 100 &&
-        pendingSelectionLevel % 10 === 0
+      configuredLevels.includes(pendingSelectionLevel) &&
+      !uniqueClaimedLevels.includes(pendingSelectionLevel)
         ? pendingSelectionLevel
         : null,
-
-    claimed_levels:
-      uniqueClaimedLevels
+    claimed_levels: uniqueClaimedLevels
   };
 }
 
 export function getNextAvailableJobLevel() {
-  const claimedLevels =
-    Array.isArray(
-      state.jobData.claimed_levels
-    )
-      ? state.jobData.claimed_levels
-      : [];
+  const claimedLevels = Array.isArray(state.jobData.claimed_levels)
+    ? state.jobData.claimed_levels
+    : [];
 
-  for (
-    let targetLevel = 10;
-    targetLevel <= 100;
-    targetLevel += 10
-  ) {
-    if (
-      state.level >= targetLevel &&
-      !claimedLevels.includes(
-        targetLevel
-      )
-    ) {
-      return targetLevel;
-    }
-  }
+  const configuredLevels = Object.keys(JOB_CHOICES)
+    .map(Number)
+    .filter(Number.isInteger)
+    .sort((a, b) => a - b);
 
-  return null;
+  return configuredLevels.find(targetLevel =>
+    state.level >= targetLevel &&
+    !claimedLevels.includes(targetLevel) &&
+    getJobChoicesByLevel(targetLevel).length > 0
+  ) ?? null;
 }
 
 /* =========================

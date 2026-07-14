@@ -39,13 +39,13 @@ export const GAME_BALANCE = {
     START_COST: 50,
 
     /* 강화 레벨이 높아질수록 비용 증가율도 조금씩 상승 */
-    BASE_GROWTH: 1.20,
-    GROWTH_PER_LEVEL: 0.003,
-    MAX_GROWTH: 2.20,
+    BASE_GROWTH: 1.30,
+    GROWTH_PER_LEVEL: 0.006,
+    MAX_GROWTH: 2.10,
 
     /* 현재 기본 터치 수익의 20% 증가 */
-    INCREASE_RATE: 0.25,
-    MIN_INCREASE: 1
+    INCREASE_RATE: 0.11,
+    MIN_INCREASE: 2
   },
 
   /* 초당 수입 강화 */
@@ -53,13 +53,13 @@ export const GAME_BALANCE = {
     START_COST: 300,
 
     /* 터치 강화와 마찬가지로 연속 증가 공식 사용 */
-    BASE_GROWTH: 1.18,
-    GROWTH_PER_LEVEL: 0.0030,
+    BASE_GROWTH: 1.28,
+    GROWTH_PER_LEVEL: 0.0055,
     MAX_GROWTH: 2.10,
 
-    /* 현재 기본 초당 수입의 30%증가 */
-    INCREASE_RATE: 0.30,
-    MIN_INCREASE: 1
+    /* 현재 기본 초당 수입의 18% 증가 */
+    INCREASE_RATE: 0.08,
+    MIN_INCREASE: 2
   },
 
   /* 플레이어 레벨 */
@@ -71,17 +71,17 @@ export const GAME_BALANCE = {
     COST_ANCHORS: [
       { level: 1, cost: 100 },
       { level: 5, cost: 1000 },
-      { level: 10, cost: 5000 },
-      { level: 20, cost: 50000 },
-      { level: 30, cost: 100000 },
-      { level: 40, cost: 300000 },
-      { level: 50, cost: 1000000 },
-      { level: 60, cost: 5000000 },
-      { level: 70, cost: 20000000 },
-      { level: 80, cost: 100000000 },
-      { level: 90, cost: 300000000 },
-      { level: 100, cost: 900000000 },
-      { level: 125, cost: 2000000000 },
+      { level: 10, cost: 50000 },
+      { level: 20, cost: 200000 },
+      { level: 30, cost: 500000 },
+      { level: 40, cost: 1000000 },
+      { level: 50, cost: 4500000 },
+      { level: 60, cost: 10000000 },
+      { level: 70, cost: 25000000 },
+      { level: 80, cost: 50000000 },
+      { level: 90, cost: 100000000 },
+      { level: 100, cost: 200000000 },
+      { level: 125, cost: 4000000000 },
       { level: 150, cost: 8000000000 },
       { level: 175, cost: 20000000000 },
       { level: 190, cost: 70000000000 },
@@ -96,7 +96,7 @@ export const GAME_BALANCE = {
     INTERVAL: 10,
 
     /* 10레벨 단위마다 직업 보너스가 3배씩 성장 */
-    TIER_MULTIPLIER: 3
+    TIER_MULTIPLIER: 2.5
   },
 
   /* 알바 업그레이드 공통 설정 */
@@ -154,9 +154,10 @@ export const DEFAULT_GAME_STATE = {
     */
     selected_jobs: [],
 
-    /*
-      직업으로 얻은 누적 보너스
-    */
+    /* 현재 적용 중인 직업 */
+    current_job: null,
+
+    /* 현재 직업으로 얻는 보너스 */
     click_bonus: 0,
     auto_bonus: 0,
 
@@ -251,56 +252,142 @@ export const DEFAULT_GAME_STATE = {
    직업 선택지
 ========================= */
 
-export const JOB_CHOICES = [
-  {
-    id: "delivery_driver",
-    name: "배달기사",
-    icon: "🛵",
+export const JOB_CHOICES = {
+  10: [
+    {
+      id: "delivery_driver",
+      name: "배달기사",
+      icon: "🛵",
+      clickBonus: 10,
+      autoBonus: 0
+    },
 
-    baseClickBonus: 20,   // 10 → 20
-    baseAutoBonus: 0
-  },
+    {
+      id: "server",
+      name: "서빙알바",
+      icon: "🍽️",
+      clickBonus: 0,
+      autoBonus: 2
+    },
 
-  {
-    id: "server",
-    name: "서빙알바",
-    icon: "🍽️",
+    {
+      id: "cook",
+      name: "요리사",
+      icon: "👨‍🍳",
+      clickBonus: 5,
+      autoBonus: 1
+    }
+  ],
 
-    baseClickBonus: 0,
-    baseAutoBonus: 10      // 2 → 4
-  },
+  20: [
+    {
+      id: "used_car_dealer",
+      name: "중고차딜러",
+      icon: "🚗",
+      clickBonus: 35,
+      autoBonus: 0
+    },
 
-  {
-    id: "cook",
-    name: "요리사",
-    icon: "👨‍🍳",
+    {
+      id: "fitness_trainer",
+      name: "헬스 트레이너",
+      icon: "🏋️",
+      clickBonus: 20,
+      autoBonus: 4
+    },
 
-    baseClickBonus: 10,   // 5 → 10
-    baseAutoBonus: 5      // 1 → 2
-  }
-];
+    {
+      id: "mcdonalds_worker",
+      name: "맥도날드 알바",
+      icon: "🍔",
+      clickBonus: 0,
+      autoBonus: 8
+    }
+  ],
 
-/*
-  선택 레벨에 맞는 실제 직업 보너스를 계산한다.
-  Lv.10은 1배, Lv.20은 2배, ... Lv.100은 512배다.
-*/
-export function calculateJobReward(job, selectedLevel) {
-  const balance = GAME_BALANCE.JOB;
-  const safeLevel = Math.min(
-    balance.LAST_LEVEL,
-    Math.max(balance.FIRST_LEVEL, Math.floor(Number(selectedLevel) || balance.FIRST_LEVEL))
-  );
+  30: [
+    {
+      id: "cafe_owner",
+      name: "카페 사장",
+      icon: "☕",
+      clickBonus: 0,
+      autoBonus: 25
+    },
 
-  const tier = Math.floor(
-    (safeLevel - balance.FIRST_LEVEL) / balance.INTERVAL
-  );
+    {
+      id: "pro_gamer",
+      name: "프로게이머",
+      icon: "🎮",
+      clickBonus: 80,
+      autoBonus: 0
+    }
+  ],
 
-  const multiplier = Math.pow(balance.TIER_MULTIPLIER, tier);
+  40: [
+    {
+      id: "baseball_player",
+      name: "야구선수",
+      icon: "⚾",
+      clickBonus: 180,
+      autoBonus: 0
+    },
 
+    {
+      id: "basketball_player",
+      name: "농구선수",
+      icon: "🏀",
+      clickBonus: 100,
+      autoBonus: 15
+    },
+
+    {
+      id: "soccer_player",
+      name: "축구선수",
+      icon: "⚽",
+      clickBonus: 0,
+      autoBonus: 35
+    }
+  ],
+
+  50: [
+    {
+      id: "national_assembly_member",
+      name: "국회의원",
+      icon: "🏛️",
+      clickBonus: 0,
+      autoBonus: 100
+    },
+
+    {
+      id: "celebrity",
+      name: "연예인",
+      icon: "🎤",
+      clickBonus: 300,
+      autoBonus: 30
+    },
+
+    {
+      id: "million_youtuber",
+      name: "100만 유튜버",
+      icon: "📹",
+      clickBonus: 150,
+      autoBonus: 70
+    }
+  ]
+};
+
+/* 직업 설정에 입력된 실제 보너스를 안전하게 반환한다. */
+export function calculateJobReward(job) {
   return {
-    clickBonus: Math.floor(Number(job.baseClickBonus || 0) * multiplier),
-    autoBonus: Math.floor(Number(job.baseAutoBonus || 0) * multiplier)
+    clickBonus: Math.floor(Number(job.clickBonus) || 0),
+    autoBonus: Math.floor(Number(job.autoBonus) || 0)
   };
+}
+
+export function getJobChoicesByLevel(level) {
+  const safeLevel = Number(level);
+
+  return JOB_CHOICES[safeLevel] || [];
 }
 
 /* =========================
@@ -378,7 +465,7 @@ export const EMPLOYEE_CONFIG = [
     icon: "👵",
 
     hireCost: 1000000,
-    baseAutoIncome: 500,
+    baseAutoIncome: 100,
     incomeGrowth: 1.45,
     upgradeGrowth: 1.75
   },
@@ -389,7 +476,7 @@ export const EMPLOYEE_CONFIG = [
     icon: "🛵",
 
     hireCost: 30000000,
-    baseAutoIncome: 2000,
+    baseAutoIncome: 400,
     incomeGrowth: 1.47,
     upgradeGrowth: 1.80
   },
@@ -399,8 +486,8 @@ export const EMPLOYEE_CONFIG = [
     name: "백종원",
     icon: "👨‍🍳",
 
-    hireCost: 500000000,
-    baseAutoIncome: 30000,
+    hireCost: 100000000,
+    baseAutoIncome: 1200,
     incomeGrowth: 1.50,
     upgradeGrowth: 1.85
   },
@@ -411,7 +498,7 @@ export const EMPLOYEE_CONFIG = [
     icon: "🎮",
 
     hireCost: 10000000000,
-    baseAutoIncome: 150000,
+    baseAutoIncome: 15000,
     incomeGrowth: 1.52,
     upgradeGrowth: 1.90
   },
@@ -422,8 +509,8 @@ export const EMPLOYEE_CONFIG = [
     icon: "⚽",
 
     /* 1,000억 */
-    hireCost: 100000000000,
-    baseAutoIncome: 5000000,
+    hireCost: 77777777777,
+    baseAutoIncome: 77777,
     incomeGrowth: 1.55,
     upgradeGrowth: 1.95
   }
@@ -451,7 +538,7 @@ export const BUILDING_CONFIG = [
     name: "포장마차",
     icon: "🍢",
     basePrice: 30000,
-    autoIncome: 12,          // 4 → 12
+    autoIncome: 4,
     priceGrowth: 1.22
   },
 
@@ -460,7 +547,7 @@ export const BUILDING_CONFIG = [
     name: "구멍가게",
     icon: "🏪",
     basePrice: 150000,
-    autoIncome: 45,          // 15 → 45
+    autoIncome: 15,
     priceGrowth: 1.22
   },
 
@@ -468,8 +555,8 @@ export const BUILDING_CONFIG = [
     id: "snack_bar",
     name: "분식집",
     icon: "🍜",
-    basePrice: 500000,
-    autoIncome: 200,         // 60 → 180
+    basePrice: 700000,
+    autoIncome: 60,
     priceGrowth: 1.23
   },
 
@@ -477,8 +564,8 @@ export const BUILDING_CONFIG = [
     id: "cafe",
     name: "카페",
     icon: "☕",
-    basePrice: 800000,
-    autoIncome: 660,         // 220 → 660
+    basePrice: 3000000,
+    autoIncome: 220,
     priceGrowth: 1.23
   },
 
@@ -486,8 +573,8 @@ export const BUILDING_CONFIG = [
     id: "restaurant",
     name: "식당",
     icon: "🍽️",
-    basePrice: 2000000,
-    autoIncome: 2400,        // 800 → 2400
+    basePrice: 12000000,
+    autoIncome: 800,
     priceGrowth: 1.24
   },
 
@@ -496,7 +583,7 @@ export const BUILDING_CONFIG = [
     name: "원룸",
     icon: "🏠",
     basePrice: 50000000,
-    autoIncome: 9000,        // 3000 → 9000
+    autoIncome: 3000,
     priceGrowth: 1.24
   },
 
@@ -505,7 +592,7 @@ export const BUILDING_CONFIG = [
     name: "고기집",
     icon: "🥩",
     basePrice: 200000000,
-    autoIncome: 40000,       // 11000 → 33000
+    autoIncome: 11000,
     priceGrowth: 1.25
   },
 
@@ -514,7 +601,7 @@ export const BUILDING_CONFIG = [
     name: "빌라",
     icon: "🏘️",
     basePrice: 1000000000,
-    autoIncome: 300000,      // 40000 → 120000
+    autoIncome: 40000,
     priceGrowth: 1.25
   },
 
@@ -523,7 +610,7 @@ export const BUILDING_CONFIG = [
     name: "아파트",
     icon: "🏢",
     basePrice: 5000000000,
-    autoIncome: 1000000,      // 150000 → 450000
+    autoIncome: 150000,
     priceGrowth: 1.26
   },
 
@@ -531,8 +618,8 @@ export const BUILDING_CONFIG = [
     id: "building",
     name: "빌딩",
     icon: "🏙️",
-    basePrice: 20000000000,
-    autoIncome: 200000,     // 550000 → 1650000
+    basePrice: 25000000000,
+    autoIncome: 550000,
     priceGrowth: 1.26
   },
 
@@ -541,7 +628,7 @@ export const BUILDING_CONFIG = [
     name: "야구장",
     icon: "⚾",
     basePrice: 100000000000,
-    autoIncome: 6000000,     // 2000000 → 6000000
+    autoIncome: 2000000,
     priceGrowth: 1.27
   },
 
@@ -550,7 +637,7 @@ export const BUILDING_CONFIG = [
     name: "축구장",
     icon: "⚽",
     basePrice: 400000000000,
-    autoIncome: 21000000,    // 7000000 → 21000000
+    autoIncome: 7000000,
     priceGrowth: 1.28
   }
 ];
