@@ -39,12 +39,12 @@ export const GAME_BALANCE = {
     START_COST: 50,
 
     /* 강화 레벨이 높아질수록 비용 증가율도 조금씩 상승 */
-    BASE_GROWTH: 1.30,
-    GROWTH_PER_LEVEL: 0.006,
+    BASE_GROWTH: 1.20,
+    GROWTH_PER_LEVEL: 0.003,
     MAX_GROWTH: 2.20,
 
     /* 현재 기본 터치 수익의 20% 증가 */
-    INCREASE_RATE: 0.2,
+    INCREASE_RATE: 0.25,
     MIN_INCREASE: 1
   },
 
@@ -53,12 +53,12 @@ export const GAME_BALANCE = {
     START_COST: 300,
 
     /* 터치 강화와 마찬가지로 연속 증가 공식 사용 */
-    BASE_GROWTH: 1.28,
-    GROWTH_PER_LEVEL: 0.0055,
+    BASE_GROWTH: 1.18,
+    GROWTH_PER_LEVEL: 0.0030,
     MAX_GROWTH: 2.10,
 
-    /* 현재 기본 초당 수입의 18% 증가 */
-    INCREASE_RATE: 0.18,
+    /* 현재 기본 초당 수입의 30%증가 */
+    INCREASE_RATE: 0.30,
     MIN_INCREASE: 1
   },
 
@@ -72,16 +72,16 @@ export const GAME_BALANCE = {
       { level: 1, cost: 100 },
       { level: 5, cost: 1000 },
       { level: 10, cost: 5000 },
-      { level: 20, cost: 100000 },
-      { level: 30, cost: 400000 },
-      { level: 40, cost: 1000000 },
-      { level: 50, cost: 4500000 },
-      { level: 60, cost: 10000000 },
-      { level: 70, cost: 10000000 },
-      { level: 80, cost: 30000000 },
-      { level: 90, cost: 100000000 },
-      { level: 100, cost: 200000000 },
-      { level: 125, cost: 4000000000 },
+      { level: 20, cost: 50000 },
+      { level: 30, cost: 100000 },
+      { level: 40, cost: 300000 },
+      { level: 50, cost: 1000000 },
+      { level: 60, cost: 5000000 },
+      { level: 70, cost: 20000000 },
+      { level: 80, cost: 100000000 },
+      { level: 90, cost: 300000000 },
+      { level: 100, cost: 900000000 },
+      { level: 125, cost: 2000000000 },
       { level: 150, cost: 8000000000 },
       { level: 175, cost: 20000000000 },
       { level: 190, cost: 70000000000 },
@@ -95,8 +95,8 @@ export const GAME_BALANCE = {
     LAST_LEVEL: 100,
     INTERVAL: 10,
 
-    /* 10레벨 단위마다 직업 보너스가 2배씩 성장 */
-    TIER_MULTIPLIER: 2
+    /* 10레벨 단위마다 직업 보너스가 3배씩 성장 */
+    TIER_MULTIPLIER: 3
   },
 
   /* 알바 업그레이드 공통 설정 */
@@ -257,8 +257,7 @@ export const JOB_CHOICES = [
     name: "배달기사",
     icon: "🛵",
 
-    /* Lv.10 기준 보너스 */
-    baseClickBonus: 10,
+    baseClickBonus: 20,   // 10 → 20
     baseAutoBonus: 0
   },
 
@@ -267,9 +266,8 @@ export const JOB_CHOICES = [
     name: "서빙알바",
     icon: "🍽️",
 
-    /* Lv.10 기준 보너스 */
     baseClickBonus: 0,
-    baseAutoBonus: 2
+    baseAutoBonus: 10      // 2 → 4
   },
 
   {
@@ -277,9 +275,8 @@ export const JOB_CHOICES = [
     name: "요리사",
     icon: "👨‍🍳",
 
-    /* Lv.10 기준 보너스 */
-    baseClickBonus: 5,
-    baseAutoBonus: 1
+    baseClickBonus: 10,   // 5 → 10
+    baseAutoBonus: 5      // 1 → 2
   }
 ];
 
@@ -381,7 +378,7 @@ export const EMPLOYEE_CONFIG = [
     icon: "👵",
 
     hireCost: 1000000,
-    baseAutoIncome: 50,
+    baseAutoIncome: 500,
     incomeGrowth: 1.45,
     upgradeGrowth: 1.75
   },
@@ -392,7 +389,7 @@ export const EMPLOYEE_CONFIG = [
     icon: "🛵",
 
     hireCost: 30000000,
-    baseAutoIncome: 600,
+    baseAutoIncome: 2000,
     incomeGrowth: 1.47,
     upgradeGrowth: 1.80
   },
@@ -403,7 +400,7 @@ export const EMPLOYEE_CONFIG = [
     icon: "👨‍🍳",
 
     hireCost: 500000000,
-    baseAutoIncome: 10000,
+    baseAutoIncome: 30000,
     incomeGrowth: 1.50,
     upgradeGrowth: 1.85
   },
@@ -414,7 +411,7 @@ export const EMPLOYEE_CONFIG = [
     icon: "🎮",
 
     hireCost: 10000000000,
-    baseAutoIncome: 180000,
+    baseAutoIncome: 150000,
     incomeGrowth: 1.52,
     upgradeGrowth: 1.90
   },
@@ -426,7 +423,7 @@ export const EMPLOYEE_CONFIG = [
 
     /* 1,000억 */
     hireCost: 100000000000,
-    baseAutoIncome: 2000000,
+    baseAutoIncome: 5000000,
     incomeGrowth: 1.55,
     upgradeGrowth: 1.95
   }
@@ -454,7 +451,7 @@ export const BUILDING_CONFIG = [
     name: "포장마차",
     icon: "🍢",
     basePrice: 30000,
-    autoIncome: 4,
+    autoIncome: 12,          // 4 → 12
     priceGrowth: 1.22
   },
 
@@ -463,7 +460,7 @@ export const BUILDING_CONFIG = [
     name: "구멍가게",
     icon: "🏪",
     basePrice: 150000,
-    autoIncome: 15,
+    autoIncome: 45,          // 15 → 45
     priceGrowth: 1.22
   },
 
@@ -471,8 +468,8 @@ export const BUILDING_CONFIG = [
     id: "snack_bar",
     name: "분식집",
     icon: "🍜",
-    basePrice: 700000,
-    autoIncome: 60,
+    basePrice: 500000,
+    autoIncome: 200,         // 60 → 180
     priceGrowth: 1.23
   },
 
@@ -480,8 +477,8 @@ export const BUILDING_CONFIG = [
     id: "cafe",
     name: "카페",
     icon: "☕",
-    basePrice: 3000000,
-    autoIncome: 220,
+    basePrice: 800000,
+    autoIncome: 660,         // 220 → 660
     priceGrowth: 1.23
   },
 
@@ -489,8 +486,8 @@ export const BUILDING_CONFIG = [
     id: "restaurant",
     name: "식당",
     icon: "🍽️",
-    basePrice: 12000000,
-    autoIncome: 800,
+    basePrice: 2000000,
+    autoIncome: 2400,        // 800 → 2400
     priceGrowth: 1.24
   },
 
@@ -499,7 +496,7 @@ export const BUILDING_CONFIG = [
     name: "원룸",
     icon: "🏠",
     basePrice: 50000000,
-    autoIncome: 3000,
+    autoIncome: 9000,        // 3000 → 9000
     priceGrowth: 1.24
   },
 
@@ -508,7 +505,7 @@ export const BUILDING_CONFIG = [
     name: "고기집",
     icon: "🥩",
     basePrice: 200000000,
-    autoIncome: 11000,
+    autoIncome: 40000,       // 11000 → 33000
     priceGrowth: 1.25
   },
 
@@ -517,7 +514,7 @@ export const BUILDING_CONFIG = [
     name: "빌라",
     icon: "🏘️",
     basePrice: 1000000000,
-    autoIncome: 40000,
+    autoIncome: 300000,      // 40000 → 120000
     priceGrowth: 1.25
   },
 
@@ -526,7 +523,7 @@ export const BUILDING_CONFIG = [
     name: "아파트",
     icon: "🏢",
     basePrice: 5000000000,
-    autoIncome: 150000,
+    autoIncome: 1000000,      // 150000 → 450000
     priceGrowth: 1.26
   },
 
@@ -534,8 +531,8 @@ export const BUILDING_CONFIG = [
     id: "building",
     name: "빌딩",
     icon: "🏙️",
-    basePrice: 25000000000,
-    autoIncome: 550000,
+    basePrice: 20000000000,
+    autoIncome: 200000,     // 550000 → 1650000
     priceGrowth: 1.26
   },
 
@@ -544,7 +541,7 @@ export const BUILDING_CONFIG = [
     name: "야구장",
     icon: "⚾",
     basePrice: 100000000000,
-    autoIncome: 2000000,
+    autoIncome: 6000000,     // 2000000 → 6000000
     priceGrowth: 1.27
   },
 
@@ -553,7 +550,7 @@ export const BUILDING_CONFIG = [
     name: "축구장",
     icon: "⚽",
     basePrice: 400000000000,
-    autoIncome: 7000000,
+    autoIncome: 21000000,    // 7000000 → 21000000
     priceGrowth: 1.28
   }
 ];
