@@ -598,3 +598,17 @@ button:disabled {
     font-size: 13px;
   }
 }
+/* 멀티플레이 상태 */
+#board.waiting-turn {
+  cursor: not-allowed;
+  filter: saturate(0.82);
+}
+
+#board.waiting-turn .cell {
+  cursor: not-allowed;
+}
+
+.player-status {
+  min-width: 74px;
+  text-align: right;
+}

@@ -7,7 +7,7 @@ let board = [];
 let currentTurn = "black";
 let gameOver = false;
 
-function initBoard(cellClickHandler) {
+function initBoard(cellClickHandler = null) {
   board = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
   currentTurn = "black";
   gameOver = false;
@@ -31,6 +31,8 @@ function initBoard(cellClickHandler) {
 }
 
 function placeStone(row, col, color) {
+  if (!Number.isInteger(row) || !Number.isInteger(col)) return false;
+  if (row < 0 || row >= SIZE || col < 0 || col >= SIZE) return false;
   if (board[row][col] !== null) return false;
 
   board[row][col] = color;
@@ -38,6 +40,8 @@ function placeStone(row, col, color) {
   const cell = boardElement.querySelector(
     `.cell[data-row="${row}"][data-col="${col}"]`
   );
+
+  if (!cell) return false;
 
   const stone = document.createElement("div");
   stone.classList.add("stone", color);
@@ -49,6 +53,10 @@ function placeStone(row, col, color) {
 function switchTurn() {
   currentTurn = currentTurn === "black" ? "white" : "black";
   turnText.textContent = currentTurn === "black" ? "흑돌" : "백돌";
+}
+
+function setBoardTurn(color) {
+  currentTurn = color;
 }
 
 function checkWin(row, col, color) {

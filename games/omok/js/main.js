@@ -5,7 +5,6 @@ const backToStartBtn = document.getElementById("backToStartBtn");
 
 const userMenuBtn = document.getElementById("userMenuBtn");
 const saveNicknameBtn = document.getElementById("saveNicknameBtn");
-
 const backToModeFromRoomBtn = document.getElementById("backToModeFromRoomBtn");
 
 const createRoomBtn = document.getElementById("createRoomBtn");
@@ -20,17 +19,9 @@ const menuBtn = document.getElementById("menuBtn");
 const menuResetBtn = document.getElementById("menuResetBtn");
 const menuModeBtn = document.getElementById("menuModeBtn");
 
-startBtn.addEventListener("click", () => {
-  showScreen(modeScreen);
-});
-
-backToStartBtn.addEventListener("click", () => {
-  showScreen(startScreen);
-});
-
-singleBtn.addEventListener("click", () => {
-  startSingleGame();
-});
+startBtn.addEventListener("click", () => showScreen(modeScreen));
+backToStartBtn.addEventListener("click", () => showScreen(startScreen));
+singleBtn.addEventListener("click", startSingleGame);
 
 multiBtn.addEventListener("click", () => {
   showScreen(roomListScreen);
@@ -48,15 +39,8 @@ userMenuBtn.addEventListener("click", (event) => {
 });
 
 saveNicknameBtn.addEventListener("click", saveNickname);
-
-createRoomBtn.addEventListener("click", () => {
-  showScreen(createRoomScreen);
-});
-
-cancelCreateRoomBtn.addEventListener("click", () => {
-  showScreen(roomListScreen);
-});
-
+createRoomBtn.addEventListener("click", () => showScreen(createRoomScreen));
+cancelCreateRoomBtn.addEventListener("click", () => showScreen(roomListScreen));
 confirmCreateRoomBtn.addEventListener("click", createRoom);
 
 readyBtnElement.addEventListener("click", toggleReady);
@@ -70,20 +54,29 @@ menuBtn.addEventListener("click", (event) => {
 
 menuResetBtn.addEventListener("click", () => {
   closeGameMenu();
+
+  if (isMultiMode) {
+    alert("멀티플레이에서는 다시하기를 사용할 수 없습니다. 방을 나간 뒤 새 게임을 시작해주세요.");
+    return;
+  }
+
   startSingleGame();
 });
 
 menuModeBtn.addEventListener("click", () => {
   closeGameMenu();
+
+  if (isMultiMode && currentRoomId) {
+    const leaveConfirmed = confirm("현재 방에서 나가고 모드 선택 화면으로 이동할까요?");
+    if (!leaveConfirmed) return;
+    socket.emit("leaveRoom", { roomId: currentRoomId });
+    resetMultiState();
+  }
+
   showScreen(modeScreen);
 });
 
 document.addEventListener("click", (event) => {
-  if (!event.target.closest(".menu-wrap")) {
-    closeGameMenu();
-  }
-
-  if (!event.target.closest(".user-menu-wrap")) {
-    closeUserMenu();
-  }
+  if (!event.target.closest(".menu-wrap")) closeGameMenu();
+  if (!event.target.closest(".user-menu-wrap")) closeUserMenu();
 });
