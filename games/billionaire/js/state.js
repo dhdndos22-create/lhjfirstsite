@@ -6,7 +6,8 @@ import {
   calculateJobReward,
   getJobChoicesByLevel,
   GAME_BALANCE,
-  ECONOMY_BALANCE_VERSION
+  ECONOMY_BALANCE_VERSION,
+  PET_CONFIG
 } from "./config.js";
 
 /* =========================
@@ -25,11 +26,17 @@ export const state = cloneDefaultState();
    클릭 수입 계산
 ========================= */
 
+export function getEquippedPet() {
+  const equippedId = state.petData?.equipped_pet_id;
+  return PET_CONFIG.find(pet => pet.id === equippedId) || null;
+}
+
 export function getTotalClickPower() {
-  return (
+  const beforePet =
     Number(state.baseClickPower) +
-    Number(state.jobData.click_bonus)
-  );
+    Number(state.jobData.click_bonus);
+  const pet = getEquippedPet();
+  return Math.floor(beforePet * (1 + Number(pet?.clickRate || 0)));
 }
 
 /* =========================
@@ -101,12 +108,13 @@ export function getEmployeeAutoIncome() {
 ========================= */
 
 export function getTotalAutoIncome() {
-  return (
+  const beforePet =
     Number(state.baseAutoIncome) +
     Number(state.jobData.auto_bonus) +
     getBuildingAutoIncome() +
-    getEmployeeAutoIncome()
-  );
+    getEmployeeAutoIncome();
+  const pet = getEquippedPet();
+  return Math.floor(beforePet * (1 + Number(pet?.autoRate || 0)));
 }
 
 /* =========================
@@ -470,6 +478,26 @@ export function normalizeEmployeeData(
   };
 }
 
+
+/* =========================
+   펫 데이터 정규화
+========================= */
+export function normalizePetData(savedPetData) {
+  const saved = savedPetData && typeof savedPetData === "object" ? savedPetData : {};
+  const validIds = new Set(PET_CONFIG.map(pet => pet.id));
+  const owned = Array.isArray(saved.owned)
+    ? [...new Set(saved.owned.filter(id => validIds.has(id)))]
+    : [];
+  const equipped = owned.includes(saved.equipped_pet_id)
+    ? saved.equipped_pet_id
+    : null;
+  return {
+    owned,
+    equipped_pet_id: equipped,
+    total_purchases: owned.length
+  };
+}
+
 /* =========================
    저장 데이터 마이그레이션 확인
 ========================= */
@@ -495,6 +523,7 @@ export function applySaveData(data) {
   const originalGamblingData = stableStringify(
     data.gambling_data
   );
+  const originalPetData = stableStringify(data.pet_data);
   state.money = Number(
     data.money ?? 0
   );
@@ -555,6 +584,8 @@ export function applySaveData(data) {
       nextJobLevel;
   }
 
+  state.petData = normalizePetData(data.pet_data);
+
   state.gamblingData =
     normalizeGamblingData(
       data.gambling_data
@@ -577,18 +608,21 @@ export function applySaveData(data) {
   const normalizedGamblingData = stableStringify(
     state.gamblingData
   );
+  const normalizedPetData = stableStringify(state.petData);
 
   const employeeDataMigrated =
     originalEmployeeData !== normalizedEmployeeData;
 
   const gamblingDataMigrated =
     originalGamblingData !== normalizedGamblingData;
+  const petDataMigrated = originalPetData !== normalizedPetData;
 
   return {
     employeeDataMigrated,
     gamblingDataMigrated,
+    petDataMigrated,
     needsSave:
-      employeeDataMigrated || gamblingDataMigrated
+      employeeDataMigrated || gamblingDataMigrated || petDataMigrated
   };
 }
 
@@ -632,6 +666,9 @@ export function createSavePayload() {
 
     gambling_data:
       state.gamblingData,
+
+    pet_data:
+      state.petData,
 
     building_data:
       state.buildingData,

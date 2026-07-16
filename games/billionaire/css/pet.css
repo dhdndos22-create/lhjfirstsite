@@ -1,0 +1,5 @@
+.petGuide { margin: 10px 0 18px; text-align: center; opacity: .8; }
+.petCard { text-align: center; }
+.petIcon { font-size: 54px; margin-bottom: 8px; }
+.petEffect { display: block; margin: 10px 0; color: #ffd166; }
+.petCard button { width: 100%; margin-top: 8px; }

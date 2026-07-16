@@ -56,6 +56,8 @@ import {
   updateGamblingUI
 } from "./gambling.js";
 
+import { initializePet, updatePetUI } from "./pet.js";
+
 const offlineRewardOverlay =
   document.getElementById(
     "offlineRewardOverlay"
@@ -95,6 +97,7 @@ initializeJob();
 initializeGambling();
 initializeBuilding();
 initializeEmployee();
+initializePet();
 
 /* =========================
    기본 이벤트 등록
@@ -208,6 +211,7 @@ async function startGame() {
     updateGamblingUI();
     updateEmployeeUI();
     updateBuildingUI();
+    updatePetUI();
 
     if (offlineResult.reward > 0) {
       showOfflineRewardPopup(
@@ -286,6 +290,7 @@ function startIncomeTimer() {
       updateJobUI();
       updateGamblingUI();
       updateBuildingUI();
+    updatePetUI();
     },
     1000
   );

@@ -183,6 +183,13 @@ export function updateContentUnlockUI() {
     "👷 알바 고용",
     "알바 고용"
   );
+
+  setMenuLockState(
+    document.getElementById("petMenuBtn"),
+    CONTENT_UNLOCK_LEVELS.PET,
+    "🐾 펫",
+    "펫"
+  );
 }
 
 /* =========================

@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="css/offline.css" />
   <link rel="stylesheet" href="css/confirm.css" />
   <link rel="stylesheet" href="css/employee.css" />
+  <link rel="stylesheet" href="css/pet.css" />
   <link rel="stylesheet" href="css/unlock.css" />
 </head>
 
@@ -81,7 +82,7 @@
       <button class="menuItem" id="jobMenuBtn">💼 직업</button>
       <button class="menuItem" id="buildingMenuBtn">💼 사업</button>
       <button class="menuItem" id="employeeMenuBtn">👷 알바 고용</button>
-      <button class="menuItem preparing">🐶 펫</button>
+      <button class="menuItem" id="petMenuBtn">🐾 펫</button>
       <button class="menuItem preparing">🛒 상점</button>
       <button class="menuItem preparing">⚔ 장비</button>
       <button class="menuItem" id="gamblingMenuBtn">🎰 도박</button>
@@ -207,6 +208,21 @@
 
 
 
+
+
+    <!-- 펫 패널 -->
+    <div id="petPanel" class="standardPanel hidden">
+      <div class="standardPanelHeader">
+        <h2>🐾 펫</h2>
+        <button id="petPanelCloseBtn" class="standardCloseBtn" type="button">✕</button>
+      </div>
+      <div class="standardSummary">
+        <div class="standardSummaryItem"><span>현재 장착</span><strong id="petEquippedText">없음</strong></div>
+        <div class="standardSummaryItem"><span>보유 펫</span><strong id="petOwnedCountText">0 / 3마리</strong></div>
+      </div>
+      <p class="petGuide">펫은 한 마리만 장착할 수 있으며, 장착한 펫의 효과만 적용됩니다.</p>
+      <div id="petList" class="standardCardGrid"></div>
+    </div>
 
     <!-- 도박 패널 -->
     <div id="gamblingPanel" class="standardPanel hidden">
@@ -338,7 +354,7 @@
           <h3>💵 서민로또</h3>
         </div>
         <div class="gamblingDescription">
-          구매 비용 500,000원 · 3분에 한 번 구매 가능<br><br>
+          구매 비용 500,000원 · 30분에 한 번 구매 가능<br><br>
           꽝 30% / 800,000원 30% / 1,000,000원 20% / 2,000,000원 15% / 3,000,000원 5%
         </div>
         <button id="commonLotteryBuyBtn" class="standardPrimaryBtn gamblingBtn" type="button">서민로또 구매 (500,000원)</button>

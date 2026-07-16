@@ -116,7 +116,8 @@ export const CONTENT_UNLOCK_LEVELS = {
   GAMBLING: 1,
   JOB: 10,
   BUILDING: 20,
-  EMPLOYEE: 30
+  EMPLOYEE: 30,
+  PET: 40
 };
 
 /* =========================
@@ -174,6 +175,13 @@ export const DEFAULT_GAME_STATE = {
       플레이어 레벨 목록.
     */
     claimed_levels: []
+  },
+
+  /* 펫 데이터 */
+  petData: {
+    owned: [],
+    equipped_pet_id: null,
+    total_purchases: 0
   },
 
   /* 도박 데이터 */
@@ -582,4 +590,39 @@ export const BUILDING_CONFIG = [
   { id: "building", name: "빌딩", icon: "🏙️", basePrice: 45000000000, autoIncome: 4200000, priceGrowth: 1.49 },
   { id: "baseball_stadium", name: "야구장", icon: "⚾", basePrice: 175000000000, autoIncome: 17000000, priceGrowth: 1.52 },
   { id: "soccer_stadium", name: "축구장", icon: "⚽", basePrice: 600000000000, autoIncome: 68000000, priceGrowth: 1.55 }
+];
+
+
+/* =========================
+   펫 설정
+========================= */
+
+export const PET_CONFIG = [
+  {
+    id: "chopper",
+    name: "쵸파",
+    species: "순록",
+    icon: "🦌",
+    price: 50000000,
+    clickRate: 0.08,
+    autoRate: 0
+  },
+  {
+    id: "bepo",
+    name: "베포",
+    species: "북극곰",
+    icon: "🐻‍❄️",
+    price: 150000000,
+    clickRate: 0,
+    autoRate: 0.10
+  },
+  {
+    id: "karoo",
+    name: "카루",
+    species: "도도새",
+    icon: "🐦",
+    price: 500000000,
+    clickRate: 0.06,
+    autoRate: 0.06
+  }
 ];
