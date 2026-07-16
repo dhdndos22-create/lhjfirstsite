@@ -1,0 +1,32 @@
+.coin {
+  position: fixed;
+
+  z-index: 999;
+
+  font-size: 26px;
+
+  pointer-events: none;
+
+  animation:
+    coinPop 0.7s ease-out forwards;
+}
+
+@keyframes coinPop {
+  0% {
+    transform:
+      translate(0, 0)
+      scale(0.7)
+      rotate(0deg);
+
+    opacity: 1;
+  }
+
+  100% {
+    transform:
+      translate(var(--x), var(--y))
+      scale(1.2)
+      rotate(360deg);
+
+    opacity: 0;
+  }
+}

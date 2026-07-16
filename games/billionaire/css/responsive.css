@@ -1,0 +1,91 @@
+@media (max-width: 600px) {
+  #startScreen h1 {
+    font-size: 40px;
+  }
+
+  #startScreen p {
+    font-size: 16px;
+  }
+
+  .topStatus {
+    min-height: 82px;
+
+    justify-content: flex-start;
+
+    padding-left: 10px;
+    padding-right: 90px;
+
+    gap: 8px;
+  }
+
+  .topStatus div {
+    width: 120px;
+
+    padding: 7px;
+  }
+
+  .topStatus strong {
+    font-size: 18px;
+  }
+
+  #gameMenuBtn {
+    top: 14px;
+    right: 10px;
+
+    padding: 10px 13px;
+
+    font-size: 15px;
+  }
+
+  #gameMenuPanel {
+    top: 62px;
+    right: 10px;
+
+    width: 190px;
+    max-height: 76vh;
+  }
+
+  .menuItem,
+  .subMenuItem {
+    padding: 11px;
+
+    font-size: 14px;
+  }
+
+  #mainCharacter {
+    width: 150px;
+  }
+
+  .characterBox p {
+    font-size: 16px;
+  }
+
+  .incomeText {
+    font-size: 14px !important;
+  }
+
+  .contentPanel {
+    top: 75px;
+
+    width: 94vw;
+    max-height: calc(100vh - 95px);
+
+    padding: 16px;
+  }
+
+  .jobStatusBox p {
+    font-size: 14px;
+  }
+
+  .jobChoiceModal {
+    padding: 18px;
+  }
+
+  .jobChoiceList {
+    grid-template-columns: 1fr;
+  }
+
+  .jobChoiceCard {
+    padding: 13px;
+  }
+}

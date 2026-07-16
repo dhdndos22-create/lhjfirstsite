@@ -1,0 +1,122 @@
+#gameScreen {
+  width: 100vw;
+  height: 100vh;
+
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.topStatus {
+  min-height: 90px;
+
+  padding: 14px;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  gap: 16px;
+
+  z-index: 10;
+}
+
+.topStatus div {
+  width: 150px;
+
+  padding: 8px;
+
+  background:
+    rgba(255, 255, 255, 0.9);
+
+  border:
+    3px solid #ffcc33;
+
+  border-radius: 18px;
+
+  text-align: center;
+}
+
+.topStatus span {
+  display: block;
+
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.topStatus strong {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 22px;
+
+  color: #e67e00;
+}
+
+#clickArea {
+  flex: 1;
+
+  position: relative;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  overflow: hidden;
+
+  cursor: pointer;
+
+  user-select: none;
+}
+
+.characterBox {
+  text-align: center;
+
+  pointer-events: none;
+}
+
+#mainCharacter {
+  width: 180px;
+  max-width: 45vw;
+
+  display: block;
+
+  margin: 0 auto;
+
+  animation:
+    floatCharacter 1.6s infinite ease-in-out;
+}
+
+.characterBox p {
+  margin: 12px 0 0;
+
+  font-size: 18px;
+  font-weight: bold;
+
+  color: #555;
+}
+
+.incomeText {
+  font-size: 16px !important;
+  font-weight: bold;
+
+  color: #555;
+
+  line-height: 1.6;
+}
+
+@keyframes floatCharacter {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
