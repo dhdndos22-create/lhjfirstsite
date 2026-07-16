@@ -257,6 +257,11 @@ export function normalizeGamblingData(
         .beggar_lottery_last_bought_at ??
       null,
 
+    common_lottery_last_bought_at:
+      savedGamblingData
+        .common_lottery_last_bought_at ??
+      null,
+
     lottery: {
       beggar_ticket_count: Number(
         savedLottery
@@ -277,6 +282,27 @@ export function normalizeGamblingData(
           .beggar_total_won ??
         defaultGamblingData.lottery
           .beggar_total_won
+      ),
+
+      common_ticket_count: Number(
+        savedLottery
+          .common_ticket_count ??
+        defaultGamblingData.lottery
+          .common_ticket_count
+      ),
+
+      common_total_spent: Number(
+        savedLottery
+          .common_total_spent ??
+        defaultGamblingData.lottery
+          .common_total_spent
+      ),
+
+      common_total_won: Number(
+        savedLottery
+          .common_total_won ??
+        defaultGamblingData.lottery
+          .common_total_won
       )
     },
 
@@ -465,6 +491,10 @@ export function applySaveData(data) {
   const originalEmployeeData = stableStringify(
     data.employee_data
   );
+
+  const originalGamblingData = stableStringify(
+    data.gambling_data
+  );
   state.money = Number(
     data.money ?? 0
   );
@@ -544,12 +574,21 @@ export function applySaveData(data) {
     state.employeeData
   );
 
-  return {
-    employeeDataMigrated:
-      originalEmployeeData !== normalizedEmployeeData,
+  const normalizedGamblingData = stableStringify(
+    state.gamblingData
+  );
 
+  const employeeDataMigrated =
+    originalEmployeeData !== normalizedEmployeeData;
+
+  const gamblingDataMigrated =
+    originalGamblingData !== normalizedGamblingData;
+
+  return {
+    employeeDataMigrated,
+    gamblingDataMigrated,
     needsSave:
-      originalEmployeeData !== normalizedEmployeeData
+      employeeDataMigrated || gamblingDataMigrated
   };
 }
 

@@ -23,6 +23,7 @@ function getElements() {
     oddEvenCardCooldown: document.getElementById("oddEvenCardCooldown"),
     diceCardCooldown: document.getElementById("diceCardCooldown"),
     lotteryCardCooldown: document.getElementById("lotteryCardCooldown"),
+    commonLotteryCardCooldown: document.getElementById("commonLotteryCardCooldown"),
 
     oddEvenBetInput: document.getElementById("oddEvenBetInput"),
     oddChoiceBtn: document.getElementById("oddChoiceBtn"),
@@ -42,7 +43,12 @@ function getElements() {
     beggarLotteryBuyBtn: document.getElementById("beggarLotteryBuyBtn"),
     beggarLotteryCooldownText: document.getElementById("beggarLotteryCooldownText"),
     beggarLotteryResultText: document.getElementById("beggarLotteryResultText"),
-    beggarLotteryStatsText: document.getElementById("beggarLotteryStatsText")
+    beggarLotteryStatsText: document.getElementById("beggarLotteryStatsText"),
+
+    commonLotteryBuyBtn: document.getElementById("commonLotteryBuyBtn"),
+    commonLotteryCooldownText: document.getElementById("commonLotteryCooldownText"),
+    commonLotteryResultText: document.getElementById("commonLotteryResultText"),
+    commonLotteryStatsText: document.getElementById("commonLotteryStatsText")
   };
 }
 
@@ -51,7 +57,8 @@ export function initializeGambling() {
   const required = [
     "menuBtn", "panel", "closeBtn", "home",
     "oddEvenBetInput", "oddChoiceBtn", "evenChoiceBtn", "oddEvenPlayBtn",
-    "diceBetInput", "dicePlayBtn", "beggarLotteryBuyBtn"
+    "diceBetInput", "dicePlayBtn", "beggarLotteryBuyBtn",
+    "commonLotteryBuyBtn"
   ];
   const missing = required.filter((key) => !ui[key]);
   if (missing.length) {
@@ -77,6 +84,7 @@ export function initializeGambling() {
   ui.diceBetInput.addEventListener("input", updateGamblingUI);
 
   ui.beggarLotteryBuyBtn.addEventListener("click", buyBeggarLottery);
+  ui.commonLotteryBuyBtn.addEventListener("click", buyCommonLottery);
 
   showHome();
   updateGamblingUI();
@@ -227,15 +235,84 @@ async function buyBeggarLottery() {
   }
 }
 
+async function buyCommonLottery() {
+  if (isProcessing) return;
+  const config = GAMBLING_CONFIG.commonLottery;
+  const remaining = getCooldownRemaining(
+    state.gamblingData.common_lottery_last_bought_at,
+    config.cooldownMs
+  );
+
+  if (remaining > 0) {
+    return showResult(
+      ui.commonLotteryResultText,
+      `아직 ${formatRemainingTime(remaining)} 남았습니다.`,
+      false
+    );
+  }
+
+  if (state.money < config.price) {
+    return showResult(
+      ui.commonLotteryResultText,
+      `${formatMoney(config.price)}이 필요합니다.`,
+      false
+    );
+  }
+
+  isProcessing = true;
+  try {
+    state.money -= config.price;
+
+    const random = Math.random() * 100;
+    const result = config.rewards.find(
+      (item) => random >= item.min && random < item.max
+    );
+    const reward = result?.reward ?? 0;
+    state.money += reward;
+
+    const lottery = state.gamblingData.lottery;
+    lottery.common_ticket_count++;
+    lottery.common_total_spent += config.price;
+    lottery.common_total_won += reward;
+
+    state.gamblingData.common_lottery_last_bought_at =
+      new Date().toISOString();
+
+    showResult(
+      ui.commonLotteryResultText,
+      reward > 0
+        ? `축하합니다! ${result.label}!`
+        : "아쉽지만 꽝입니다.",
+      reward > 0
+    );
+
+    updateMainUI();
+    updateGamblingUI();
+    await saveGameData();
+  } finally {
+    isProcessing = false;
+  }
+}
+
 export function updateGamblingUI() {
   if (!ui) return;
   const oddRemaining = getCooldownRemaining(state.gamblingData.odd_even_last_played_at, GAMBLING_CONFIG.oddEven.cooldownMs);
   const diceRemaining = getCooldownRemaining(state.gamblingData.dice_last_played_at, GAMBLING_CONFIG.dice.cooldownMs);
   const lotteryRemaining = getCooldownRemaining(state.gamblingData.beggar_lottery_last_bought_at, GAMBLING_CONFIG.beggarLottery.cooldownMs);
+  const commonLotteryRemaining = getCooldownRemaining(
+    state.gamblingData.common_lottery_last_bought_at,
+    GAMBLING_CONFIG.commonLottery.cooldownMs
+  );
 
   setCooldown(ui.oddEvenCooldownText, ui.oddEvenCardCooldown, oddRemaining, "플레이");
   setCooldown(ui.diceCooldownText, ui.diceCardCooldown, diceRemaining, "플레이");
   setCooldown(ui.beggarLotteryCooldownText, ui.lotteryCardCooldown, lotteryRemaining, "구매");
+  setCooldown(
+    ui.commonLotteryCooldownText,
+    ui.commonLotteryCardCooldown,
+    commonLotteryRemaining,
+    "구매"
+  );
 
   const oddBet = Number(ui.oddEvenBetInput.value);
   ui.oddEvenPlayBtn.disabled = oddRemaining > 0 || !selectedOddEven || !Number.isFinite(oddBet) || oddBet <= 0 || oddBet > state.money;
@@ -245,6 +322,12 @@ export function updateGamblingUI() {
 
   ui.beggarLotteryBuyBtn.disabled = lotteryRemaining > 0 || state.money < GAMBLING_CONFIG.beggarLottery.price;
   ui.beggarLotteryBuyBtn.textContent = `거지로또 구매 (${formatMoney(GAMBLING_CONFIG.beggarLottery.price)})`;
+
+  ui.commonLotteryBuyBtn.disabled =
+    commonLotteryRemaining > 0 ||
+    state.money < GAMBLING_CONFIG.commonLottery.price;
+  ui.commonLotteryBuyBtn.textContent =
+    `서민로또 구매 (${formatMoney(GAMBLING_CONFIG.commonLottery.price)})`;
 
   const stats = state.gamblingData.stats;
   const totalPlays = stats.odd_even_plays + stats.dice_plays;
@@ -256,6 +339,7 @@ export function updateGamblingUI() {
 
   const lottery = state.gamblingData.lottery;
   ui.beggarLotteryStatsText.textContent = `구매 ${formatPlainNumber(lottery.beggar_ticket_count)}회 · 총 사용 ${formatMoney(lottery.beggar_total_spent)} · 총 당첨 ${formatMoney(lottery.beggar_total_won)}`;
+  ui.commonLotteryStatsText.textContent = `구매 ${formatPlainNumber(lottery.common_ticket_count)}회 · 총 사용 ${formatMoney(lottery.common_total_spent)} · 총 당첨 ${formatMoney(lottery.common_total_won)}`;
 }
 
 function setCooldown(detailElement, cardElement, remaining, action) {

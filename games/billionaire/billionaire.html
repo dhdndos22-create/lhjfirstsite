@@ -264,16 +264,17 @@
             <div id="lotteryCardCooldown" class="gamblingCardCooldown">지금 구매 가능</div>
           </button>
 
-          <div class="standardCard gamblingGameCard preparingCard">
+          <button class="standardCard gamblingGameCard" data-section="commonLotterySection" type="button">
             <div class="gamblingCardTop">
-              <span class="gamblingCardIcon">🔒</span>
+              <span class="gamblingCardIcon">💵</span>
               <div>
-                <h3>준비중</h3>
-                <p>새로운 도박 게임</p>
+                <h3>서민로또</h3>
+                <p>구매비 500,000원</p>
               </div>
             </div>
-            <p class="gamblingCardDescription">추후 새로운 게임이 추가됩니다.</p>
-          </div>
+            <p class="gamblingCardDescription">최대 3,000,000원까지 당첨되는 중급 로또입니다.</p>
+            <div id="commonLotteryCardCooldown" class="gamblingCardCooldown">지금 구매 가능</div>
+          </button>
         </div>
       </div>
 
@@ -329,6 +330,21 @@
         <div id="beggarLotteryCooldownText" class="cooldownText">지금 구매 가능</div>
         <div id="beggarLotteryResultText" class="resultBox">거지로또를 구매해보세요.</div>
         <div id="beggarLotteryStatsText" class="statsBox">구매 0회 · 총 사용 0원 · 총 당첨 0원</div>
+      </section>
+
+      <section id="commonLotterySection" class="gamblingDetail hidden">
+        <div class="gamblingDetailTop">
+          <button class="standardSecondaryBtn gamblingBackBtn" type="button">◀ 목록</button>
+          <h3>💵 서민로또</h3>
+        </div>
+        <div class="gamblingDescription">
+          구매 비용 500,000원 · 3분에 한 번 구매 가능<br><br>
+          꽝 30% / 800,000원 30% / 1,000,000원 20% / 2,000,000원 15% / 3,000,000원 5%
+        </div>
+        <button id="commonLotteryBuyBtn" class="standardPrimaryBtn gamblingBtn" type="button">서민로또 구매 (500,000원)</button>
+        <div id="commonLotteryCooldownText" class="cooldownText">지금 구매 가능</div>
+        <div id="commonLotteryResultText" class="resultBox">서민로또를 구매해보세요.</div>
+        <div id="commonLotteryStatsText" class="statsBox">구매 0회 · 총 사용 0원 · 총 당첨 0원</div>
       </section>
     </div>
 

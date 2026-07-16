@@ -181,11 +181,16 @@ export const DEFAULT_GAME_STATE = {
     odd_even_last_played_at: null,
     dice_last_played_at: null,
     beggar_lottery_last_bought_at: null,
+    common_lottery_last_bought_at: null,
 
     lottery: {
       beggar_ticket_count: 0,
       beggar_total_spent: 0,
-      beggar_total_won: 0
+      beggar_total_won: 0,
+
+      common_ticket_count: 0,
+      common_total_spent: 0,
+      common_total_won: 0
     },
 
     stats: {
@@ -452,6 +457,45 @@ export const GAMBLING_CONFIG = {
         max: 100,
         reward: 100000,
         label: "100,000원 당첨"
+      }
+    ]
+  },
+
+  /* 서민로또 */
+  commonLottery: {
+    price: 500000,
+    cooldownMs: 30 * 60 * 1000,
+
+    rewards: [
+      {
+        min: 0,
+        max: 30,
+        reward: 0,
+        label: "꽝"
+      },
+      {
+        min: 30,
+        max: 60,
+        reward: 800000,
+        label: "800,000원 당첨"
+      },
+      {
+        min: 60,
+        max: 80,
+        reward: 1000000,
+        label: "1,000,000원 당첨"
+      },
+      {
+        min: 80,
+        max: 95,
+        reward: 2000000,
+        label: "2,000,000원 당첨"
+      },
+      {
+        min: 95,
+        max: 100,
+        reward: 3000000,
+        label: "3,000,000원 당첨"
       }
     ]
   }
