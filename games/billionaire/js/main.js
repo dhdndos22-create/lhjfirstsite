@@ -1,5 +1,6 @@
 import {
-  AUTO_SAVE_INTERVAL
+  AUTO_SAVE_INTERVAL,
+  calculateLevelUpCost
 } from "./config.js";
 
 import {
@@ -37,7 +38,6 @@ import {
 
 import {
   initializeUpgrade,
-  calculateLevelUpCost,
   calculateClickUpgradeCost,
   calculateAutoUpgradeCost,
   calculateClickPower,
