@@ -4,7 +4,9 @@ import {
   EMPLOYEE_CONFIG,
   JOB_CHOICES,
   calculateJobReward,
-  getJobChoicesByLevel
+  getJobChoicesByLevel,
+  GAME_BALANCE,
+  ECONOMY_BALANCE_VERSION
 } from "./config.js";
 
 /* =========================
@@ -416,10 +418,13 @@ export function normalizeEmployeeData(
         hired,
 
         level: hired
-          ? Math.max(
-            1,
-            Math.floor(
-              Number(savedEmployee.level) || 1
+          ? Math.min(
+            Number(GAME_BALANCE.EMPLOYEE.MAX_LEVEL),
+            Math.max(
+              1,
+              Math.floor(
+                Number(savedEmployee.level) || 1
+              )
             )
           )
           : Number(defaultEmployee.level) || 0
@@ -434,7 +439,8 @@ export function normalizeEmployeeData(
 
   return {
     employees: normalizedEmployees,
-    total_hired: totalHired
+    total_hired: totalHired,
+    balance_version: ECONOMY_BALANCE_VERSION
   };
 }
 

@@ -90,9 +90,11 @@ function createEmployeeCard(employee) {
   const savedEmployee = getSavedEmployee(employee.id);
   const hired = savedEmployee.hired;
   const level = savedEmployee.level;
+  const maxLevel = Number(GAME_BALANCE.EMPLOYEE.MAX_LEVEL);
+  const isMaxLevel = hired && level >= maxLevel;
   const currentIncome = hired ? calculateEmployeeIncome(employee, level) : 0;
   const nextIncome = hired
-    ? calculateEmployeeIncome(employee, level + 1)
+    ? calculateEmployeeIncome(employee, Math.min(level + 1, maxLevel))
     : Number(employee.baseAutoIncome);
   const actionCost = hired
     ? calculateEmployeeUpgradeCost(employee, level)
@@ -112,8 +114,8 @@ function createEmployeeCard(employee) {
     <div class="employeeDetail">
       ${hired ? `
         <p><span>현재 초당 수입</span><strong>${formatMoney(currentIncome)} / 초</strong></p>
-        <p><span>다음 레벨 수입</span><strong>${formatMoney(nextIncome)} / 초</strong></p>
-        <p><span>업그레이드 비용</span><strong>${formatMoney(actionCost)}</strong></p>
+        <p><span>${isMaxLevel ? "최대 레벨 수입" : "다음 레벨 수입"}</span><strong>${formatMoney(nextIncome)} / 초</strong></p>
+        <p><span>업그레이드 비용</span><strong>${isMaxLevel ? "최대 레벨" : formatMoney(actionCost)}</strong></p>
       ` : `
         <p><span>고용 비용</span><strong>${formatMoney(employee.hireCost)}</strong></p>
         <p><span>고용 시 수입</span><strong>${formatMoney(employee.baseAutoIncome)} / 초</strong></p>
@@ -126,9 +128,9 @@ function createEmployeeCard(employee) {
   actionButton.type = "button";
   actionButton.className = "standardPrimaryBtn employeeActionBtn";
   actionButton.textContent = hired
-    ? `업그레이드 (${formatMoney(actionCost)})`
+    ? (isMaxLevel ? "최대 레벨" : `업그레이드 (${formatMoney(actionCost)})`)
     : `고용 (${formatMoney(actionCost)})`;
-  actionButton.disabled = state.money < actionCost || isProcessing;
+  actionButton.disabled = isMaxLevel || state.money < actionCost || isProcessing;
   actionButton.addEventListener("click", async (event) => {
     event.stopPropagation();
     if (hired) {
@@ -178,6 +180,10 @@ async function upgradeEmployee(employeeId) {
   const employee = findEmployeeConfig(employeeId);
   const savedEmployee = getSavedEmployee(employeeId);
   if (!employee || !savedEmployee.hired) return;
+
+  if (savedEmployee.level >= Number(GAME_BALANCE.EMPLOYEE.MAX_LEVEL)) {
+    return;
+  }
 
   const upgradeCost = calculateEmployeeUpgradeCost(employee, savedEmployee.level);
   if (state.money < upgradeCost) {
@@ -238,11 +244,14 @@ function updateVisibleEmployeeButtons() {
     if (!employee) return;
 
     const savedEmployee = getSavedEmployee(employee.id);
+    const isMaxLevel =
+      savedEmployee.hired &&
+      savedEmployee.level >= Number(GAME_BALANCE.EMPLOYEE.MAX_LEVEL);
     const actionCost = savedEmployee.hired
       ? calculateEmployeeUpgradeCost(employee, savedEmployee.level)
       : Number(employee.hireCost);
     const button = card.querySelector(".employeeActionBtn");
-    if (button) button.disabled = state.money < actionCost || isProcessing;
+    if (button) button.disabled = isMaxLevel || state.money < actionCost || isProcessing;
   });
 }
 

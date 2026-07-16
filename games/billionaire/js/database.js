@@ -1,7 +1,8 @@
 import {
   SUPABASE_URL,
   SUPABASE_KEY,
-  SAVE_TABLE
+  SAVE_TABLE,
+  GAME_BALANCE
 } from "./config.js";
 
 import {
@@ -201,11 +202,19 @@ export async function applyOfflineReward(
     };
   }
 
-  const offlineSeconds = Math.max(
+  const rawOfflineSeconds = Math.max(
     0,
     Math.floor(
       (Date.now() - lastTime) / 1000
     )
+  );
+
+  const maxOfflineSeconds =
+    Number(GAME_BALANCE.OFFLINE.MAX_HOURS) * 60 * 60;
+
+  const offlineSeconds = Math.min(
+    rawOfflineSeconds,
+    maxOfflineSeconds
   );
 
   if (offlineSeconds <= 0) {
@@ -219,11 +228,10 @@ export async function applyOfflineReward(
     offlineSeconds *
     getTotalAutoIncome();
 
-  /*
-    비접속 수입은 정상 수입의 1/5
-  */
-  const offlineReward =
-    Math.floor(normalReward / 5);
+  const offlineReward = Math.floor(
+    normalReward *
+    Number(GAME_BALANCE.OFFLINE.INCOME_RATE)
+  );
 
   state.money += offlineReward;
 
