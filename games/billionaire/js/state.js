@@ -7,7 +7,8 @@ import {
   getJobChoicesByLevel,
   GAME_BALANCE,
   ECONOMY_BALANCE_VERSION,
-  PET_CONFIG
+  PET_CONFIG,
+  calculateLevelUpCost
 } from "./config.js";
 
 /* =========================
@@ -561,8 +562,16 @@ export function applySaveData(data) {
     data.auto_upgrade_cost ?? 100
   );
 
-  state.levelUpCost = Number(
-    data.level_up_cost ?? 500
+  /*
+    DB에 저장된 이전 level_up_cost는 사용하지 않는다.
+    현재 레벨과 최신 COST_ANCHORS를 기준으로 항상 다시 계산한다.
+  */
+  const savedLevelUpCost = Number(
+    data.level_up_cost ?? 0
+  );
+
+  state.levelUpCost = calculateLevelUpCost(
+    state.level
   );
 
   state.jobData =
@@ -617,12 +626,19 @@ export function applySaveData(data) {
     originalGamblingData !== normalizedGamblingData;
   const petDataMigrated = originalPetData !== normalizedPetData;
 
+  const levelUpCostMigrated =
+    savedLevelUpCost !== state.levelUpCost;
+
   return {
     employeeDataMigrated,
     gamblingDataMigrated,
     petDataMigrated,
+    levelUpCostMigrated,
     needsSave:
-      employeeDataMigrated || gamblingDataMigrated || petDataMigrated
+      employeeDataMigrated ||
+      gamblingDataMigrated ||
+      petDataMigrated ||
+      levelUpCostMigrated
   };
 }
 

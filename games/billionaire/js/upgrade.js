@@ -1,6 +1,7 @@
 import {
   GAME_BALANCE,
-  CONTENT_UNLOCK_LEVELS
+  CONTENT_UNLOCK_LEVELS,
+  calculateLevelUpCost
 } from "./config.js";
 
 import { state } from "./state.js";
@@ -100,45 +101,6 @@ export function calculateAutoIncome(completedLevel) {
   return value;
 }
 
-/*
-  현재 레벨에서 다음 레벨로 올라갈 때 필요한 비용을 계산한다.
-  지정된 기준점 사이를 로그 보간하여 매 레벨 자연스럽게 증가한다.
-*/
-export function calculateLevelUpCost(currentLevel) {
-  const { MIN_LEVEL, MAX_LEVEL, COST_ANCHORS } = GAME_BALANCE.LEVEL;
-  const level = Math.floor(Number(currentLevel));
-
-  if (!Number.isFinite(level) || level < MIN_LEVEL) {
-    return COST_ANCHORS[0].cost;
-  }
-
-  if (level >= MAX_LEVEL) {
-    return null;
-  }
-
-  for (let i = 0; i < COST_ANCHORS.length - 1; i++) {
-    const left = COST_ANCHORS[i];
-    const right = COST_ANCHORS[i + 1];
-
-    if (level >= left.level && level <= right.level) {
-      if (level === left.level) return left.cost;
-      if (level === right.level) return right.cost;
-
-      const progress =
-        (level - left.level) /
-        (right.level - left.level);
-
-      const logCost =
-        Math.log(left.cost) +
-        (Math.log(right.cost) - Math.log(left.cost)) * progress;
-
-      return Math.max(1, Math.round(Math.exp(logCost)));
-    }
-  }
-
-  return COST_ANCHORS[COST_ANCHORS.length - 1].cost;
-}
-
 function getUnlockedContent(level) {
   const content = [];
 
@@ -152,6 +114,10 @@ function getUnlockedContent(level) {
 
   if (level === CONTENT_UNLOCK_LEVELS.EMPLOYEE) {
     content.push({ icon: "👷", title: "알바 고용", message: "알바를 고용하고 업그레이드할 수 있습니다." });
+  }
+
+  if (level === CONTENT_UNLOCK_LEVELS.PET) {
+    content.push({ icon: "🐾", title: "펫", message: "펫을 구매하고 장착해 총 수입을 비율로 증가시킬 수 있습니다." });
   }
 
   return content;

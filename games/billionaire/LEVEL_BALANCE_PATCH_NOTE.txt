@@ -1,0 +1,8 @@
+레벨 밸런스 패치
+
+- 누적 획득 1억 원 약 7일 목표 기준 레벨 비용표 적용
+- Lv.10 직업 / Lv.20 사업 / Lv.30 알바 / Lv.40 펫 해금
+- 기존 DB의 level_up_cost를 그대로 사용하지 않고 현재 레벨 기준으로 재계산
+- 기존 유저는 접속 시 새 level_up_cost로 자동 마이그레이션 후 저장
+- 최대 레벨 200에서는 levelUpCost 0 처리
+- 레벨 비용 계산 로직을 config.js의 calculateLevelUpCost로 통합

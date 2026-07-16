@@ -18,7 +18,7 @@ export const SAVE_TABLE =
 export const AUTO_SAVE_INTERVAL = 5000;
 
 /* 현재 경제 밸런스 버전 */
-export const ECONOMY_BALANCE_VERSION = 2;
+export const ECONOMY_BALANCE_VERSION = 3;
 
 /* =========================
    게임 밸런스
@@ -116,6 +116,51 @@ export const GAME_BALANCE = {
     MAX_HOURS: 24
   }
 };
+
+/* =========================
+   레벨업 비용 계산
+========================= */
+
+/*
+  현재 레벨에서 다음 레벨로 올라갈 때 필요한 비용을 계산한다.
+  COST_ANCHORS 사이를 로그 보간하여 자연스럽게 증가시킨다.
+*/
+export function calculateLevelUpCost(currentLevel) {
+  const { MIN_LEVEL, MAX_LEVEL, COST_ANCHORS } = GAME_BALANCE.LEVEL;
+  const level = Math.floor(Number(currentLevel));
+
+  if (!Number.isFinite(level) || level < MIN_LEVEL) {
+    return Number(COST_ANCHORS[0].cost);
+  }
+
+  if (level >= MAX_LEVEL) {
+    return 0;
+  }
+
+  for (let index = 0; index < COST_ANCHORS.length - 1; index++) {
+    const left = COST_ANCHORS[index];
+    const right = COST_ANCHORS[index + 1];
+
+    if (level < left.level || level > right.level) {
+      continue;
+    }
+
+    if (level === left.level) return Number(left.cost);
+    if (level === right.level) return Number(right.cost);
+
+    const progress =
+      (level - left.level) /
+      (right.level - left.level);
+
+    const logCost =
+      Math.log(Number(left.cost)) +
+      (Math.log(Number(right.cost)) - Math.log(Number(left.cost))) * progress;
+
+    return Math.max(1, Math.round(Math.exp(logCost)));
+  }
+
+  return Number(COST_ANCHORS[COST_ANCHORS.length - 1].cost);
+}
 
 /* =========================
    콘텐츠 해금 레벨
