@@ -72,11 +72,22 @@ export async function loadGameData() {
     job_data와 gambling_data도
     state.js에서 함께 처리된다.
   */
-  applySaveData(data);
+  const migrationResult =
+    applySaveData(data);
+
+  /*
+    기존 유저의 저장 데이터에 employee_data가 없거나
+    새 알바 항목이 빠져 있으면 현재 설정에 맞게 보완한 뒤
+    즉시 Supabase에도 새 구조를 저장한다.
+  */
+  if (migrationResult?.needsSave) {
+    await saveGameData();
+  }
 
   return {
     isNewUser: false,
-    lastSavedAt: data.last_saved_at
+    lastSavedAt: data.last_saved_at,
+    migrated: Boolean(migrationResult?.needsSave)
   };
 }
 

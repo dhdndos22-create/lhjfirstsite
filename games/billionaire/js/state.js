@@ -378,29 +378,39 @@ export function normalizeEmployeeData(
   const defaultEmployeeData =
     cloneDefaultState().employeeData;
 
-  if (
-    !savedEmployeeData ||
-    typeof savedEmployeeData !== "object"
-  ) {
-    return defaultEmployeeData;
-  }
+  const safeSavedData =
+    savedEmployeeData &&
+    typeof savedEmployeeData === "object"
+      ? savedEmployeeData
+      : {};
 
   const savedEmployees =
-    savedEmployeeData.employees &&
-      typeof savedEmployeeData.employees ===
-      "object"
-      ? savedEmployeeData.employees
+    safeSavedData.employees &&
+    typeof safeSavedData.employees === "object"
+      ? safeSavedData.employees
       : {};
 
   const normalizedEmployees = {};
 
+  /*
+    현재 EMPLOYEE_CONFIG를 기준으로 알바 목록을 다시 만든다.
+    기존 유저가 보유한 알바와 강화 레벨은 유지하고,
+    새로 추가된 알바는 미고용·레벨 0으로 자동 생성한다.
+  */
   EMPLOYEE_CONFIG.forEach(
     function (employee) {
+      const defaultEmployee =
+        defaultEmployeeData.employees[employee.id] ||
+        { hired: false, level: 0 };
+
       const savedEmployee =
-        savedEmployees[employee.id];
+        savedEmployees[employee.id] &&
+        typeof savedEmployees[employee.id] === "object"
+          ? savedEmployees[employee.id]
+          : {};
 
       const hired =
-        savedEmployee?.hired === true;
+        savedEmployee.hired === true;
 
       normalizedEmployees[employee.id] = {
         hired,
@@ -409,30 +419,35 @@ export function normalizeEmployeeData(
           ? Math.max(
             1,
             Math.floor(
-              Number(
-                savedEmployee?.level
-              ) || 1
+              Number(savedEmployee.level) || 1
             )
           )
-          : 0
+          : Number(defaultEmployee.level) || 0
       };
     }
   );
 
+  /* 저장된 total_hired 값은 신뢰하지 않고 실제 상태로 재계산한다. */
+  const totalHired = Object.values(
+    normalizedEmployees
+  ).filter(employee => employee.hired).length;
+
   return {
     employees: normalizedEmployees,
-
-    total_hired: Math.max(
-      0,
-      Math.floor(
-        Number(
-          savedEmployeeData.total_hired ??
-          defaultEmployeeData.total_hired ??
-          0
-        )
-      )
-    )
+    total_hired: totalHired
   };
+}
+
+/* =========================
+   저장 데이터 마이그레이션 확인
+========================= */
+
+function stableStringify(value) {
+  try {
+    return JSON.stringify(value ?? null);
+  } catch (error) {
+    return "";
+  }
 }
 
 
@@ -441,6 +456,9 @@ export function normalizeEmployeeData(
 ========================= */
 
 export function applySaveData(data) {
+  const originalEmployeeData = stableStringify(
+    data.employee_data
+  );
   state.money = Number(
     data.money ?? 0
   );
@@ -516,7 +534,17 @@ export function applySaveData(data) {
       data.employee_data
     );
 
+  const normalizedEmployeeData = stableStringify(
+    state.employeeData
+  );
 
+  return {
+    employeeDataMigrated:
+      originalEmployeeData !== normalizedEmployeeData,
+
+    needsSave:
+      originalEmployeeData !== normalizedEmployeeData
+  };
 }
 
 /* =========================
