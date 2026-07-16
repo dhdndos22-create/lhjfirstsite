@@ -88,3 +88,117 @@
   .diceButtons { grid-template-columns: repeat(3, 1fr); gap: 7px; }
   .gamblingDescription, .statsBox, .resultBox { font-size: 12px; padding: 10px; }
 }
+
+
+/* 주사위 굴림 애니메이션 */
+.diceAnimation {
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px auto 2px;
+  border: 4px solid #ffcc33;
+  border-radius: 24px;
+  background: #fffaf0;
+  box-shadow: 0 7px 0 #d49a00;
+  font-size: 68px;
+  line-height: 1;
+  user-select: none;
+}
+
+.diceAnimation.rolling {
+  animation: diceRolling .18s linear infinite;
+}
+
+.diceAnimation.landed {
+  animation: diceLanded .28s ease-out;
+}
+
+@keyframes diceRolling {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.12) translateY(-4px); }
+  50% { transform: rotate(180deg) scale(.9); }
+  75% { transform: rotate(270deg) scale(1.12) translateY(4px); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes diceLanded {
+  0% { transform: scale(1.35); }
+  65% { transform: scale(.9); }
+  100% { transform: scale(1); }
+}
+
+/* 홀짝 결과 확인 팝업 */
+.gamblingResultOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 6500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(20, 35, 55, .68);
+  backdrop-filter: blur(3px);
+}
+
+.gamblingResultModal {
+  width: min(90vw, 410px);
+  padding: 26px 22px 22px;
+  border: 5px solid #ffcc33;
+  border-radius: 26px;
+  background: #fff;
+  text-align: center;
+  box-shadow: 0 10px 0 #d49a00, 0 18px 35px rgba(0, 0, 0, .28);
+  animation: gamblingResultOpen .18s ease-out;
+}
+
+.gamblingResultIcon {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  border-radius: 22px;
+  background: #fff4bf;
+  font-size: 40px;
+}
+
+.gamblingResultModal h2 {
+  margin: 0;
+  color: #e67e00;
+  font-size: 25px;
+}
+
+.gamblingResultMessage {
+  margin: 16px 0 20px;
+  padding: 15px;
+  border-radius: 16px;
+  background: #fff8d7;
+  color: #444;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.gamblingResultModal button {
+  width: 100%;
+}
+
+@keyframes gamblingResultOpen {
+  from { transform: scale(.88); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 600px) {
+  .diceAnimation {
+    width: 78px;
+    height: 78px;
+    font-size: 54px;
+  }
+
+  .gamblingResultMessage {
+    font-size: 14px;
+  }
+}
