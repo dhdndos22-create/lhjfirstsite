@@ -59,30 +59,39 @@ export const GAME_BALANCE = {
 
   /* 플레이어 레벨 */
   LEVEL: {
-    MIN_LEVEL: 1,
-    MAX_LEVEL: 200,
+  MIN_LEVEL: 1,
+  MAX_LEVEL: 200,
 
-    /* 기준점 사이는 로그 보간하여 자연스럽게 증가 */
-    COST_ANCHORS: [
-      { level: 1, cost: 100 },
-      { level: 5, cost: 1000 },
-      { level: 10, cost: 50000 },
-      { level: 20, cost: 200000 },
-      { level: 30, cost: 500000 },
-      { level: 40, cost: 1000000 },
-      { level: 50, cost: 4500000 },
-      { level: 60, cost: 10000000 },
-      { level: 70, cost: 25000000 },
-      { level: 80, cost: 50000000 },
-      { level: 90, cost: 100000000 },
-      { level: 100, cost: 200000000 },
-      { level: 125, cost: 4000000000 },
-      { level: 150, cost: 8000000000 },
-      { level: 175, cost: 20000000000 },
-      { level: 190, cost: 70000000000 },
-      { level: 199, cost: 100000000000 }
-    ]
-  },
+  COST_ANCHORS: [
+    { level: 1, cost: 100 },
+    { level: 5, cost: 1500 },
+    { level: 10, cost: 15000 },
+
+    { level: 15, cost: 50000 },
+    { level: 20, cost: 120000 },
+
+    { level: 25, cost: 250000 },
+    { level: 30, cost: 500000 },
+
+    { level: 35, cost: 900000 },
+    { level: 40, cost: 1500000 },
+
+    { level: 45, cost: 2500000 },
+    { level: 50, cost: 4000000 },
+
+    { level: 60, cost: 10000000 },
+    { level: 70, cost: 25000000 },
+    { level: 80, cost: 60000000 },
+    { level: 90, cost: 150000000 },
+    { level: 100, cost: 350000000 },
+
+    { level: 125, cost: 2000000000 },
+    { level: 150, cost: 10000000000 },
+    { level: 175, cost: 50000000000 },
+    { level: 190, cost: 150000000000 },
+    { level: 199, cost: 500000000000 }
+  ]
+},
 
   /* 직업은 Lv.10~100에서 총 10번 선택 */
   JOB: {
@@ -603,25 +612,27 @@ export const PET_CONFIG = [
     name: "쵸파",
     species: "순록",
     icon: "🦌",
-    price: 50000000,
+    price: 15000000,
     clickRate: 0.08,
     autoRate: 0
   },
+
   {
     id: "bepo",
     name: "베포",
     species: "북극곰",
     icon: "🐻‍❄️",
-    price: 150000000,
+    price: 70000000,
     clickRate: 0,
     autoRate: 0.10
   },
+
   {
     id: "karoo",
     name: "카루",
     species: "도도새",
     icon: "🐦",
-    price: 500000000,
+    price: 250000000,
     clickRate: 0.06,
     autoRate: 0.06
   }
