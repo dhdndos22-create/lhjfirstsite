@@ -1,3 +1,9 @@
+import {
+  getLoggedInUsername,
+  requireHyojongLogin,
+  watchHyojongLogin
+} from "./fishing-auth.js";
+
 const startButton = document.getElementById("startButton");
 const bubbleLayer = document.getElementById("bubbleLayer");
 
@@ -8,21 +14,12 @@ const BUBBLE_COUNT_MAX = 11;
 let pressTimer = null;
 
 /*
-  모바일 브라우저의 주소창이 나타나거나 사라질 때도
-  게임 영역이 실제 보이는 화면 높이를 정확히 채우도록 한다.
+  피싱월드 어디서든 사용할 현재 효종월드 로그인 정보.
+  이후 로비·저장·랭킹·친구 시스템은 이 username을 기준으로 시작한다.
 */
-function updateAppHeight() {
-  const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
-  document.documentElement.style.setProperty(
-    "--app-height",
-    `${Math.round(viewportHeight)}px`
-  );
-}
-
-updateAppHeight();
-window.addEventListener("resize", updateAppHeight);
-window.addEventListener("orientationchange", updateAppHeight);
-window.visualViewport?.addEventListener("resize", updateAppHeight);
+export const fishingSession = {
+  username: getLoggedInUsername()
+};
 
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
@@ -46,9 +43,7 @@ function createBubble(x, y, index) {
 
   bubble.addEventListener(
     "animationend",
-    () => {
-      bubble.remove();
-    },
+    () => bubble.remove(),
     { once: true }
   );
 
@@ -59,11 +54,8 @@ function playBubbleEffect(button) {
   const screenRect = bubbleLayer.getBoundingClientRect();
   const buttonRect = button.getBoundingClientRect();
 
-  const centerX =
-    buttonRect.left - screenRect.left + buttonRect.width / 2;
-
-  const centerY =
-    buttonRect.top - screenRect.top + buttonRect.height * 0.7;
+  const centerX = buttonRect.left - screenRect.left + buttonRect.width / 2;
+  const centerY = buttonRect.top - screenRect.top + buttonRect.height * 0.7;
 
   const count = Math.floor(
     randomBetween(BUBBLE_COUNT_MIN, BUBBLE_COUNT_MAX + 1)
@@ -76,13 +68,9 @@ function playBubbleEffect(button) {
 
 function pressButton(button) {
   window.clearTimeout(pressTimer);
-
   button.classList.remove("is-pressed");
 
-  /*
-    같은 버튼을 빠르게 연속 클릭해도 애니메이션이 다시 시작되도록
-    브라우저의 레이아웃 계산을 한 번 발생시킨다.
-  */
+  /* 빠른 연속 터치에서도 애니메이션을 다시 시작한다. */
   void button.offsetWidth;
 
   button.classList.add("is-pressed");
@@ -91,6 +79,22 @@ function pressButton(button) {
   pressTimer = window.setTimeout(() => {
     button.classList.remove("is-pressed");
   }, PRESS_DURATION);
+}
+
+function initializeFishingLogin() {
+  fishingSession.username = getLoggedInUsername();
+
+  if (fishingSession.username) {
+    console.log(`피싱월드 로그인 연결 완료: ${fishingSession.username}`);
+  } else {
+    console.log("피싱월드 비로그인 상태");
+  }
+
+  watchHyojongLogin(() => {
+    fishingSession.username = null;
+    alert("효종월드에서 로그아웃되어 메인 화면으로 이동합니다.");
+    window.location.href = "../../index.html";
+  });
 }
 
 startButton.addEventListener("pointerdown", () => {
@@ -113,18 +117,26 @@ startButton.addEventListener("pointerleave", (event) => {
   }
 });
 
-/*
-  현재 단계에서는 로비나 실제 게임 화면으로 이동하지 않는다.
-  따라서 클릭 시 버튼 애니메이션만 실행된다.
-  나중에 게임 화면을 만들면 이 click 이벤트 안에서 화면 전환 함수를 호출한다.
-*/
 startButton.addEventListener("click", () => {
-  console.log("피싱월드 게임 시작 버튼 클릭");
+  const username = requireHyojongLogin();
+
+  if (!username) {
+    return;
+  }
+
+  fishingSession.username = username;
+  console.log(`게임 시작: ${username}`);
+
+  /*
+    다음 단계에서 여기에 로비 화면 전환 함수를 연결한다.
+    예: openLobby({ username });
+  */
 });
 
-/* 키보드 Enter / Space 입력에서도 같은 효과를 재생한다. */
 startButton.addEventListener("keydown", (event) => {
   if (event.key === "Enter" || event.key === " ") {
     pressButton(startButton);
   }
 });
+
+initializeFishingLogin();

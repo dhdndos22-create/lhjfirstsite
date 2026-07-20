@@ -1,9 +1,5 @@
 /* 피싱월드 시작 화면 전용 스타일 */
 
-:root {
-  --app-height: 100dvh;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -15,15 +11,13 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  overscroll-behavior: none;
   background: #041d2e;
 }
 
 body {
-  min-height: 100%;
   font-family: Arial, "Noto Sans KR", sans-serif;
   touch-action: manipulation;
-  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
 }
 
 button,
@@ -36,23 +30,16 @@ button {
   font: inherit;
 }
 
-/*
-  모바일 브라우저의 실제 보이는 화면 전체를 게임 영역으로 사용한다.
-  JS에서 --app-height를 갱신해 구형 모바일 브라우저의 주소창 변화에도 대응한다.
-*/
 #app {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: var(--app-height);
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background: #041d2e;
 }
 
-/*
-  이전처럼 1024 × 1536 비율로 화면을 제한하지 않고,
-  현재 모바일 화면의 가로·세로를 그대로 꽉 채운다.
-*/
 .start-screen {
   position: relative;
   width: 100%;
@@ -62,15 +49,10 @@ button {
   isolation: isolate;
 }
 
-/*
-  배경은 빈 공간 없이 화면을 완전히 채운다.
-  휴대폰 비율에 따라 이미지의 좌우 또는 위아래 일부가 조금 잘릴 수 있다.
-*/
 .start-background {
   position: absolute;
   inset: 0;
   z-index: 0;
-  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -78,7 +60,6 @@ button {
   pointer-events: none;
 }
 
-/* 모든 피싱월드 이미지 버튼에 공통으로 사용할 기본 구조 */
 .game-button {
   position: absolute;
   z-index: 10;
@@ -93,19 +74,13 @@ button {
   transform-origin: center;
 }
 
-/*
-  배경 위에 분리된 게임 시작 버튼 이미지를 배치한다.
-  위치나 크기를 바꾸려면 top과 width를 조절하면 된다.
-*/
 .start-button {
   left: 50%;
   top: 68.2%;
-  width: min(67%, 520px);
+  width: 67%;
   transform: translate(-50%, -50%);
   filter: drop-shadow(0 0.8rem 0.45rem rgba(0, 38, 67, 0.34));
-  transition:
-    transform 90ms ease-out,
-    filter 90ms ease-out;
+  transition: transform 90ms ease-out, filter 90ms ease-out;
 }
 
 .start-button img {
@@ -118,22 +93,18 @@ button {
 @media (hover: hover) {
   .start-button:hover {
     transform: translate(-50%, -51.5%) scale(1.025);
-    filter:
-      brightness(1.04)
+    filter: brightness(1.04)
       drop-shadow(0 1rem 0.55rem rgba(0, 38, 67, 0.38));
   }
 }
 
-/* 버튼을 누르는 순간 살짝 아래로 들어가는 효과 */
 .start-button.is-pressed,
 .start-button:active {
   transform: translate(-50%, -45.5%) scale(0.94);
-  filter:
-    brightness(0.94)
+  filter: brightness(0.94)
     drop-shadow(0 0.28rem 0.18rem rgba(0, 38, 67, 0.35));
 }
 
-/* 거품은 게임 화면 전체 위에서 재생된다. */
 .bubble-layer {
   position: absolute;
   inset: 0;
@@ -151,15 +122,14 @@ button {
   border: max(1px, calc(var(--bubble-size) * 0.08)) solid rgba(255, 255, 255, 0.88);
   border-radius: 50%;
   opacity: 0;
-  background:
-    radial-gradient(
-      circle at 30% 24%,
-      rgba(255, 255, 255, 0.95) 0 10%,
-      rgba(255, 255, 255, 0.35) 11% 26%,
-      rgba(84, 207, 255, 0.18) 50%,
-      rgba(0, 116, 181, 0.08) 72%,
-      rgba(255, 255, 255, 0.18) 100%
-    );
+  background: radial-gradient(
+    circle at 30% 24%,
+    rgba(255, 255, 255, 0.95) 0 10%,
+    rgba(255, 255, 255, 0.35) 11% 26%,
+    rgba(84, 207, 255, 0.18) 50%,
+    rgba(0, 116, 181, 0.08) 72%,
+    rgba(255, 255, 255, 0.18) 100%
+  );
   box-shadow:
     inset calc(var(--bubble-size) * -0.08) calc(var(--bubble-size) * -0.12)
       calc(var(--bubble-size) * 0.18) rgba(0, 102, 164, 0.18),
@@ -172,11 +142,7 @@ button {
 @keyframes bubble-rise {
   0% {
     opacity: 0;
-    transform:
-      translate(-50%, -50%)
-      translateX(0)
-      translateY(0)
-      scale(0.2);
+    transform: translate(-50%, -50%) translateX(0) translateY(0) scale(0.2);
   }
 
   12% {
@@ -184,40 +150,29 @@ button {
   }
 
   45% {
-    transform:
-      translate(-50%, -50%)
-      translateX(var(--bubble-sway))
-      translateY(calc(var(--bubble-rise) * -0.45))
-      scale(0.9);
+    transform: translate(-50%, -50%) translateX(var(--bubble-sway))
+      translateY(calc(var(--bubble-rise) * -0.45)) scale(0.9);
   }
 
   78% {
     opacity: 0.76;
-    transform:
-      translate(-50%, -50%)
-      translateX(calc(var(--bubble-sway) * -0.55))
-      translateY(calc(var(--bubble-rise) * -0.8))
-      scale(1);
+    transform: translate(-50%, -50%) translateX(calc(var(--bubble-sway) * -0.55))
+      translateY(calc(var(--bubble-rise) * -0.8)) scale(1);
   }
 
   100% {
     opacity: 0;
-    transform:
-      translate(-50%, -50%)
-      translateX(calc(var(--bubble-sway) * 0.35))
-      translateY(calc(var(--bubble-rise) * -1))
-      scale(1.12);
+    transform: translate(-50%, -50%) translateX(calc(var(--bubble-sway) * 0.35))
+      translateY(calc(var(--bubble-rise) * -1)) scale(1.12);
   }
 }
 
-/* 키보드 사용자를 위한 포커스 표시 */
 .start-button:focus-visible {
   outline: 4px solid rgba(255, 255, 255, 0.95);
   outline-offset: 8px;
   border-radius: 24%;
 }
 
-/* 움직임 최소화 설정을 사용 중인 기기 */
 @media (prefers-reduced-motion: reduce) {
   .start-button {
     transition: none;
@@ -225,15 +180,5 @@ button {
 
   .click-bubble {
     animation-duration: 1ms;
-  }
-}
-
-/*
-  가로 화면에서도 검은 여백 없이 화면 전체를 사용한다.
-  피싱월드는 세로 플레이가 기준이므로 UI는 중앙을 기준으로 유지된다.
-*/
-@media (orientation: landscape) {
-  .start-button {
-    width: min(42%, 520px);
   }
 }
