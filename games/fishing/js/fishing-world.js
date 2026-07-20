@@ -7,6 +7,8 @@ import {
 const startScreen = document.getElementById("startScreen");
 const lobbyScreen = document.getElementById("lobbyScreen");
 const startButton = document.getElementById("startButton");
+const menuButton = document.getElementById("menuButton");
+const fishingButton = document.getElementById("fishingButton");
 const bubbleLayer = document.getElementById("bubbleLayer");
 
 const PRESS_DURATION = 170;
@@ -109,6 +111,36 @@ function pressButton(button) {
   }, PRESS_DURATION);
 }
 
+
+function bindBubbleButton(button, onClick) {
+  button.addEventListener("pointerdown", () => {
+    pressButton(button);
+  });
+
+  button.addEventListener("pointerup", () => {
+    window.setTimeout(() => {
+      button.classList.remove("is-pressed");
+    }, 70);
+  });
+
+  button.addEventListener("pointercancel", () => {
+    button.classList.remove("is-pressed");
+  });
+
+  button.addEventListener("pointerleave", (event) => {
+    if (event.buttons > 0) {
+      button.classList.remove("is-pressed");
+    }
+  });
+
+  button.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      pressButton(button);
+    }
+  });
+
+  button.addEventListener("click", onClick);
+}
 function initializeFishingLogin() {
   fishingSession.username = getLoggedInUsername();
 
@@ -125,27 +157,7 @@ function initializeFishingLogin() {
   });
 }
 
-startButton.addEventListener("pointerdown", () => {
-  pressButton(startButton);
-});
-
-startButton.addEventListener("pointerup", () => {
-  window.setTimeout(() => {
-    startButton.classList.remove("is-pressed");
-  }, 70);
-});
-
-startButton.addEventListener("pointercancel", () => {
-  startButton.classList.remove("is-pressed");
-});
-
-startButton.addEventListener("pointerleave", (event) => {
-  if (event.buttons > 0) {
-    startButton.classList.remove("is-pressed");
-  }
-});
-
-startButton.addEventListener("click", () => {
+bindBubbleButton(startButton, () => {
   if (isOpeningLobby) {
     return;
   }
@@ -165,10 +177,16 @@ startButton.addEventListener("click", () => {
   }, SCREEN_CHANGE_DELAY);
 });
 
-startButton.addEventListener("keydown", (event) => {
-  if (event.key === "Enter" || event.key === " ") {
-    pressButton(startButton);
-  }
+bindBubbleButton(menuButton, () => {
+  window.setTimeout(() => {
+    alert("메뉴 화면은 다음 단계에서 연결할 예정입니다.");
+  }, 120);
+});
+
+bindBubbleButton(fishingButton, () => {
+  window.setTimeout(() => {
+    alert("낚시 화면은 다음 단계에서 연결할 예정입니다.");
+  }, 120);
 });
 
 initializeFishingLogin();

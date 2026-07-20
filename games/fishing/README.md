@@ -12,3 +12,9 @@
 - `images/lobby-background.png`: 메인 로비 배경
 
 다음 단계에서는 `lobbyMenu` 안에 상점, 장비, 뽑기 등의 메뉴 버튼을 추가하면 된다.
+
+
+## 로비 하단 버튼
+- 왼쪽: menu-button-1.png + HTML 텍스트 `메뉴`
+- 오른쪽: menu-button-2.png + HTML 텍스트 `낚시하기`
+- 두 버튼 모두 터치/클릭 시 물방울 효과가 실행됩니다.

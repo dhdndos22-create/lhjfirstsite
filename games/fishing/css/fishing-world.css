@@ -230,3 +230,105 @@ button {
     animation-duration: 1ms;
   }
 }
+
+/* 로비 하단 공통 버튼 */
+.lobby-menu {
+  left: 0;
+  right: 0;
+  bottom: max(1.5%, env(safe-area-inset-bottom));
+  width: 100%;
+  padding: 0 3.5%;
+  transform: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 3%;
+  pointer-events: none;
+}
+
+.lobby-action-button {
+  position: relative;
+  z-index: 12;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  transform-origin: center bottom;
+  transition: transform 90ms ease-out, filter 90ms ease-out;
+}
+
+.lobby-action-button img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+.lobby-menu-button {
+  width: 38%;
+  max-width: 290px;
+  filter: drop-shadow(0 0.55rem 0.32rem rgba(0, 35, 53, 0.32));
+}
+
+.lobby-fishing-button {
+  width: 46%;
+  max-width: 350px;
+  filter: drop-shadow(0 0.55rem 0.32rem rgba(0, 35, 53, 0.34));
+}
+
+.lobby-button-label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  width: 65%;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.lobby-menu-label {
+  top: 61%;
+  color: #5a3116;
+  font-size: clamp(20px, 6vw, 38px);
+  text-shadow:
+    0 2px 0 #ffe9b1,
+    0 4px 4px rgba(65, 26, 0, 0.28);
+}
+
+.lobby-fishing-label {
+  top: 51%;
+  color: #ffffff;
+  font-size: clamp(20px, 6vw, 40px);
+  text-shadow:
+    0 3px 0 #075e9a,
+    0 5px 5px rgba(0, 34, 74, 0.38);
+}
+
+.lobby-action-button.is-pressed,
+.lobby-action-button:active {
+  transform: translateY(7%) scale(0.93);
+  filter: brightness(0.92)
+    drop-shadow(0 0.18rem 0.12rem rgba(0, 35, 53, 0.28));
+}
+
+@media (hover: hover) {
+  .lobby-action-button:hover {
+    transform: translateY(-2%) scale(1.025);
+    filter: brightness(1.04)
+      drop-shadow(0 0.75rem 0.4rem rgba(0, 35, 53, 0.38));
+  }
+}
+
+.lobby-action-button:focus-visible {
+  outline: 4px solid rgba(255, 255, 255, 0.96);
+  outline-offset: 5px;
+  border-radius: 18%;
+}

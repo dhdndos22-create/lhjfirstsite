@@ -36,7 +36,6 @@
         >
       </button>
 
-      <div id="bubbleLayer" class="bubble-layer" aria-hidden="true"></div>
     </section>
 
     <!-- 메인 로비 화면 -->
@@ -53,9 +52,30 @@
         draggable="false"
       >
 
-      <!-- 다음 단계에서 상점, 장비, 뽑기 등의 메뉴 버튼을 이 안에 추가한다. -->
-      <div id="lobbyMenu" class="lobby-menu" aria-label="로비 메뉴"></div>
+      <div id="lobbyMenu" class="lobby-menu" aria-label="로비 메뉴">
+        <button
+          id="menuButton"
+          class="lobby-action-button lobby-menu-button"
+          type="button"
+          aria-label="메뉴 열기"
+        >
+          <img src="./images/menu-button-1.png" alt="" draggable="false">
+          <span class="lobby-button-label lobby-menu-label">메뉴</span>
+        </button>
+
+        <button
+          id="fishingButton"
+          class="lobby-action-button lobby-fishing-button"
+          type="button"
+          aria-label="낚시하기"
+        >
+          <img src="./images/menu-button-2.png" alt="" draggable="false">
+          <span class="lobby-button-label lobby-fishing-label">낚시하기</span>
+        </button>
+      </div>
     </section>
+
+    <div id="bubbleLayer" class="bubble-layer" aria-hidden="true"></div>
   </main>
 
   <script type="module" src="./js/fishing-world.js"></script>
