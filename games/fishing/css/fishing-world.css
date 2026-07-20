@@ -530,3 +530,74 @@ button {
     transform: translateY(-2px);
   }
 }
+
+
+/* 상점 메인 화면 */
+.shop-screen {
+  background: #071a32;
+}
+
+.shop-main-background {
+  object-fit: fill;
+}
+
+.shop-back-button {
+  position: absolute;
+  top: max(18px, env(safe-area-inset-top));
+  left: 4%;
+  z-index: 24;
+  width: clamp(44px, 12vw, 72px);
+  aspect-ratio: 1;
+  border: 2px solid rgba(255, 214, 112, 0.95);
+  border-radius: 50%;
+  background: rgba(4, 24, 49, 0.88);
+  color: #fff3c4;
+  font-size: clamp(26px, 7vw, 42px);
+  font-weight: 900;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+  transition: transform 90ms ease, filter 90ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.shop-back-button.is-pressed,
+.shop-back-button:active {
+  transform: translateY(4px) scale(0.93);
+  filter: brightness(0.9);
+}
+
+.shop-title {
+  position: absolute;
+  top: max(22px, env(safe-area-inset-top));
+  left: 50%;
+  z-index: 22;
+  margin: 0;
+  transform: translateX(-50%);
+  color: #fff4ca;
+  font-size: clamp(24px, 7vw, 44px);
+  font-weight: 900;
+  text-shadow: 0 3px 0 #5e3b08, 0 5px 10px rgba(0,0,0,0.45);
+}
+
+.shop-ready-text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 22;
+  width: 72%;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  color: rgba(255,255,255,0.78);
+  font-size: clamp(14px, 3.8vw, 23px);
+  font-weight: 700;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+}
+
+.shop-back-button:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 4px;
+}

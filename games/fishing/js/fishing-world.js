@@ -6,12 +6,14 @@ import {
 
 const startScreen = document.getElementById("startScreen");
 const lobbyScreen = document.getElementById("lobbyScreen");
+const shopScreen = document.getElementById("shopScreen");
 
 const startButton = document.getElementById("startButton");
 const menuButton = document.getElementById("menuButton");
 const fishingButton = document.getElementById("fishingButton");
 const quickMenuPanel = document.getElementById("quickMenuPanel");
 const quickMenuItems = [...document.querySelectorAll(".quick-menu-item")];
+const shopBackButton = document.getElementById("shopBackButton");
 
 const levelStatusButton = document.getElementById("levelStatusButton");
 const goldStatusButton = document.getElementById("goldStatusButton");
@@ -63,7 +65,8 @@ function randomBetween(min, max) {
 function changeScreen(nextScreenName) {
   const screens = {
     start: startScreen,
-    lobby: lobbyScreen
+    lobby: lobbyScreen,
+    shop: shopScreen
   };
 
   const nextScreen = screens[nextScreenName];
@@ -323,20 +326,35 @@ bindBubbleButton(menuButton, () => {
 
 quickMenuItems.forEach((button) => {
   bindBubbleButton(button, () => {
+    const menuType = button.dataset.menu;
+
+    if (menuType === "shop") {
+      setQuickMenuOpen(false);
+      window.setTimeout(() => {
+        changeScreen("shop");
+      }, 120);
+      return;
+    }
+
     const menuNames = {
-      shop: "상점",
       equipment: "장비",
       draw: "뽑기",
       achievement: "업적",
       mail: "우편"
     };
 
-    const menuName = menuNames[button.dataset.menu] ?? "메뉴";
+    const menuName = menuNames[menuType] ?? "메뉴";
 
     window.setTimeout(() => {
       alert(`${menuName} 화면은 다음 단계에서 연결할 예정입니다.`);
     }, 100);
   });
+});
+
+bindBubbleButton(shopBackButton, () => {
+  window.setTimeout(() => {
+    changeScreen("lobby");
+  }, 100);
 });
 
 document.addEventListener("pointerdown", (event) => {
