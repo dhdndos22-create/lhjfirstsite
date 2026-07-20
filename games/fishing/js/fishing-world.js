@@ -4,14 +4,6 @@ import {
   watchHyojongLogin
 } from "./fishing-auth.js";
 
-import {
-  CHARACTER_CATALOG,
-  DEFAULT_EQUIPMENT,
-  registerCharacterTarget,
-  rebuildCharacterEverywhere
-} from "./character-composer.js";
-
-
 const startScreen = document.getElementById("startScreen");
 const lobbyScreen = document.getElementById("lobbyScreen");
 
@@ -248,7 +240,11 @@ bindBubbleButton(energyStatusButton, () => {
   }, 100);
 });
 
-bindBubbleButton(menuButton, () => {});
+bindBubbleButton(menuButton, () => {
+  window.setTimeout(() => {
+    alert("메뉴 화면은 다음 단계에서 연결할 예정입니다.");
+  }, 120);
+});
 
 bindBubbleButton(fishingButton, () => {
   window.setTimeout(() => {
@@ -258,197 +254,3 @@ bindBubbleButton(fishingButton, () => {
 
 updateLobbyStatus(playerState);
 initializeFishingLogin();
-
-
-/* =========================
-   안전 장비 장착 및 캐릭터 출력
-========================= */
-
-const characterButton = document.getElementById("characterButton");
-const lobbyCharacterImage =
-  document.getElementById("lobbyCharacterImage");
-
-const equipmentPanel = document.getElementById("equipmentPanel");
-const equipmentCloseButton =
-  document.getElementById("equipmentCloseButton");
-const equipmentSlots =
-  [...document.querySelectorAll(".equipment-slot")];
-const equipmentOptions =
-  document.getElementById("equipmentOptions");
-
-const slotMap = {
-  head: "head",
-  top: "top",
-  bottom: "bottom",
-  shoes: "shoes",
-  rod: "rodFront"
-};
-
-let selectedEquipmentSlot = "head";
-let equippedItems = { ...DEFAULT_EQUIPMENT };
-let rebuildQueue = Promise.resolve();
-
-function getEquipmentSaveKey() {
-  return `fishingEquipmentV2:${fishingSession.username || "guest"}`;
-}
-
-function loadEquipmentState() {
-  try {
-    const saved = JSON.parse(
-      localStorage.getItem(getEquipmentSaveKey())
-    );
-
-    if (!saved || typeof saved !== "object") {
-      return;
-    }
-
-    Object.entries(DEFAULT_EQUIPMENT).forEach(([slot, defaultId]) => {
-      const savedId = saved[slot];
-
-      equippedItems[slot] =
-        CHARACTER_CATALOG[slot]?.[savedId]
-          ? savedId
-          : defaultId;
-    });
-  } catch (error) {
-    console.warn("장비 저장 데이터를 읽지 못했습니다.", error);
-  }
-}
-
-function saveEquipmentState() {
-  localStorage.setItem(
-    getEquipmentSaveKey(),
-    JSON.stringify(equippedItems)
-  );
-}
-
-function queueCharacterRebuild() {
-  rebuildQueue = rebuildQueue
-    .catch(() => {})
-    .then(() => rebuildCharacterEverywhere(equippedItems))
-    .catch((error) => {
-      console.error("캐릭터 갱신 실패:", error);
-    });
-
-  return rebuildQueue;
-}
-
-async function equipItem(slot, itemId) {
-  if (!CHARACTER_CATALOG[slot]?.[itemId]) {
-    console.error(`존재하지 않는 장비: ${slot}/${itemId}`);
-    return;
-  }
-
-  equippedItems[slot] = itemId;
-  saveEquipmentState();
-
-  await queueCharacterRebuild();
-  renderEquipmentOptions(selectedEquipmentSlot);
-}
-
-function renderEquipmentOptions(uiSlot) {
-  selectedEquipmentSlot = uiSlot;
-  equipmentOptions.replaceChildren();
-
-  equipmentSlots.forEach((button) => {
-    button.classList.toggle(
-      "is-selected",
-      button.dataset.slot === uiSlot
-    );
-  });
-
-  const actualSlot = slotMap[uiSlot];
-  const items = CHARACTER_CATALOG[actualSlot] ?? {};
-
-  Object.entries(items).forEach(([itemId, item]) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "equipment-option";
-    button.textContent = item.name;
-
-    if (equippedItems[actualSlot] === itemId) {
-      button.classList.add("is-equipped");
-      button.textContent += " · 장착 중";
-    }
-
-    button.addEventListener("click", async () => {
-      button.disabled = true;
-
-      try {
-        await equipItem(actualSlot, itemId);
-      } finally {
-        button.disabled = false;
-      }
-    });
-
-    equipmentOptions.appendChild(button);
-  });
-
-  const guide = document.createElement("p");
-  guide.className = "equipment-guide";
-  guide.textContent =
-    "규격이 맞지 않는 PNG는 자동으로 제외되므로 캐릭터가 깨지지 않습니다. " +
-    "신규 장비는 1024×1536 투명 PNG로 등록하세요.";
-
-  equipmentOptions.appendChild(guide);
-}
-
-function openEquipmentPanel(initialSlot = "head") {
-  renderEquipmentOptions(initialSlot);
-  equipmentPanel.classList.add("is-open");
-  equipmentPanel.setAttribute("aria-hidden", "false");
-}
-
-function closeEquipmentPanel() {
-  equipmentPanel.classList.remove("is-open");
-  equipmentPanel.setAttribute("aria-hidden", "true");
-}
-
-equipmentSlots.forEach((button) => {
-  button.addEventListener("click", () => {
-    renderEquipmentOptions(button.dataset.slot);
-  });
-});
-
-characterButton.addEventListener("click", () => {
-  playBubbleEffect(characterButton);
-  openEquipmentPanel("head");
-});
-
-equipmentCloseButton.addEventListener(
-  "click",
-  closeEquipmentPanel
-);
-
-equipmentPanel.addEventListener("click", (event) => {
-  if (event.target === equipmentPanel) {
-    closeEquipmentPanel();
-  }
-});
-
-menuButton.addEventListener("click", () => {
-  openEquipmentPanel(selectedEquipmentSlot);
-});
-
-window.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") {
-    closeEquipmentPanel();
-  }
-});
-
-/*
-  다른 화면에 캐릭터를 출력할 때도 같은 완성 개체를 사용한다.
-
-  예:
-  registerCharacterTarget(
-    document.getElementById("profileCharacterImage")
-  );
-
-  registerCharacterTarget(
-    document.getElementById("fishingCharacterImage")
-  );
-*/
-registerCharacterTarget(lobbyCharacterImage);
-
-loadEquipmentState();
-queueCharacterRebuild();
