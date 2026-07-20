@@ -60,7 +60,7 @@
           aria-label="레벨 정보"
         >
           <img
-            src="./images/level-gauge-ui.png"
+            src="./images/level-status-ui-new.png"
             class="status-ui-image"
             alt=""
             draggable="false"
@@ -82,7 +82,7 @@
           aria-label="보유 골드"
         >
           <img
-            src="./images/gold-ui.png"
+            src="./images/gold-status-ui-new.png"
             class="status-ui-image"
             alt=""
             draggable="false"
@@ -98,7 +98,7 @@
           aria-label="에너지 정보"
         >
           <img
-            src="./images/energy-ui.png"
+            src="./images/energy-status-ui-new.png"
             class="status-ui-image"
             alt=""
             draggable="false"
@@ -181,6 +181,28 @@
         alt=""
         draggable="false"
       >
+
+      <!-- 상점 상단 상태 UI -->
+      <header class="lobby-status-bar shop-status-bar" aria-label="플레이어 상태">
+        <button class="status-button level-status" type="button" data-status="level" aria-label="레벨 정보">
+          <img src="./images/level-status-ui-new.png" class="status-ui-image" alt="" draggable="false">
+          <span id="shopPlayerLevel" class="level-number">Lv. 1</span>
+          <span class="level-progress-area" aria-hidden="true">
+            <span id="shopLevelProgressFill" class="level-progress-fill"></span>
+          </span>
+          <span id="shopLevelExperience" class="level-experience">0 / 100</span>
+        </button>
+
+        <button class="status-button gold-status" type="button" data-status="gold" aria-label="보유 골드">
+          <img src="./images/gold-status-ui-new.png" class="status-ui-image" alt="" draggable="false">
+          <span id="shopPlayerGold" class="gold-number">0</span>
+        </button>
+
+        <button class="status-button energy-status" type="button" data-status="energy" aria-label="에너지 정보">
+          <img src="./images/energy-status-ui-new.png" class="status-ui-image" alt="" draggable="false">
+          <span id="shopPlayerEnergy" class="energy-number">10</span>
+        </button>
+      </header>
 
       <button
         id="shopBackButton"

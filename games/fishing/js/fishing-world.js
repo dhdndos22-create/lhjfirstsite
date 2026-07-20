@@ -24,6 +24,12 @@ const playerGold = document.getElementById("playerGold");
 const playerEnergy = document.getElementById("playerEnergy");
 const levelExperience = document.getElementById("levelExperience");
 const levelProgressFill = document.getElementById("levelProgressFill");
+const shopPlayerLevel = document.getElementById("shopPlayerLevel");
+const shopPlayerGold = document.getElementById("shopPlayerGold");
+const shopPlayerEnergy = document.getElementById("shopPlayerEnergy");
+const shopLevelExperience = document.getElementById("shopLevelExperience");
+const shopLevelProgressFill = document.getElementById("shopLevelProgressFill");
+const shopStatusButtons = [...document.querySelectorAll("#shopScreen .status-button")];
 
 const bubbleLayer = document.getElementById("bubbleLayer");
 
@@ -93,10 +99,20 @@ export function updateLobbyStatus({
   gold,
   energy,
 }) {
-  playerLevel.textContent = String(level);
-  playerGold.textContent = Number(gold).toLocaleString("ko-KR");
-  playerEnergy.textContent = Number(energy).toLocaleString("ko-KR");
-  levelExperience.textContent = `${currentExp} / ${requiredExp}`;
+  const levelLabel = `Lv. ${level}`;
+  const goldLabel = Number(gold).toLocaleString("ko-KR");
+  const energyLabel = Number(energy).toLocaleString("ko-KR");
+  const expLabel = level >= 100 ? "MAX" : `${currentExp} / ${requiredExp}`;
+
+  playerLevel.textContent = levelLabel;
+  playerGold.textContent = goldLabel;
+  playerEnergy.textContent = energyLabel;
+  levelExperience.textContent = expLabel;
+
+  if (shopPlayerLevel) shopPlayerLevel.textContent = levelLabel;
+  if (shopPlayerGold) shopPlayerGold.textContent = goldLabel;
+  if (shopPlayerEnergy) shopPlayerEnergy.textContent = energyLabel;
+  if (shopLevelExperience) shopLevelExperience.textContent = expLabel;
 
   const progress =
     requiredExp > 0
@@ -104,6 +120,9 @@ export function updateLobbyStatus({
       : 0;
 
   levelProgressFill.style.width = `${progress}%`;
+  if (shopLevelProgressFill) {
+    shopLevelProgressFill.style.width = `${progress}%`;
+  }
 }
 
 function getPlayerSaveKey() {
@@ -303,6 +322,22 @@ bindBubbleButton(energyStatusButton, () => {
   window.setTimeout(() => {
     alert(`보유 에너지: ${playerState.energy.toLocaleString("ko-KR")}\n낚시 1회당 에너지 1개를 사용합니다.`);
   }, 100);
+});
+
+shopStatusButtons.forEach((button) => {
+  bindBubbleButton(button, () => {
+    const statusType = button.dataset.status;
+
+    window.setTimeout(() => {
+      if (statusType === "level") {
+        alert(`레벨 ${playerState.level}\n경험치 ${playerState.currentExp} / ${playerState.requiredExp}`);
+      } else if (statusType === "gold") {
+        alert(`보유 골드: ${playerState.gold.toLocaleString("ko-KR")}`);
+      } else if (statusType === "energy") {
+        alert(`보유 에너지: ${playerState.energy.toLocaleString("ko-KR")}\n낚시 1회당 에너지 1개를 사용합니다.`);
+      }
+    }, 100);
+  });
 });
 
 function setQuickMenuOpen(open) {

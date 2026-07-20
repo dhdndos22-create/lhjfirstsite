@@ -142,18 +142,22 @@ button {
   border-radius: 18%;
 }
 
-/* 로비 상단 상태 UI */
+/* 로비/상점 상단 상태 UI */
 .lobby-status-bar {
   position: absolute;
   top: max(8px, env(safe-area-inset-top));
   left: 50%;
-  z-index: 20;
+  z-index: 30;
   width: min(97%, 760px);
   display: grid;
-  grid-template-columns: 1.42fr 0.82fr 0.88fr;
-  align-items: start;
-  gap: clamp(2px, 1vw, 8px);
+  grid-template-columns: 1.28fr 1fr 1fr;
+  align-items: center;
+  gap: clamp(3px, 0.9vw, 8px);
   transform: translateX(-50%);
+}
+
+.shop-status-bar {
+  z-index: 35;
 }
 
 .status-button {
@@ -170,6 +174,7 @@ button {
   width: 100%;
   height: auto;
   pointer-events: none;
+  filter: drop-shadow(0 3px 3px rgba(0, 13, 35, 0.38));
 }
 
 .status-button.is-pressed,
@@ -185,32 +190,35 @@ button {
   }
 }
 
-/* 레벨 UI 안의 숫자 및 게이지 */
+/* 새 레벨 UI: 상단 레벨, 하단 경험치 */
 .level-number {
   position: absolute;
-  left: 14.5%;
-  top: 51%;
+  left: 57%;
+  top: 32%;
   z-index: 4;
   transform: translate(-50%, -50%);
-  font-size: clamp(8px, 2.55vw, 20px);
+  width: 64%;
+  text-align: left;
+  font-size: clamp(8px, 2.25vw, 19px);
   font-weight: 900;
   color: #ffffff;
+  white-space: nowrap;
   pointer-events: none;
   text-shadow:
-    -1px -1px 0 #16426b,
-    1px -1px 0 #16426b,
-    -1px 1px 0 #16426b,
-    1px 1px 0 #16426b,
-    0 2px 2px rgba(0, 0, 0, 0.45);
+    -1px -1px 0 #061831,
+    1px -1px 0 #061831,
+    -1px 1px 0 #061831,
+    1px 1px 0 #061831,
+    0 2px 2px rgba(0, 0, 0, 0.65);
 }
 
 .level-progress-area {
   position: absolute;
-  left: 28%;
-  top: 33%;
+  left: 29.2%;
+  top: 61.5%;
   z-index: 2;
-  width: 57%;
-  height: 34%;
+  width: 63.5%;
+  height: 22%;
   overflow: hidden;
   border-radius: 999px;
   pointer-events: none;
@@ -221,65 +229,59 @@ button {
   width: 0%;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #82f399, #4fd9cf);
-  opacity: 0.9;
+  background: linear-gradient(90deg, #31d9ff, #54f3ff);
+  box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.75);
+  opacity: 0.88;
   transition: width 350ms ease;
 }
 
 .level-experience {
   position: absolute;
-  left: 64%;
-  top: 51%;
+  left: 61%;
+  top: 72.5%;
   z-index: 4;
   transform: translate(-50%, -50%);
-  font-size: clamp(6px, 1.7vw, 14px);
+  font-size: clamp(6px, 1.48vw, 13px);
   font-weight: 900;
   color: #ffffff;
   white-space: nowrap;
   pointer-events: none;
   text-shadow:
-    -1px -1px 0 #16426b,
-    1px -1px 0 #16426b,
-    -1px 1px 0 #16426b,
-    1px 1px 0 #16426b;
+    -1px -1px 0 #07172d,
+    1px -1px 0 #07172d,
+    -1px 1px 0 #07172d,
+    1px 1px 0 #07172d;
 }
 
-/* 골드 UI 숫자 */
-.gold-number {
-  position: absolute;
-  left: 51%;
-  top: 66%;
-  z-index: 4;
-  transform: translate(-50%, -50%);
-  width: 69%;
-  text-align: center;
-  font-size: clamp(7px, 2.05vw, 17px);
-  font-weight: 900;
-  color: #4c2d11;
-  white-space: nowrap;
-  pointer-events: none;
-  text-shadow:
-    0 1px 0 #fff5c8,
-    0 2px 2px rgba(0, 0, 0, 0.2);
-}
-
-/* 에너지 UI 숫자 */
+/* 새 골드/에너지 UI 숫자 */
+.gold-number,
 .energy-number {
   position: absolute;
-  left: 55%;
-  top: 52%;
+  top: 50%;
   z-index: 4;
   transform: translate(-50%, -50%);
-  width: 48%;
   text-align: center;
-  font-size: clamp(7px, 1.9vw, 16px);
+  font-size: clamp(8px, 2.15vw, 18px);
   font-weight: 900;
-  color: #493019;
+  color: #ffffff;
   white-space: nowrap;
   pointer-events: none;
   text-shadow:
-    0 1px 0 #ffffff,
-    0 2px 2px rgba(0, 0, 0, 0.2);
+    -1px -1px 0 #07172d,
+    1px -1px 0 #07172d,
+    -1px 1px 0 #07172d,
+    1px 1px 0 #07172d,
+    0 2px 2px rgba(0, 0, 0, 0.65);
+}
+
+.gold-number {
+  left: 54%;
+  width: 47%;
+}
+
+.energy-number {
+  left: 54%;
+  width: 45%;
 }
 
 /* 로비 하단 버튼 */
