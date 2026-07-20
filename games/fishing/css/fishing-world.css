@@ -83,7 +83,8 @@ button {
 
 .game-button,
 .status-button,
-.lobby-action-button {
+.lobby-action-button,
+.quick-menu-item {
   margin: 0;
   padding: 0;
   border: 0;
@@ -134,7 +135,8 @@ button {
 
 .start-button:focus-visible,
 .status-button:focus-visible,
-.lobby-action-button:focus-visible {
+.lobby-action-button:focus-visible,
+.quick-menu-item:focus-visible {
   outline: 3px solid rgba(255, 255, 255, 0.96);
   outline-offset: 4px;
   border-radius: 18%;
@@ -452,5 +454,79 @@ button {
 
   .click-bubble {
     animation-duration: 1ms;
+  }
+}
+
+
+/* 메뉴 버튼 위로 펼쳐지는 5개 메뉴 */
+.quick-menu-panel {
+  position: absolute;
+  left: 4%;
+  bottom: calc(max(1.5%, env(safe-area-inset-bottom)) + clamp(92px, 19vw, 146px));
+  z-index: 18;
+  width: min(46%, 310px);
+  display: grid;
+  gap: clamp(5px, 1.3vw, 9px);
+  padding: clamp(7px, 1.8vw, 12px);
+  border: 3px solid rgba(99, 57, 23, 0.88);
+  border-radius: clamp(15px, 4vw, 25px);
+  background: linear-gradient(180deg, rgba(255, 246, 198, 0.98), rgba(242, 192, 102, 0.98));
+  box-shadow: 0 10px 20px rgba(0, 38, 58, 0.34), inset 0 2px 0 rgba(255, 255, 255, 0.72);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(32px) scale(0.92);
+  transform-origin: left bottom;
+  transition: opacity 180ms ease, transform 210ms cubic-bezier(.2,.85,.25,1.2), visibility 180ms ease;
+}
+
+.quick-menu-panel.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.quick-menu-item {
+  position: relative;
+  width: 100%;
+  min-height: clamp(42px, 10vw, 62px);
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 2vw, 13px);
+  padding: 5px 13px;
+  border: 2px solid rgba(116, 66, 26, 0.72);
+  border-radius: clamp(11px, 3vw, 17px);
+  background: linear-gradient(180deg, #fffdf0, #ffe1a1);
+  color: #5b3116;
+  font-weight: 900;
+  font-size: clamp(15px, 4vw, 24px);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #b86e2b, 0 6px 8px rgba(70, 32, 8, 0.2);
+  transform: translateY(0);
+  transition: transform 90ms ease, filter 90ms ease, box-shadow 90ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.quick-menu-icon {
+  width: 1.6em;
+  flex: 0 0 1.6em;
+  text-align: center;
+  font-size: 1.15em;
+  line-height: 1;
+}
+
+.quick-menu-item.is-pressed,
+.quick-menu-item:active {
+  transform: translateY(4px) scale(0.97);
+  filter: brightness(0.94);
+  box-shadow: 0 1px 0 #9b5820, 0 2px 4px rgba(70, 32, 8, 0.18);
+}
+
+@media (hover: hover) {
+  .quick-menu-item:hover {
+    filter: brightness(1.04);
+    transform: translateY(-2px);
   }
 }

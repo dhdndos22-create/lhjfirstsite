@@ -104,9 +104,43 @@
             draggable="false"
           >
 
-          <span id="playerEnergy" class="energy-number">100 / 100</span>
+          <span id="playerEnergy" class="energy-number">10</span>
         </button>
       </header>
+
+
+      <!-- 메뉴 버튼을 누르면 위로 펼쳐지는 메뉴 -->
+      <nav
+        id="quickMenuPanel"
+        class="quick-menu-panel"
+        aria-label="확장 메뉴"
+        aria-hidden="true"
+      >
+        <button class="quick-menu-item" type="button" data-menu="shop">
+          <span class="quick-menu-icon" aria-hidden="true">🛒</span>
+          <span>상점</span>
+        </button>
+
+        <button class="quick-menu-item" type="button" data-menu="equipment">
+          <span class="quick-menu-icon" aria-hidden="true">🎣</span>
+          <span>장비</span>
+        </button>
+
+        <button class="quick-menu-item" type="button" data-menu="draw">
+          <span class="quick-menu-icon" aria-hidden="true">🎁</span>
+          <span>뽑기</span>
+        </button>
+
+        <button class="quick-menu-item" type="button" data-menu="achievement">
+          <span class="quick-menu-icon" aria-hidden="true">🏆</span>
+          <span>업적</span>
+        </button>
+
+        <button class="quick-menu-item" type="button" data-menu="mail">
+          <span class="quick-menu-icon" aria-hidden="true">✉️</span>
+          <span>우편</span>
+        </button>
+      </nav>
 
       <!-- 로비 하단 버튼 -->
       <div id="lobbyMenu" class="lobby-menu" aria-label="로비 메뉴">

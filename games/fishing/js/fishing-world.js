@@ -10,6 +10,8 @@ const lobbyScreen = document.getElementById("lobbyScreen");
 const startButton = document.getElementById("startButton");
 const menuButton = document.getElementById("menuButton");
 const fishingButton = document.getElementById("fishingButton");
+const quickMenuPanel = document.getElementById("quickMenuPanel");
+const quickMenuItems = [...document.querySelectorAll(".quick-menu-item")];
 
 const levelStatusButton = document.getElementById("levelStatusButton");
 const goldStatusButton = document.getElementById("goldStatusButton");
@@ -29,17 +31,24 @@ const BUBBLE_COUNT_MIN = 7;
 const BUBBLE_COUNT_MAX = 11;
 
 let isOpeningLobby = false;
+let isQuickMenuOpen = false;
 
 /*
-  이후 Supabase 저장 데이터를 연결하면 이 값을 서버 데이터로 교체한다.
+  계정 최초 접속 기본값
+  - 레벨: 1 (최대 100)
+  - 골드: 0
+  - 에너지: 10 (보유 제한 없음)
 */
-export const playerState = {
+const DEFAULT_PLAYER_STATE = Object.freeze({
   level: 1,
-  currentExp: 30,
+  currentExp: 0,
   requiredExp: 100,
-  gold: 12500,
-  energy: 80,
-  maxEnergy: 100
+  gold: 0,
+  energy: 10
+});
+
+export const playerState = {
+  ...DEFAULT_PLAYER_STATE
 };
 
 export const fishingSession = {
@@ -80,11 +89,10 @@ export function updateLobbyStatus({
   requiredExp,
   gold,
   energy,
-  maxEnergy
 }) {
   playerLevel.textContent = String(level);
   playerGold.textContent = Number(gold).toLocaleString("ko-KR");
-  playerEnergy.textContent = `${energy} / ${maxEnergy}`;
+  playerEnergy.textContent = Number(energy).toLocaleString("ko-KR");
   levelExperience.textContent = `${currentExp} / ${requiredExp}`;
 
   const progress =
@@ -95,7 +103,61 @@ export function updateLobbyStatus({
   levelProgressFill.style.width = `${progress}%`;
 }
 
+function getPlayerSaveKey() {
+  return `fishingPlayer:${fishingSession.username || "guest"}`;
+}
+
+function normalizeNonNegativeInteger(value, fallback) {
+  const number = Number(value);
+
+  if (!Number.isFinite(number)) {
+    return fallback;
+  }
+
+  return Math.max(0, Math.floor(number));
+}
+
+function loadPlayerState() {
+  try {
+    const raw = localStorage.getItem(getPlayerSaveKey());
+
+    if (!raw) {
+      Object.assign(playerState, DEFAULT_PLAYER_STATE);
+      localStorage.setItem(
+        getPlayerSaveKey(),
+        JSON.stringify(playerState)
+      );
+      return;
+    }
+
+    const saved = JSON.parse(raw);
+
+    playerState.level = Math.min(
+      100,
+      Math.max(1, normalizeNonNegativeInteger(saved.level, 1))
+    );
+    playerState.currentExp = normalizeNonNegativeInteger(saved.currentExp, 0);
+    playerState.requiredExp = Math.max(
+      1,
+      normalizeNonNegativeInteger(saved.requiredExp, 100)
+    );
+    playerState.gold = normalizeNonNegativeInteger(saved.gold, 0);
+    playerState.energy = normalizeNonNegativeInteger(saved.energy, 10);
+  } catch (error) {
+    console.warn("플레이어 저장 데이터를 읽지 못했습니다.", error);
+    Object.assign(playerState, DEFAULT_PLAYER_STATE);
+  }
+}
+
+export function savePlayerState() {
+  localStorage.setItem(
+    getPlayerSaveKey(),
+    JSON.stringify(playerState)
+  );
+}
+
 function openLobby() {
+  loadPlayerState();
   updateLobbyStatus(playerState);
   changeScreen("lobby");
   console.log(`피싱월드 로비 입장: ${fishingSession.username}`);
@@ -236,14 +298,64 @@ bindBubbleButton(goldStatusButton, () => {
 
 bindBubbleButton(energyStatusButton, () => {
   window.setTimeout(() => {
-    alert(`에너지: ${playerState.energy} / ${playerState.maxEnergy}`);
+    alert(`보유 에너지: ${playerState.energy.toLocaleString("ko-KR")}\n낚시 1회당 에너지 1개를 사용합니다.`);
   }, 100);
 });
 
+function setQuickMenuOpen(open) {
+  isQuickMenuOpen = open;
+  quickMenuPanel.classList.toggle("is-open", open);
+  quickMenuPanel.setAttribute("aria-hidden", String(!open));
+  menuButton.setAttribute("aria-expanded", String(open));
+  menuButton.setAttribute(
+    "aria-label",
+    open ? "메뉴 닫기" : "메뉴 열기"
+  );
+}
+
+function toggleQuickMenu() {
+  setQuickMenuOpen(!isQuickMenuOpen);
+}
+
 bindBubbleButton(menuButton, () => {
-  window.setTimeout(() => {
-    alert("메뉴 화면은 다음 단계에서 연결할 예정입니다.");
-  }, 120);
+  toggleQuickMenu();
+});
+
+quickMenuItems.forEach((button) => {
+  bindBubbleButton(button, () => {
+    const menuNames = {
+      shop: "상점",
+      equipment: "장비",
+      draw: "뽑기",
+      achievement: "업적",
+      mail: "우편"
+    };
+
+    const menuName = menuNames[button.dataset.menu] ?? "메뉴";
+
+    window.setTimeout(() => {
+      alert(`${menuName} 화면은 다음 단계에서 연결할 예정입니다.`);
+    }, 100);
+  });
+});
+
+document.addEventListener("pointerdown", (event) => {
+  if (!isQuickMenuOpen) {
+    return;
+  }
+
+  const clickedInsidePanel = quickMenuPanel.contains(event.target);
+  const clickedMenuButton = menuButton.contains(event.target);
+
+  if (!clickedInsidePanel && !clickedMenuButton) {
+    setQuickMenuOpen(false);
+  }
+});
+
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    setQuickMenuOpen(false);
+  }
 });
 
 bindBubbleButton(fishingButton, () => {
