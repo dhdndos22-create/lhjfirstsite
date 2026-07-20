@@ -9,9 +9,15 @@
 </head>
 <body>
   <main id="app">
-    <section id="startScreen" class="start-screen" aria-label="피싱월드 시작 화면">
+    <!-- 게임 시작 화면 -->
+    <section
+      id="startScreen"
+      class="game-screen start-screen is-active"
+      aria-label="피싱월드 시작 화면"
+      aria-hidden="false"
+    >
       <img
-        class="start-background"
+        class="screen-background start-background"
         src="./images/start-background.png"
         alt=""
         draggable="false"
@@ -31,6 +37,24 @@
       </button>
 
       <div id="bubbleLayer" class="bubble-layer" aria-hidden="true"></div>
+    </section>
+
+    <!-- 메인 로비 화면 -->
+    <section
+      id="lobbyScreen"
+      class="game-screen lobby-screen"
+      aria-label="피싱월드 메인 로비"
+      aria-hidden="true"
+    >
+      <img
+        class="screen-background lobby-background"
+        src="./images/lobby-background.png"
+        alt=""
+        draggable="false"
+      >
+
+      <!-- 다음 단계에서 상점, 장비, 뽑기 등의 메뉴 버튼을 이 안에 추가한다. -->
+      <div id="lobbyMenu" class="lobby-menu" aria-label="로비 메뉴"></div>
     </section>
   </main>
 

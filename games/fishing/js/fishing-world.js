@@ -4,25 +4,58 @@ import {
   watchHyojongLogin
 } from "./fishing-auth.js";
 
+const startScreen = document.getElementById("startScreen");
+const lobbyScreen = document.getElementById("lobbyScreen");
 const startButton = document.getElementById("startButton");
 const bubbleLayer = document.getElementById("bubbleLayer");
 
 const PRESS_DURATION = 170;
+const SCREEN_CHANGE_DELAY = 180;
 const BUBBLE_COUNT_MIN = 7;
 const BUBBLE_COUNT_MAX = 11;
 
 let pressTimer = null;
+let isOpeningLobby = false;
 
 /*
   피싱월드 어디서든 사용할 현재 효종월드 로그인 정보.
-  이후 로비·저장·랭킹·친구 시스템은 이 username을 기준으로 시작한다.
+  이후 저장, 랭킹, 친구 시스템은 이 username을 기준으로 시작한다.
 */
 export const fishingSession = {
-  username: getLoggedInUsername()
+  username: getLoggedInUsername(),
+  currentScreen: "start"
 };
 
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
+}
+
+function changeScreen(nextScreenName) {
+  const screens = {
+    start: startScreen,
+    lobby: lobbyScreen
+  };
+
+  const nextScreen = screens[nextScreenName];
+
+  if (!nextScreen) {
+    console.error(`존재하지 않는 화면입니다: ${nextScreenName}`);
+    return;
+  }
+
+  Object.entries(screens).forEach(([screenName, screenElement]) => {
+    const isNextScreen = screenName === nextScreenName;
+
+    screenElement.classList.toggle("is-active", isNextScreen);
+    screenElement.setAttribute("aria-hidden", String(!isNextScreen));
+  });
+
+  fishingSession.currentScreen = nextScreenName;
+}
+
+function openLobby() {
+  changeScreen("lobby");
+  console.log(`피싱월드 로비 입장: ${fishingSession.username}`);
 }
 
 function createBubble(x, y, index) {
@@ -41,12 +74,7 @@ function createBubble(x, y, index) {
   bubble.style.setProperty("--bubble-sway", `${sway}px`);
   bubble.style.animationDelay = `${index * 18}ms`;
 
-  bubble.addEventListener(
-    "animationend",
-    () => bubble.remove(),
-    { once: true }
-  );
-
+  bubble.addEventListener("animationend", () => bubble.remove(), { once: true });
   bubbleLayer.appendChild(bubble);
 }
 
@@ -118,19 +146,23 @@ startButton.addEventListener("pointerleave", (event) => {
 });
 
 startButton.addEventListener("click", () => {
+  if (isOpeningLobby) {
+    return;
+  }
+
   const username = requireHyojongLogin();
 
   if (!username) {
     return;
   }
 
+  isOpeningLobby = true;
   fishingSession.username = username;
-  console.log(`게임 시작: ${username}`);
 
-  /*
-    다음 단계에서 여기에 로비 화면 전환 함수를 연결한다.
-    예: openLobby({ username });
-  */
+  window.setTimeout(() => {
+    openLobby();
+    isOpeningLobby = false;
+  }, SCREEN_CHANGE_DELAY);
 });
 
 startButton.addEventListener("keydown", (event) => {
