@@ -109,16 +109,20 @@
       </header>
 
 
-      <!-- 로비 중앙 레이어 캐릭터 -->
-      <button id="characterButton" class="lobby-character" type="button" aria-label="캐릭터 장비 변경">
+      <!-- 로비 중앙 완성 캐릭터 개체 -->
+      <button
+        id="characterButton"
+        class="lobby-character"
+        type="button"
+        aria-label="캐릭터 장비 변경"
+      >
         <span class="character-shadow" aria-hidden="true"></span>
-        <img id="playerBaseLayer" class="character-piece character-base" src="./images/player/base/player-base.png" alt="메인 캐릭터 1">
-        <img id="playerBottomLayer" class="character-piece character-bottom" src="./images/player/bottom/bottom-shorts-001.png" alt="">
-        <img id="playerShoesLayer" class="character-piece character-shoes" src="./images/player/shoes/shoes-sneakers-001.png" alt="">
-        <img id="playerTopLayer" class="character-piece character-top" src="./images/player/top/top-vest-001.png" alt="">
-        <img id="playerRodLayer" class="character-piece character-rod" src="./images/player/rod/rod-basic-001.png" alt="">
-        <img id="playerFrontHandLayer" class="character-piece character-front-hand" src="./images/player/base/player-front-hand.png" alt="">
-        <img id="playerHeadLayer" class="character-piece character-head" src="./images/player/head/head-cap-001.png" alt="">
+        <img
+          id="lobbyCharacterImage"
+          class="player-character-image"
+          alt="메인 캐릭터 1"
+          draggable="false"
+        >
       </button>
 
       <!-- 장비 변경 패널 -->

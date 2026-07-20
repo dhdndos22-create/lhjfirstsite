@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "canvas": {
+    "width": 1024,
+    "height": 1536,
+    "anchorX": 512,
+    "groundY": 1450,
+    "direction": "front",
+    "background": "transparent"
+  },
+  "layerOrder": [
+    "base",
+    "bottom",
+    "shoes",
+    "top",
+    "rod",
+    "frontHand",
+    "head"
+  ],
+  "filenameRules": {
+    "head": "head-<name>-<number>.png",
+    "top": "top-<name>-<number>.png",
+    "bottom": "bottom-<name>-<number>.png",
+    "shoes": "shoes-<name>-<number>.png",
+    "rod": "rod-<name>-<number>.png"
+  }
+}

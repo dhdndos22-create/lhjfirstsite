@@ -146,7 +146,7 @@ button {
   top: max(8px, env(safe-area-inset-top));
   left: 50%;
   z-index: 20;
-  width: min(97%, 760px);
+  width: min(99.5%, 980px);
   display: grid;
   grid-template-columns: 1.42fr 0.82fr 0.88fr;
   align-items: start;
@@ -456,14 +456,15 @@ button {
 }
 
 
-/* 레이어형 메인 캐릭터 1 */
+/* 완성 캐릭터 개체 */
+
 .lobby-character {
   position: absolute;
   left: 50%;
   bottom: 12.5%;
   z-index: 9;
-  width: min(67vw, 430px);
-  height: min(63vh, 650px);
+  width: min(63vw, 410px);
+  height: min(59vh, 620px);
   padding: 0;
   border: 0;
   background: transparent;
@@ -479,8 +480,8 @@ button {
 .character-shadow {
   position: absolute;
   left: 50%;
-  bottom: 2%;
-  width: 47%;
+  bottom: 1%;
+  width: 50%;
   height: 5%;
   transform: translateX(-50%);
   border-radius: 50%;
@@ -488,59 +489,17 @@ button {
   filter: blur(5px);
 }
 
-.character-piece {
+.player-character-image {
   position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
   pointer-events: none;
   user-select: none;
-  object-fit: contain;
-  filter: drop-shadow(0 8px 5px rgba(0, 35, 52, 0.15));
-}
-
-/* 스프라이트 시트에서 분리한 첫 세트의 정렬값 */
-.character-base {
-  left: 21%;
-  bottom: 2%;
-  width: 58%;
-  height: 92%;
-  object-position: center bottom;
-}
-
-.character-bottom {
-  left: 31.5%;
-  bottom: 34%;
-  width: 38%;
-}
-
-.character-shoes {
-  left: 30%;
-  bottom: 1%;
-  width: 42%;
-}
-
-.character-top {
-  left: 24%;
-  bottom: 46%;
-  width: 53%;
-}
-
-.character-rod {
-  left: -2%;
-  bottom: 2%;
-  width: 45%;
-  height: 92%;
-  object-position: center bottom;
-}
-
-.character-front-hand {
-  left: 19%;
-  bottom: 41%;
-  width: 20%;
-}
-
-.character-head {
-  left: 30%;
-  bottom: 72%;
-  width: 44%;
+  filter: drop-shadow(0 9px 5px rgba(0, 35, 52, 0.18));
 }
 
 /* 장비 패널 */
@@ -669,7 +628,42 @@ button {
   }
 
   .lobby-character {
-    width: 72vw;
-    height: 58vh;
+    width: 68vw;
+    height: 56vh;
+  }
+}
+
+
+/* 상단 상태 UI 약 30% 확대 */
+.lobby-status-bar {
+  top: max(5px, env(safe-area-inset-top));
+  width: 99.5%;
+  gap: clamp(1px, 0.65vw, 5px);
+}
+
+.status-button {
+  transform: scale(1.08);
+}
+
+.status-button:first-child {
+  transform-origin: left top;
+}
+
+.status-button:nth-child(2) {
+  transform-origin: center top;
+}
+
+.status-button:last-child {
+  transform-origin: right top;
+}
+
+.status-button.is-pressed,
+.status-button:active {
+  transform: translateY(4%) scale(1.01);
+}
+
+@media (hover: hover) {
+  .status-button:hover {
+    transform: translateY(-2%) scale(1.1);
   }
 }
