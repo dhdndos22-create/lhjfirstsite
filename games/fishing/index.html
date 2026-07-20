@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#008fd3">
+  <title>피싱월드</title>
+  <link rel="stylesheet" href="./css/fishing-world.css">
+</head>
+<body>
+  <main id="app">
+    <section id="startScreen" class="start-screen" aria-label="피싱월드 시작 화면">
+      <img
+        class="start-background"
+        src="./images/start-background.png"
+        alt=""
+        draggable="false"
+      >
+
+      <button
+        id="startButton"
+        class="game-button start-button"
+        type="button"
+        aria-label="게임 시작"
+      >
+        <img
+          src="./images/start-button.png"
+          alt="게임 시작"
+          draggable="false"
+        >
+      </button>
+
+      <div id="bubbleLayer" class="bubble-layer" aria-hidden="true"></div>
+    </section>
+  </main>
+
+  <script src="./js/fishing-world.js"></script>
+</body>
+</html>
