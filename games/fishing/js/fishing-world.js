@@ -7,6 +7,23 @@ const BUBBLE_COUNT_MAX = 11;
 
 let pressTimer = null;
 
+/*
+  모바일 브라우저의 주소창이 나타나거나 사라질 때도
+  게임 영역이 실제 보이는 화면 높이를 정확히 채우도록 한다.
+*/
+function updateAppHeight() {
+  const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+  document.documentElement.style.setProperty(
+    "--app-height",
+    `${Math.round(viewportHeight)}px`
+  );
+}
+
+updateAppHeight();
+window.addEventListener("resize", updateAppHeight);
+window.addEventListener("orientationchange", updateAppHeight);
+window.visualViewport?.addEventListener("resize", updateAppHeight);
+
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
 }
