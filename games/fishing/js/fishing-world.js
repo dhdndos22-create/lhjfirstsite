@@ -240,11 +240,7 @@ bindBubbleButton(energyStatusButton, () => {
   }, 100);
 });
 
-bindBubbleButton(menuButton, () => {
-  window.setTimeout(() => {
-    alert("메뉴 화면은 다음 단계에서 연결할 예정입니다.");
-  }, 120);
-});
+bindBubbleButton(menuButton, () => {});
 
 bindBubbleButton(fishingButton, () => {
   window.setTimeout(() => {
@@ -254,3 +250,215 @@ bindBubbleButton(fishingButton, () => {
 
 updateLobbyStatus(playerState);
 initializeFishingLogin();
+
+
+/* =========================
+   레이어형 캐릭터 장비 시스템
+========================= */
+
+const characterButton = document.getElementById("characterButton");
+const equipmentPanel = document.getElementById("equipmentPanel");
+const equipmentCloseButton = document.getElementById("equipmentCloseButton");
+const equipmentSlots = [...document.querySelectorAll(".equipment-slot")];
+const equipmentOptions = document.getElementById("equipmentOptions");
+
+const characterLayers = {
+  head: document.getElementById("playerHeadLayer"),
+  top: document.getElementById("playerTopLayer"),
+  bottom: document.getElementById("playerBottomLayer"),
+  shoes: document.getElementById("playerShoesLayer"),
+  rod: document.getElementById("playerRodLayer")
+};
+
+const equippedNameElements = {
+  head: document.getElementById("equippedHeadName"),
+  top: document.getElementById("equippedTopName"),
+  bottom: document.getElementById("equippedBottomName"),
+  shoes: document.getElementById("equippedShoesName"),
+  rod: document.getElementById("equippedRodName")
+};
+
+const EQUIPMENT = {
+  head: {
+    "head-none": {
+      name: "착용 안 함",
+      image: "./images/player/head/head-none.png"
+    },
+    "head-cap-001": {
+      name: "초보 낚시 모자",
+      image: "./images/player/head/head-cap-001.png"
+    }
+  },
+  top: {
+    "top-none": {
+      name: "기본 민소매",
+      image: "./images/player/top/top-none.png"
+    },
+    "top-vest-001": {
+      name: "초보 낚시 조끼",
+      image: "./images/player/top/top-vest-001.png"
+    }
+  },
+  bottom: {
+    "bottom-none": {
+      name: "기본 하의",
+      image: "./images/player/bottom/bottom-none.png"
+    },
+    "bottom-shorts-001": {
+      name: "초보 반바지",
+      image: "./images/player/bottom/bottom-shorts-001.png"
+    }
+  },
+  shoes: {
+    "shoes-none": {
+      name: "맨발",
+      image: "./images/player/shoes/shoes-none.png"
+    },
+    "shoes-sneakers-001": {
+      name: "초보 운동화",
+      image: "./images/player/shoes/shoes-sneakers-001.png"
+    }
+  },
+  rod: {
+    "rod-none": {
+      name: "낚싯대 없음",
+      image: "./images/player/rod/rod-none.png"
+    },
+    "rod-basic-001": {
+      name: "초보 낚싯대",
+      image: "./images/player/rod/rod-basic-001.png"
+    }
+  }
+};
+
+const DEFAULT_EQUIPPED_ITEMS = {
+  head: "head-cap-001",
+  top: "top-vest-001",
+  bottom: "bottom-shorts-001",
+  shoes: "shoes-sneakers-001",
+  rod: "rod-basic-001"
+};
+
+let equippedItems = { ...DEFAULT_EQUIPPED_ITEMS };
+let selectedEquipmentSlot = "head";
+
+function getEquipmentSaveKey() {
+  return `fishingEquipment:${fishingSession.username || "guest"}`;
+}
+
+function loadEquippedItems() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(getEquipmentSaveKey()));
+
+    if (saved && typeof saved === "object") {
+      Object.keys(DEFAULT_EQUIPPED_ITEMS).forEach((slot) => {
+        if (EQUIPMENT[slot]?.[saved[slot]]) {
+          equippedItems[slot] = saved[slot];
+        }
+      });
+    }
+  } catch (error) {
+    console.warn("장비 저장 데이터를 읽지 못했습니다.", error);
+  }
+}
+
+function saveEquippedItems() {
+  localStorage.setItem(getEquipmentSaveKey(), JSON.stringify(equippedItems));
+}
+
+function renderEquippedCharacter() {
+  Object.entries(equippedItems).forEach(([slot, itemId]) => {
+    const layer = characterLayers[slot];
+    const item = EQUIPMENT[slot]?.[itemId];
+
+    if (!layer || !item) {
+      return;
+    }
+
+    layer.src = item.image;
+    equippedNameElements[slot].textContent = item.name;
+  });
+}
+
+function equipItem(slot, itemId) {
+  if (!EQUIPMENT[slot]?.[itemId]) {
+    console.error(`존재하지 않는 장비: ${slot}/${itemId}`);
+    return;
+  }
+
+  equippedItems[slot] = itemId;
+  renderEquippedCharacter();
+  saveEquippedItems();
+  renderEquipmentOptions(slot);
+}
+
+function renderEquipmentOptions(slot) {
+  selectedEquipmentSlot = slot;
+  equipmentOptions.replaceChildren();
+
+  equipmentSlots.forEach((button) => {
+    button.classList.toggle("is-selected", button.dataset.slot === slot);
+  });
+
+  Object.entries(EQUIPMENT[slot]).forEach(([itemId, item]) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "equipment-option";
+    button.textContent = item.name;
+
+    if (equippedItems[slot] === itemId) {
+      button.classList.add("is-equipped");
+    }
+
+    button.addEventListener("click", () => {
+      pressButton(characterButton);
+      equipItem(slot, itemId);
+    });
+
+    equipmentOptions.appendChild(button);
+  });
+}
+
+function openEquipmentPanel(initialSlot = "head") {
+  renderEquipmentOptions(initialSlot);
+  equipmentPanel.classList.add("is-open");
+  equipmentPanel.setAttribute("aria-hidden", "false");
+}
+
+function closeEquipmentPanel() {
+  equipmentPanel.classList.remove("is-open");
+  equipmentPanel.setAttribute("aria-hidden", "true");
+}
+
+equipmentSlots.forEach((button) => {
+  button.addEventListener("click", () => {
+    renderEquipmentOptions(button.dataset.slot);
+  });
+});
+
+characterButton.addEventListener("click", () => {
+  playBubbleEffect(characterButton);
+  openEquipmentPanel("head");
+});
+
+equipmentCloseButton.addEventListener("click", closeEquipmentPanel);
+
+equipmentPanel.addEventListener("click", (event) => {
+  if (event.target === equipmentPanel) {
+    closeEquipmentPanel();
+  }
+});
+
+/* 기존 메뉴 버튼도 장비창을 열도록 연결 */
+menuButton.addEventListener("click", () => {
+  openEquipmentPanel(selectedEquipmentSlot);
+});
+
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeEquipmentPanel();
+  }
+});
+
+loadEquippedItems();
+renderEquippedCharacter();

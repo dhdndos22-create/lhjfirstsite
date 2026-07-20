@@ -108,6 +108,49 @@
         </button>
       </header>
 
+
+      <!-- 로비 중앙 레이어 캐릭터 -->
+      <button id="characterButton" class="lobby-character" type="button" aria-label="캐릭터 장비 변경">
+        <span class="character-shadow" aria-hidden="true"></span>
+        <img id="playerBaseLayer" class="character-piece character-base" src="./images/player/base/player-base.png" alt="메인 캐릭터 1">
+        <img id="playerBottomLayer" class="character-piece character-bottom" src="./images/player/bottom/bottom-shorts-001.png" alt="">
+        <img id="playerShoesLayer" class="character-piece character-shoes" src="./images/player/shoes/shoes-sneakers-001.png" alt="">
+        <img id="playerTopLayer" class="character-piece character-top" src="./images/player/top/top-vest-001.png" alt="">
+        <img id="playerRodLayer" class="character-piece character-rod" src="./images/player/rod/rod-basic-001.png" alt="">
+        <img id="playerFrontHandLayer" class="character-piece character-front-hand" src="./images/player/base/player-front-hand.png" alt="">
+        <img id="playerHeadLayer" class="character-piece character-head" src="./images/player/head/head-cap-001.png" alt="">
+      </button>
+
+      <!-- 장비 변경 패널 -->
+      <section id="equipmentPanel" class="equipment-panel" aria-hidden="true">
+        <div class="equipment-card">
+          <header class="equipment-header">
+            <h2>장비 변경</h2>
+            <button id="equipmentCloseButton" class="equipment-close-button" type="button" aria-label="장비창 닫기">×</button>
+          </header>
+
+          <div id="equipmentSlots" class="equipment-slots">
+            <button class="equipment-slot" type="button" data-slot="head">
+              <strong>머리</strong><span id="equippedHeadName">초보 낚시 모자</span>
+            </button>
+            <button class="equipment-slot" type="button" data-slot="top">
+              <strong>상의</strong><span id="equippedTopName">초보 낚시 조끼</span>
+            </button>
+            <button class="equipment-slot" type="button" data-slot="bottom">
+              <strong>하의</strong><span id="equippedBottomName">초보 반바지</span>
+            </button>
+            <button class="equipment-slot" type="button" data-slot="shoes">
+              <strong>신발</strong><span id="equippedShoesName">초보 운동화</span>
+            </button>
+            <button class="equipment-slot" type="button" data-slot="rod">
+              <strong>낚싯대</strong><span id="equippedRodName">초보 낚싯대</span>
+            </button>
+          </div>
+
+          <div id="equipmentOptions" class="equipment-options" aria-live="polite"></div>
+        </div>
+      </section>
+
       <!-- 로비 하단 버튼 -->
       <div id="lobbyMenu" class="lobby-menu" aria-label="로비 메뉴">
         <button
