@@ -81,14 +81,9 @@ button {
   background: #069fd6;
 }
 
-.lobby-background {
-  object-position: center;
-}
-
-.game-button {
-  position: absolute;
-  z-index: 10;
-  display: block;
+.game-button,
+.status-button,
+.lobby-action-button {
   margin: 0;
   padding: 0;
   border: 0;
@@ -96,6 +91,13 @@ button {
   background: transparent;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* 시작 버튼 */
+.game-button {
+  position: absolute;
+  z-index: 10;
+  display: block;
   transform-origin: center;
 }
 
@@ -130,26 +132,246 @@ button {
     drop-shadow(0 0.28rem 0.18rem rgba(0, 38, 67, 0.35));
 }
 
-.start-button:focus-visible {
-  outline: 4px solid rgba(255, 255, 255, 0.95);
-  outline-offset: 8px;
-  border-radius: 24%;
+.start-button:focus-visible,
+.status-button:focus-visible,
+.lobby-action-button:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.96);
+  outline-offset: 4px;
+  border-radius: 18%;
 }
 
-/* 이후 로비 메뉴 버튼들이 들어갈 영역 */
-.lobby-menu {
+/* 로비 상단 상태 UI */
+.lobby-status-bar {
   position: absolute;
+  top: max(8px, env(safe-area-inset-top));
   left: 50%;
-  bottom: max(4%, env(safe-area-inset-bottom));
-  z-index: 10;
-  width: min(92%, 720px);
-  transform: translateX(-50%);
+  z-index: 20;
+  width: min(97%, 760px);
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: 1.42fr 0.82fr 0.88fr;
+  align-items: start;
+  gap: clamp(2px, 1vw, 8px);
+  transform: translateX(-50%);
+}
+
+.status-button {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  transform-origin: center top;
+  transition: transform 90ms ease-out, filter 90ms ease-out;
+}
+
+.status-ui-image {
+  display: block;
+  width: 100%;
+  height: auto;
   pointer-events: none;
 }
 
+.status-button.is-pressed,
+.status-button:active {
+  transform: translateY(4%) scale(0.94);
+  filter: brightness(0.93);
+}
+
+@media (hover: hover) {
+  .status-button:hover {
+    transform: translateY(-2%) scale(1.02);
+    filter: brightness(1.05);
+  }
+}
+
+/* 레벨 UI 안의 숫자 및 게이지 */
+.level-number {
+  position: absolute;
+  left: 14.5%;
+  top: 51%;
+  z-index: 4;
+  transform: translate(-50%, -50%);
+  font-size: clamp(8px, 2.55vw, 20px);
+  font-weight: 900;
+  color: #ffffff;
+  pointer-events: none;
+  text-shadow:
+    -1px -1px 0 #16426b,
+    1px -1px 0 #16426b,
+    -1px 1px 0 #16426b,
+    1px 1px 0 #16426b,
+    0 2px 2px rgba(0, 0, 0, 0.45);
+}
+
+.level-progress-area {
+  position: absolute;
+  left: 28%;
+  top: 33%;
+  z-index: 2;
+  width: 57%;
+  height: 34%;
+  overflow: hidden;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.level-progress-fill {
+  display: block;
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #82f399, #4fd9cf);
+  opacity: 0.9;
+  transition: width 350ms ease;
+}
+
+.level-experience {
+  position: absolute;
+  left: 64%;
+  top: 51%;
+  z-index: 4;
+  transform: translate(-50%, -50%);
+  font-size: clamp(6px, 1.7vw, 14px);
+  font-weight: 900;
+  color: #ffffff;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow:
+    -1px -1px 0 #16426b,
+    1px -1px 0 #16426b,
+    -1px 1px 0 #16426b,
+    1px 1px 0 #16426b;
+}
+
+/* 골드 UI 숫자 */
+.gold-number {
+  position: absolute;
+  left: 51%;
+  top: 66%;
+  z-index: 4;
+  transform: translate(-50%, -50%);
+  width: 69%;
+  text-align: center;
+  font-size: clamp(7px, 2.05vw, 17px);
+  font-weight: 900;
+  color: #4c2d11;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow:
+    0 1px 0 #fff5c8,
+    0 2px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 에너지 UI 숫자 */
+.energy-number {
+  position: absolute;
+  left: 55%;
+  top: 52%;
+  z-index: 4;
+  transform: translate(-50%, -50%);
+  width: 48%;
+  text-align: center;
+  font-size: clamp(7px, 1.9vw, 16px);
+  font-weight: 900;
+  color: #493019;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow:
+    0 1px 0 #ffffff,
+    0 2px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 로비 하단 버튼 */
+.lobby-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: max(1.5%, env(safe-area-inset-bottom));
+  z-index: 10;
+  width: 100%;
+  padding: 0 3.5%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 3%;
+  pointer-events: none;
+}
+
+.lobby-action-button {
+  position: relative;
+  z-index: 12;
+  display: block;
+  pointer-events: auto;
+  transform-origin: center bottom;
+  transition: transform 90ms ease-out, filter 90ms ease-out;
+}
+
+.lobby-action-button img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+.lobby-menu-button {
+  width: 38%;
+  max-width: 290px;
+  filter: drop-shadow(0 0.55rem 0.32rem rgba(0, 35, 53, 0.32));
+}
+
+.lobby-fishing-button {
+  width: 46%;
+  max-width: 350px;
+  filter: drop-shadow(0 0.55rem 0.32rem rgba(0, 35, 53, 0.34));
+}
+
+.lobby-button-label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  width: 65%;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.lobby-menu-label {
+  top: 61%;
+  color: #5a3116;
+  font-size: clamp(20px, 6vw, 38px);
+  text-shadow:
+    0 2px 0 #ffe9b1,
+    0 4px 4px rgba(65, 26, 0, 0.28);
+}
+
+.lobby-fishing-label {
+  top: 51%;
+  color: #ffffff;
+  font-size: clamp(20px, 6vw, 40px);
+  text-shadow:
+    0 3px 0 #075e9a,
+    0 5px 5px rgba(0, 34, 74, 0.38);
+}
+
+.lobby-action-button.is-pressed,
+.lobby-action-button:active {
+  transform: translateY(7%) scale(0.93);
+  filter: brightness(0.92)
+    drop-shadow(0 0.18rem 0.12rem rgba(0, 35, 53, 0.28));
+}
+
+@media (hover: hover) {
+  .lobby-action-button:hover {
+    transform: translateY(-2%) scale(1.025);
+    filter: brightness(1.04)
+      drop-shadow(0 0.75rem 0.4rem rgba(0, 35, 53, 0.38));
+  }
+}
+
+/* 물방울 애니메이션 */
 .bubble-layer {
   position: absolute;
   inset: 0;
@@ -222,113 +444,13 @@ button {
 
 @media (prefers-reduced-motion: reduce) {
   .game-screen,
-  .start-button {
+  .start-button,
+  .status-button,
+  .lobby-action-button {
     transition: none;
   }
 
   .click-bubble {
     animation-duration: 1ms;
   }
-}
-
-/* 로비 하단 공통 버튼 */
-.lobby-menu {
-  left: 0;
-  right: 0;
-  bottom: max(1.5%, env(safe-area-inset-bottom));
-  width: 100%;
-  padding: 0 3.5%;
-  transform: none;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 3%;
-  pointer-events: none;
-}
-
-.lobby-action-button {
-  position: relative;
-  z-index: 12;
-  display: block;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  pointer-events: auto;
-  -webkit-tap-highlight-color: transparent;
-  transform-origin: center bottom;
-  transition: transform 90ms ease-out, filter 90ms ease-out;
-}
-
-.lobby-action-button img {
-  display: block;
-  width: 100%;
-  height: auto;
-  pointer-events: none;
-}
-
-.lobby-menu-button {
-  width: 38%;
-  max-width: 290px;
-  filter: drop-shadow(0 0.55rem 0.32rem rgba(0, 35, 53, 0.32));
-}
-
-.lobby-fishing-button {
-  width: 46%;
-  max-width: 350px;
-  filter: drop-shadow(0 0.55rem 0.32rem rgba(0, 35, 53, 0.34));
-}
-
-.lobby-button-label {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 2;
-  transform: translate(-50%, -50%);
-  width: 65%;
-  text-align: center;
-  white-space: nowrap;
-  pointer-events: none;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.lobby-menu-label {
-  top: 61%;
-  color: #5a3116;
-  font-size: clamp(20px, 6vw, 38px);
-  text-shadow:
-    0 2px 0 #ffe9b1,
-    0 4px 4px rgba(65, 26, 0, 0.28);
-}
-
-.lobby-fishing-label {
-  top: 51%;
-  color: #ffffff;
-  font-size: clamp(20px, 6vw, 40px);
-  text-shadow:
-    0 3px 0 #075e9a,
-    0 5px 5px rgba(0, 34, 74, 0.38);
-}
-
-.lobby-action-button.is-pressed,
-.lobby-action-button:active {
-  transform: translateY(7%) scale(0.93);
-  filter: brightness(0.92)
-    drop-shadow(0 0.18rem 0.12rem rgba(0, 35, 53, 0.28));
-}
-
-@media (hover: hover) {
-  .lobby-action-button:hover {
-    transform: translateY(-2%) scale(1.025);
-    filter: brightness(1.04)
-      drop-shadow(0 0.75rem 0.4rem rgba(0, 35, 53, 0.38));
-  }
-}
-
-.lobby-action-button:focus-visible {
-  outline: 4px solid rgba(255, 255, 255, 0.96);
-  outline-offset: 5px;
-  border-radius: 18%;
 }

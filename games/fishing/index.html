@@ -35,7 +35,6 @@
           draggable="false"
         >
       </button>
-
     </section>
 
     <!-- 메인 로비 화면 -->
@@ -52,6 +51,64 @@
         draggable="false"
       >
 
+      <!-- 로비 상단 상태 UI -->
+      <header class="lobby-status-bar" aria-label="플레이어 상태">
+        <button
+          id="levelStatusButton"
+          class="status-button level-status"
+          type="button"
+          aria-label="레벨 정보"
+        >
+          <img
+            src="./images/level-gauge-ui.png"
+            class="status-ui-image"
+            alt=""
+            draggable="false"
+          >
+
+          <span id="playerLevel" class="level-number">1</span>
+
+          <span class="level-progress-area" aria-hidden="true">
+            <span id="levelProgressFill" class="level-progress-fill"></span>
+          </span>
+
+          <span id="levelExperience" class="level-experience">0 / 100</span>
+        </button>
+
+        <button
+          id="goldStatusButton"
+          class="status-button gold-status"
+          type="button"
+          aria-label="보유 골드"
+        >
+          <img
+            src="./images/gold-ui.png"
+            class="status-ui-image"
+            alt=""
+            draggable="false"
+          >
+
+          <span id="playerGold" class="gold-number">0</span>
+        </button>
+
+        <button
+          id="energyStatusButton"
+          class="status-button energy-status"
+          type="button"
+          aria-label="에너지 정보"
+        >
+          <img
+            src="./images/energy-ui.png"
+            class="status-ui-image"
+            alt=""
+            draggable="false"
+          >
+
+          <span id="playerEnergy" class="energy-number">100 / 100</span>
+        </button>
+      </header>
+
+      <!-- 로비 하단 버튼 -->
       <div id="lobbyMenu" class="lobby-menu" aria-label="로비 메뉴">
         <button
           id="menuButton"

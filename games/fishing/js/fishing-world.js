@@ -6,9 +6,21 @@ import {
 
 const startScreen = document.getElementById("startScreen");
 const lobbyScreen = document.getElementById("lobbyScreen");
+
 const startButton = document.getElementById("startButton");
 const menuButton = document.getElementById("menuButton");
 const fishingButton = document.getElementById("fishingButton");
+
+const levelStatusButton = document.getElementById("levelStatusButton");
+const goldStatusButton = document.getElementById("goldStatusButton");
+const energyStatusButton = document.getElementById("energyStatusButton");
+
+const playerLevel = document.getElementById("playerLevel");
+const playerGold = document.getElementById("playerGold");
+const playerEnergy = document.getElementById("playerEnergy");
+const levelExperience = document.getElementById("levelExperience");
+const levelProgressFill = document.getElementById("levelProgressFill");
+
 const bubbleLayer = document.getElementById("bubbleLayer");
 
 const PRESS_DURATION = 170;
@@ -16,13 +28,20 @@ const SCREEN_CHANGE_DELAY = 180;
 const BUBBLE_COUNT_MIN = 7;
 const BUBBLE_COUNT_MAX = 11;
 
-let pressTimer = null;
 let isOpeningLobby = false;
 
 /*
-  피싱월드 어디서든 사용할 현재 효종월드 로그인 정보.
-  이후 저장, 랭킹, 친구 시스템은 이 username을 기준으로 시작한다.
+  이후 Supabase 저장 데이터를 연결하면 이 값을 서버 데이터로 교체한다.
 */
+export const playerState = {
+  level: 1,
+  currentExp: 30,
+  requiredExp: 100,
+  gold: 12500,
+  energy: 80,
+  maxEnergy: 100
+};
+
 export const fishingSession = {
   username: getLoggedInUsername(),
   currentScreen: "start"
@@ -55,7 +74,29 @@ function changeScreen(nextScreenName) {
   fishingSession.currentScreen = nextScreenName;
 }
 
+export function updateLobbyStatus({
+  level,
+  currentExp,
+  requiredExp,
+  gold,
+  energy,
+  maxEnergy
+}) {
+  playerLevel.textContent = String(level);
+  playerGold.textContent = Number(gold).toLocaleString("ko-KR");
+  playerEnergy.textContent = `${energy} / ${maxEnergy}`;
+  levelExperience.textContent = `${currentExp} / ${requiredExp}`;
+
+  const progress =
+    requiredExp > 0
+      ? Math.min(100, Math.max(0, currentExp / requiredExp * 100))
+      : 0;
+
+  levelProgressFill.style.width = `${progress}%`;
+}
+
 function openLobby() {
+  updateLobbyStatus(playerState);
   changeScreen("lobby");
   console.log(`피싱월드 로비 입장: ${fishingSession.username}`);
 }
@@ -85,7 +126,7 @@ function playBubbleEffect(button) {
   const buttonRect = button.getBoundingClientRect();
 
   const centerX = buttonRect.left - screenRect.left + buttonRect.width / 2;
-  const centerY = buttonRect.top - screenRect.top + buttonRect.height * 0.7;
+  const centerY = buttonRect.top - screenRect.top + buttonRect.height * 0.65;
 
   const count = Math.floor(
     randomBetween(BUBBLE_COUNT_MIN, BUBBLE_COUNT_MAX + 1)
@@ -97,22 +138,23 @@ function playBubbleEffect(button) {
 }
 
 function pressButton(button) {
-  window.clearTimeout(pressTimer);
   button.classList.remove("is-pressed");
 
-  /* 빠른 연속 터치에서도 애니메이션을 다시 시작한다. */
   void button.offsetWidth;
 
   button.classList.add("is-pressed");
   playBubbleEffect(button);
 
-  pressTimer = window.setTimeout(() => {
+  window.setTimeout(() => {
     button.classList.remove("is-pressed");
   }, PRESS_DURATION);
 }
 
-
 function bindBubbleButton(button, onClick) {
+  if (!button) {
+    return;
+  }
+
   button.addEventListener("pointerdown", () => {
     pressButton(button);
   });
@@ -141,6 +183,7 @@ function bindBubbleButton(button, onClick) {
 
   button.addEventListener("click", onClick);
 }
+
 function initializeFishingLogin() {
   fishingSession.username = getLoggedInUsername();
 
@@ -177,6 +220,26 @@ bindBubbleButton(startButton, () => {
   }, SCREEN_CHANGE_DELAY);
 });
 
+bindBubbleButton(levelStatusButton, () => {
+  window.setTimeout(() => {
+    alert(
+      `레벨 ${playerState.level}\n경험치 ${playerState.currentExp} / ${playerState.requiredExp}`
+    );
+  }, 100);
+});
+
+bindBubbleButton(goldStatusButton, () => {
+  window.setTimeout(() => {
+    alert(`보유 골드: ${playerState.gold.toLocaleString("ko-KR")}`);
+  }, 100);
+});
+
+bindBubbleButton(energyStatusButton, () => {
+  window.setTimeout(() => {
+    alert(`에너지: ${playerState.energy} / ${playerState.maxEnergy}`);
+  }, 100);
+});
+
 bindBubbleButton(menuButton, () => {
   window.setTimeout(() => {
     alert("메뉴 화면은 다음 단계에서 연결할 예정입니다.");
@@ -189,4 +252,5 @@ bindBubbleButton(fishingButton, () => {
   }, 120);
 });
 
+updateLobbyStatus(playerState);
 initializeFishingLogin();
