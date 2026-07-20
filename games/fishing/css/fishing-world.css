@@ -461,10 +461,10 @@ button {
 .lobby-character {
   position: absolute;
   left: 50%;
-  bottom: 12.5%;
+  bottom: 13.5%;
   z-index: 9;
-  width: min(63vw, 410px);
-  height: min(59vh, 620px);
+  width: min(44vw, 287px);
+  height: min(41vh, 434px);
   padding: 0;
   border: 0;
   background: transparent;
@@ -666,4 +666,13 @@ button {
   .status-button:hover {
     transform: translateY(-2%) scale(1.1);
   }
+}
+
+
+.equipment-guide {
+  margin: 8px 2px 0;
+  color: #5b4023;
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: center;
 }

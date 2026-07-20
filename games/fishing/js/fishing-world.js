@@ -5,11 +5,12 @@ import {
 } from "./fishing-auth.js";
 
 import {
-  CHARACTER_ASSETS,
-  CHARACTER_STANDARD,
+  CHARACTER_CATALOG,
+  DEFAULT_EQUIPMENT,
   registerCharacterTarget,
-  updateCharacterObjectEverywhere
+  rebuildCharacterEverywhere
 } from "./character-composer.js";
+
 
 const startScreen = document.getElementById("startScreen");
 const lobbyScreen = document.getElementById("lobbyScreen");
@@ -260,7 +261,7 @@ initializeFishingLogin();
 
 
 /* =========================
-   완성 캐릭터 개체 장비 시스템
+   안전 장비 장착 및 캐릭터 출력
 ========================= */
 
 const characterButton = document.getElementById("characterButton");
@@ -275,39 +276,23 @@ const equipmentSlots =
 const equipmentOptions =
   document.getElementById("equipmentOptions");
 
-const equippedNameElements = {
-  head: document.getElementById("equippedHeadName"),
-  top: document.getElementById("equippedTopName"),
-  bottom: document.getElementById("equippedBottomName"),
-  shoes: document.getElementById("equippedShoesName"),
-  rod: document.getElementById("equippedRodName")
+const slotMap = {
+  head: "head",
+  top: "top",
+  bottom: "bottom",
+  shoes: "shoes",
+  rod: "rodFront"
 };
 
-const EQUIPMENT = {
-  head: CHARACTER_ASSETS.head,
-  top: CHARACTER_ASSETS.top,
-  bottom: CHARACTER_ASSETS.bottom,
-  shoes: CHARACTER_ASSETS.shoes,
-  rod: CHARACTER_ASSETS.rod
-};
-
-const DEFAULT_EQUIPPED_ITEMS = {
-  head: "head-cap-001",
-  top: "top-vest-001",
-  bottom: "bottom-shorts-001",
-  shoes: "shoes-sneakers-001",
-  rod: "rod-basic-001"
-};
-
-let equippedItems = { ...DEFAULT_EQUIPPED_ITEMS };
 let selectedEquipmentSlot = "head";
-let characterUpdatePromise = Promise.resolve();
+let equippedItems = { ...DEFAULT_EQUIPMENT };
+let rebuildQueue = Promise.resolve();
 
 function getEquipmentSaveKey() {
-  return `fishingEquipment:${fishingSession.username || "guest"}`;
+  return `fishingEquipmentV2:${fishingSession.username || "guest"}`;
 }
 
-function loadEquippedItems() {
+function loadEquipmentState() {
   try {
     const saved = JSON.parse(
       localStorage.getItem(getEquipmentSaveKey())
@@ -317,93 +302,80 @@ function loadEquippedItems() {
       return;
     }
 
-    Object.keys(DEFAULT_EQUIPPED_ITEMS).forEach((slot) => {
-      if (EQUIPMENT[slot]?.[saved[slot]]) {
-        equippedItems[slot] = saved[slot];
-      }
+    Object.entries(DEFAULT_EQUIPMENT).forEach(([slot, defaultId]) => {
+      const savedId = saved[slot];
+
+      equippedItems[slot] =
+        CHARACTER_CATALOG[slot]?.[savedId]
+          ? savedId
+          : defaultId;
     });
   } catch (error) {
     console.warn("장비 저장 데이터를 읽지 못했습니다.", error);
   }
 }
 
-function saveEquippedItems() {
+function saveEquipmentState() {
   localStorage.setItem(
     getEquipmentSaveKey(),
     JSON.stringify(equippedItems)
   );
 }
 
-function updateEquippedNames() {
-  Object.entries(equippedItems).forEach(([slot, itemId]) => {
-    const item = EQUIPMENT[slot]?.[itemId];
-
-    if (item && equippedNameElements[slot]) {
-      equippedNameElements[slot].textContent = item.name;
-    }
-  });
-}
-
-/*
-  핵심:
-  HTML에 장비 레이어를 직접 올리지 않는다.
-  숨겨진 Canvas에서 먼저 모든 장비를 하나의 PNG 개체로 합성한 뒤,
-  완성된 결과 하나만 lobbyCharacterImage에 출력한다.
-*/
-function rebuildCharacterObject() {
-  updateEquippedNames();
-
-  characterUpdatePromise = characterUpdatePromise
+function queueCharacterRebuild() {
+  rebuildQueue = rebuildQueue
     .catch(() => {})
-    .then(() => updateCharacterObjectEverywhere(equippedItems))
+    .then(() => rebuildCharacterEverywhere(equippedItems))
     .catch((error) => {
-      console.error("캐릭터 합성 실패:", error);
-      alert("캐릭터 이미지를 만드는 중 오류가 발생했습니다.");
+      console.error("캐릭터 갱신 실패:", error);
     });
 
-  return characterUpdatePromise;
+  return rebuildQueue;
 }
 
 async function equipItem(slot, itemId) {
-  if (!EQUIPMENT[slot]?.[itemId]) {
+  if (!CHARACTER_CATALOG[slot]?.[itemId]) {
     console.error(`존재하지 않는 장비: ${slot}/${itemId}`);
     return;
   }
 
   equippedItems[slot] = itemId;
-  saveEquippedItems();
+  saveEquipmentState();
 
-  await rebuildCharacterObject();
-  renderEquipmentOptions(slot);
+  await queueCharacterRebuild();
+  renderEquipmentOptions(selectedEquipmentSlot);
 }
 
-function renderEquipmentOptions(slot) {
-  selectedEquipmentSlot = slot;
+function renderEquipmentOptions(uiSlot) {
+  selectedEquipmentSlot = uiSlot;
   equipmentOptions.replaceChildren();
 
   equipmentSlots.forEach((button) => {
     button.classList.toggle(
       "is-selected",
-      button.dataset.slot === slot
+      button.dataset.slot === uiSlot
     );
   });
 
-  Object.entries(EQUIPMENT[slot]).forEach(([itemId, item]) => {
+  const actualSlot = slotMap[uiSlot];
+  const items = CHARACTER_CATALOG[actualSlot] ?? {};
+
+  Object.entries(items).forEach(([itemId, item]) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "equipment-option";
     button.textContent = item.name;
 
-    if (equippedItems[slot] === itemId) {
+    if (equippedItems[actualSlot] === itemId) {
       button.classList.add("is-equipped");
+      button.textContent += " · 장착 중";
     }
 
     button.addEventListener("click", async () => {
-      pressButton(characterButton);
       button.disabled = true;
 
       try {
-        await equipItem(slot, itemId);
+        await equipItem(actualSlot, itemId);
       } finally {
         button.disabled = false;
       }
@@ -411,6 +383,14 @@ function renderEquipmentOptions(slot) {
 
     equipmentOptions.appendChild(button);
   });
+
+  const guide = document.createElement("p");
+  guide.className = "equipment-guide";
+  guide.textContent =
+    "규격이 맞지 않는 PNG는 자동으로 제외되므로 캐릭터가 깨지지 않습니다. " +
+    "신규 장비는 1024×1536 투명 PNG로 등록하세요.";
+
+  equipmentOptions.appendChild(guide);
 }
 
 function openEquipmentPanel(initialSlot = "head") {
@@ -446,7 +426,6 @@ equipmentPanel.addEventListener("click", (event) => {
   }
 });
 
-/* 하단 메뉴 버튼은 장비창으로 연결 */
 menuButton.addEventListener("click", () => {
   openEquipmentPanel(selectedEquipmentSlot);
 });
@@ -458,14 +437,18 @@ window.addEventListener("keydown", (event) => {
 });
 
 /*
-  향후 프로필이나 낚시 화면에 캐릭터를 추가할 때:
-  registerCharacterTarget(document.getElementById("profileCharacterImage"));
-  registerCharacterTarget(document.getElementById("fishingCharacterImage"));
-  한 줄만 추가하면 현재 완성 캐릭터 개체가 동일하게 출력된다.
+  다른 화면에 캐릭터를 출력할 때도 같은 완성 개체를 사용한다.
+
+  예:
+  registerCharacterTarget(
+    document.getElementById("profileCharacterImage")
+  );
+
+  registerCharacterTarget(
+    document.getElementById("fishingCharacterImage")
+  );
 */
 registerCharacterTarget(lobbyCharacterImage);
 
-loadEquippedItems();
-rebuildCharacterObject();
-
-console.info("피싱월드 캐릭터 규격:", CHARACTER_STANDARD);
+loadEquipmentState();
+queueCharacterRebuild();

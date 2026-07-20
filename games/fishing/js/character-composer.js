@@ -1,146 +1,127 @@
 /*
-  피싱월드 캐릭터 합성기
+  피싱월드 안전 캐릭터 합성 시스템
 
-  원칙
-  1. 화면에는 레이어를 직접 출력하지 않는다.
-  2. 장비 레이어들을 숨겨진 Canvas에서 먼저 합성한다.
-  3. 합성 결과 Blob URL 하나를 로비/프로필/게임 화면에 재사용한다.
-  4. 신규 장비 이미지는 CHARACTER_STANDARD 규칙을 반드시 따른다.
+  핵심:
+  - 화면에 레이어를 직접 겹치지 않는다.
+  - 숨겨진 Canvas에서 먼저 완성 캐릭터 개체 1개를 만든다.
+  - 모든 정규 장비 PNG는 1024×1536 전체 캔버스여야 한다.
+  - 크기가 틀리거나 로딩에 실패한 장비는 자동으로 건너뛴다.
+  - 합성 실패 시 마지막 정상 캐릭터 또는 기본 완성 이미지로 복구한다.
 */
 
 export const CHARACTER_STANDARD = Object.freeze({
-  canvasWidth: 1024,
-  canvasHeight: 1536,
-
-  // 모든 신규 장비 PNG는 반드시 아래 규격으로 제작한다.
-  rules: Object.freeze({
-    format: "PNG",
-    background: "transparent",
-    width: 1024,
-    height: 1536,
-    anchorX: 512,
-    groundY: 1450,
-    direction: "front",
-    note:
-      "이미지를 부위 크기로 자르지 말고 1024×1536 전체 캔버스를 유지하며, " +
-      "기본 캐릭터와 같은 좌표에 장비만 그리고 나머지는 투명하게 둔다."
-  }),
-
-  layerOrder: Object.freeze([
-    "base",
-    "bottom",
-    "shoes",
-    "top",
-    "rod",
-    "frontHand",
-    "head"
-  ])
+  width: 1024,
+  height: 1536,
+  centerX: 512,
+  groundY: 1450,
+  format: "PNG",
+  transparent: true
 });
 
+export const CHARACTER_LAYER_ORDER = Object.freeze([
+  "base",
+  "bottom",
+  "shoes",
+  "top",
+  "rodBack",
+  "bodyFront",
+  "rodFront",
+  "head"
+]);
+
+export const DEFAULT_COMPLETE_CHARACTER =
+  "./images/player/complete/main-character-1.png";
+
 /*
-  현재 첫 세트는 참고 시트에서 분리된 초기 이미지이므로,
-  아래 placement를 사용해 1024×1536 캐릭터 캔버스 안에 정렬한다.
+  현재 배포본은 정상 출력이 우선이므로 완성 캐릭터 PNG를 기본 베이스로 사용한다.
 
-  앞으로 새로 제작할 정규 장비는 fullCanvas: true로 등록하고
-  x/y/width/height를 지정하지 않는다.
+  나중에 진짜 장비 교체를 시작할 때:
+  1. 장비가 제거된 clean base를 1024×1536로 제작한다.
+  2. base.src를 clean base 경로로 교체한다.
+  3. 각 장비를 동일 규격으로 등록한다.
+  4. 모든 레이어는 좌표 보정 없이 (0, 0)에 합성된다.
 */
-export const CHARACTER_ASSETS = Object.freeze({
+export const CHARACTER_CATALOG = Object.freeze({
   base: Object.freeze({
-    id: "player-base",
-    src: "./images/player/base/player-base.png",
-    placement: Object.freeze({ x: 215, y: 110, width: 594, height: 1320 })
-  }),
-
-  frontHand: Object.freeze({
-    id: "player-front-hand",
-    src: "./images/player/base/player-front-hand.png",
-    placement: Object.freeze({ x: 175, y: 575, width: 230, height: 450 })
+    "base-main-001": Object.freeze({
+      id: "base-main-001",
+      name: "메인 캐릭터 1",
+      src: DEFAULT_COMPLETE_CHARACTER,
+      required: true
+    })
   }),
 
   head: Object.freeze({
     "head-none": Object.freeze({
       id: "head-none",
-      name: "착용 안 함",
-      src: null,
-      fullCanvas: true
-    }),
-
-    "head-cap-001": Object.freeze({
-      id: "head-cap-001",
-      name: "초보 낚시 모자",
-      src: "./images/player/head/head-cap-001.png",
-      placement: Object.freeze({ x: 300, y: 55, width: 455, height: 360 })
+      name: "머리 장비 없음",
+      src: null
     })
   }),
 
   top: Object.freeze({
     "top-none": Object.freeze({
       id: "top-none",
-      name: "기본 민소매",
-      src: null,
-      fullCanvas: true
-    }),
-
-    "top-vest-001": Object.freeze({
-      id: "top-vest-001",
-      name: "초보 낚시 조끼",
-      src: "./images/player/top/top-vest-001.png",
-      placement: Object.freeze({ x: 245, y: 470, width: 550, height: 620 })
+      name: "상의 장비 없음",
+      src: null
     })
   }),
 
   bottom: Object.freeze({
     "bottom-none": Object.freeze({
       id: "bottom-none",
-      name: "기본 하의",
-      src: null,
-      fullCanvas: true
-    }),
-
-    "bottom-shorts-001": Object.freeze({
-      id: "bottom-shorts-001",
-      name: "초보 반바지",
-      src: "./images/player/bottom/bottom-shorts-001.png",
-      placement: Object.freeze({ x: 315, y: 900, width: 400, height: 390 })
+      name: "하의 장비 없음",
+      src: null
     })
   }),
 
   shoes: Object.freeze({
     "shoes-none": Object.freeze({
       id: "shoes-none",
-      name: "맨발",
-      src: null,
-      fullCanvas: true
-    }),
-
-    "shoes-sneakers-001": Object.freeze({
-      id: "shoes-sneakers-001",
-      name: "초보 운동화",
-      src: "./images/player/shoes/shoes-sneakers-001.png",
-      placement: Object.freeze({ x: 300, y: 1190, width: 430, height: 300 })
+      name: "신발 장비 없음",
+      src: null
     })
   }),
 
-  rod: Object.freeze({
-    "rod-none": Object.freeze({
-      id: "rod-none",
-      name: "낚싯대 없음",
-      src: null,
-      fullCanvas: true
-    }),
+  rodBack: Object.freeze({
+    "rod-back-none": Object.freeze({
+      id: "rod-back-none",
+      name: "뒤쪽 낚싯대 없음",
+      src: null
+    })
+  }),
 
-    "rod-basic-001": Object.freeze({
-      id: "rod-basic-001",
-      name: "초보 낚싯대",
-      src: "./images/player/rod/rod-basic-001.png",
-      placement: Object.freeze({ x: 15, y: 160, width: 455, height: 1300 })
+  bodyFront: Object.freeze({
+    "body-front-none": Object.freeze({
+      id: "body-front-none",
+      name: "앞쪽 몸 레이어 없음",
+      src: null
+    })
+  }),
+
+  rodFront: Object.freeze({
+    "rod-front-none": Object.freeze({
+      id: "rod-front-none",
+      name: "앞쪽 낚싯대 없음",
+      src: null
     })
   })
 });
 
+export const DEFAULT_EQUIPMENT = Object.freeze({
+  base: "base-main-001",
+  bottom: "bottom-none",
+  shoes: "shoes-none",
+  top: "top-none",
+  rodBack: "rod-back-none",
+  bodyFront: "body-front-none",
+  rodFront: "rod-front-none",
+  head: "head-none"
+});
+
 const canvas = document.createElement("canvas");
-canvas.width = CHARACTER_STANDARD.canvasWidth;
-canvas.height = CHARACTER_STANDARD.canvasHeight;
+canvas.width = CHARACTER_STANDARD.width;
+canvas.height = CHARACTER_STANDARD.height;
 
 const context = canvas.getContext("2d", {
   alpha: true,
@@ -148,14 +129,15 @@ const context = canvas.getContext("2d", {
 });
 
 if (!context) {
-  throw new Error("Canvas 2D Context를 생성하지 못했습니다.");
+  throw new Error("캐릭터 Canvas를 생성하지 못했습니다.");
 }
 
 const imageCache = new Map();
-const registeredTargets = new Set();
+const targets = new Set();
 
-let currentCharacterObjectUrl = null;
-let composeSequence = 0;
+let currentObjectUrl = null;
+let lastGoodObjectUrl = null;
+let composeToken = 0;
 
 function loadImage(src) {
   if (!src) {
@@ -173,7 +155,7 @@ function loadImage(src) {
     image.addEventListener("load", () => resolve(image), { once: true });
     image.addEventListener(
       "error",
-      () => reject(new Error(`캐릭터 이미지를 불러오지 못했습니다: ${src}`)),
+      () => reject(new Error(`이미지 로딩 실패: ${src}`)),
       { once: true }
     );
 
@@ -184,65 +166,41 @@ function loadImage(src) {
   return promise;
 }
 
-function getAsset(slot, itemId) {
-  const group = CHARACTER_ASSETS[slot];
-  const asset = group?.[itemId];
+function getItem(slot, itemId) {
+  const item = CHARACTER_CATALOG[slot]?.[itemId];
 
-  if (!asset) {
-    throw new Error(`존재하지 않는 캐릭터 장비입니다: ${slot}/${itemId}`);
+  if (!item) {
+    throw new Error(`등록되지 않은 장비: ${slot}/${itemId}`);
   }
 
-  return asset;
+  return item;
 }
 
-function drawAsset(image, asset) {
+function validateImageSize(image, item) {
   if (!image) {
-    return;
+    return true;
   }
 
-  if (asset.fullCanvas) {
-    context.drawImage(
-      image,
-      0,
-      0,
-      CHARACTER_STANDARD.canvasWidth,
-      CHARACTER_STANDARD.canvasHeight
+  const valid =
+    image.naturalWidth === CHARACTER_STANDARD.width &&
+    image.naturalHeight === CHARACTER_STANDARD.height;
+
+  if (!valid) {
+    console.warn(
+      `[캐릭터 레이어 제외] ${item.id}: ` +
+      `${image.naturalWidth}×${image.naturalHeight}, ` +
+      `필수 규격 ${CHARACTER_STANDARD.width}×${CHARACTER_STANDARD.height}`
     );
-    return;
   }
 
-  const placement = asset.placement;
-
-  if (!placement) {
-    throw new Error(`캐릭터 레이어 placement가 없습니다: ${asset.id}`);
-  }
-
-  context.drawImage(
-    image,
-    placement.x,
-    placement.y,
-    placement.width,
-    placement.height
-  );
-}
-
-function getLayerAssets(equipment) {
-  return [
-    CHARACTER_ASSETS.base,
-    getAsset("bottom", equipment.bottom),
-    getAsset("shoes", equipment.shoes),
-    getAsset("top", equipment.top),
-    getAsset("rod", equipment.rod),
-    CHARACTER_ASSETS.frontHand,
-    getAsset("head", equipment.head)
-  ];
+  return valid;
 }
 
 function canvasToBlob() {
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
       if (!blob) {
-        reject(new Error("완성 캐릭터 PNG를 생성하지 못했습니다."));
+        reject(new Error("캐릭터 PNG Blob 생성 실패"));
         return;
       }
 
@@ -251,42 +209,94 @@ function canvasToBlob() {
   });
 }
 
-/*
-  장비 레이어들을 먼저 하나의 완성 캐릭터 PNG 개체로 합성한다.
-  반환값은 화면에 사용할 Blob URL 하나다.
-*/
-export async function composeCharacterObject(equipment) {
-  const sequence = ++composeSequence;
-  const assets = getLayerAssets(equipment);
+function normalizeEquipment(equipment = {}) {
+  return {
+    ...DEFAULT_EQUIPMENT,
+    ...equipment
+  };
+}
 
-  const images = await Promise.all(
-    assets.map((asset) => loadImage(asset.src))
+export async function composeCharacterObject(equipment = {}) {
+  const token = ++composeToken;
+  const normalized = normalizeEquipment(equipment);
+
+  const layerItems = CHARACTER_LAYER_ORDER.map((slot) => {
+    return getItem(slot, normalized[slot]);
+  });
+
+  const loaded = await Promise.all(
+    layerItems.map(async (item) => {
+      if (!item.src) {
+        return { item, image: null, valid: true };
+      }
+
+      try {
+        const image = await loadImage(item.src);
+        return {
+          item,
+          image,
+          valid: validateImageSize(image, item)
+        };
+      } catch (error) {
+        console.error(error);
+
+        return {
+          item,
+          image: null,
+          valid: false
+        };
+      }
+    })
   );
 
-  if (sequence !== composeSequence) {
-    return currentCharacterObjectUrl;
+  if (token !== composeToken) {
+    return currentObjectUrl || lastGoodObjectUrl || DEFAULT_COMPLETE_CHARACTER;
+  }
+
+  const baseLayer = loaded.find(({ item }) => item.required);
+
+  if (!baseLayer?.image || !baseLayer.valid) {
+    console.error("필수 기본 캐릭터 레이어가 올바르지 않습니다.");
+    return lastGoodObjectUrl || DEFAULT_COMPLETE_CHARACTER;
   }
 
   context.clearRect(
     0,
     0,
-    CHARACTER_STANDARD.canvasWidth,
-    CHARACTER_STANDARD.canvasHeight
+    CHARACTER_STANDARD.width,
+    CHARACTER_STANDARD.height
   );
 
-  assets.forEach((asset, index) => {
-    drawAsset(images[index], asset);
-  });
+  for (const layer of loaded) {
+    if (!layer.image || !layer.valid) {
+      continue;
+    }
 
-  const blob = await canvasToBlob();
-  const nextUrl = URL.createObjectURL(blob);
-
-  if (currentCharacterObjectUrl) {
-    URL.revokeObjectURL(currentCharacterObjectUrl);
+    context.drawImage(
+      layer.image,
+      0,
+      0,
+      CHARACTER_STANDARD.width,
+      CHARACTER_STANDARD.height
+    );
   }
 
-  currentCharacterObjectUrl = nextUrl;
-  return currentCharacterObjectUrl;
+  try {
+    const blob = await canvasToBlob();
+    const nextUrl = URL.createObjectURL(blob);
+
+    if (currentObjectUrl && currentObjectUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(currentObjectUrl);
+    }
+
+    currentObjectUrl = nextUrl;
+    lastGoodObjectUrl = nextUrl;
+
+    return nextUrl;
+  } catch (error) {
+    console.error("캐릭터 합성 실패:", error);
+    return lastGoodObjectUrl || DEFAULT_COMPLETE_CHARACTER;
+  }
 }
 
 export function registerCharacterTarget(imageElement) {
@@ -294,47 +304,48 @@ export function registerCharacterTarget(imageElement) {
     return;
   }
 
-  registeredTargets.add(imageElement);
+  targets.add(imageElement);
 
-  if (currentCharacterObjectUrl) {
-    imageElement.src = currentCharacterObjectUrl;
+  if (currentObjectUrl) {
+    imageElement.src = currentObjectUrl;
   }
 }
 
 export function unregisterCharacterTarget(imageElement) {
-  registeredTargets.delete(imageElement);
+  targets.delete(imageElement);
 }
 
-export function applyCharacterObjectToTargets(characterObjectUrl) {
-  registeredTargets.forEach((imageElement) => {
-    imageElement.src = characterObjectUrl;
+export function applyCharacterObject(url) {
+  targets.forEach((imageElement) => {
+    imageElement.src = url;
   });
 }
 
-export async function updateCharacterObjectEverywhere(equipment) {
-  const characterObjectUrl = await composeCharacterObject(equipment);
-  applyCharacterObjectToTargets(characterObjectUrl);
-  return characterObjectUrl;
+export async function rebuildCharacterEverywhere(equipment) {
+  const url = await composeCharacterObject(equipment);
+  applyCharacterObject(url);
+  return url;
 }
 
-export function getCurrentCharacterObjectUrl() {
-  return currentCharacterObjectUrl;
-}
+export async function inspectEquipmentAsset(src) {
+  try {
+    const image = await loadImage(src);
 
-/*
-  신규 장비 등록 전 검사 도우미.
-  정규 장비는 반드시 1024×1536 전체 투명 캔버스여야 한다.
-*/
-export async function validateFullCanvasAsset(src) {
-  const image = await loadImage(src);
-
-  return {
-    valid:
-      image.width === CHARACTER_STANDARD.canvasWidth &&
-      image.height === CHARACTER_STANDARD.canvasHeight,
-    width: image.width,
-    height: image.height,
-    expectedWidth: CHARACTER_STANDARD.canvasWidth,
-    expectedHeight: CHARACTER_STANDARD.canvasHeight
-  };
+    return {
+      valid:
+        image.naturalWidth === CHARACTER_STANDARD.width &&
+        image.naturalHeight === CHARACTER_STANDARD.height,
+      width: image.naturalWidth,
+      height: image.naturalHeight,
+      expectedWidth: CHARACTER_STANDARD.width,
+      expectedHeight: CHARACTER_STANDARD.height
+    };
+  } catch (error) {
+    return {
+      valid: false,
+      error: error.message,
+      expectedWidth: CHARACTER_STANDARD.width,
+      expectedHeight: CHARACTER_STANDARD.height
+    };
+  }
 }
