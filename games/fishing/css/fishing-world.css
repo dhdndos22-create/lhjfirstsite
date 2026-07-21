@@ -635,13 +635,22 @@ button {
 .shop-content-layer {
   position: absolute;
   z-index: 18;
-  top: calc(max(8px, env(safe-area-inset-top)) + clamp(118px, 24vw, 180px));
-  left: 5%;
-  right: 5%;
-  bottom: 5.5%;
+
+  /* 상단 상태 UI와 뒤로가기 버튼 아래에서 시작 */
+  top: calc(max(8px, env(safe-area-inset-top)) + clamp(116px, 23vw, 174px));
+  left: 4.2%;
+  right: 4.2%;
+
+  /* 페이지 이동 영역과 하단 안전영역을 확실히 확보 */
+  bottom: calc(max(14px, env(safe-area-inset-bottom)) + clamp(24px, 5vw, 42px));
+
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: clamp(8px, 1.7vw, 14px);
+  grid-template-rows:
+    auto
+    minmax(0, 1fr)
+    clamp(46px, 10vw, 62px);
+  gap: clamp(7px, 1.5vw, 12px);
+  overflow: hidden;
   text-align: center;
   pointer-events: auto;
 }
@@ -685,21 +694,24 @@ button {
 
 .shop-item-grid {
   min-height: 0;
+  height: 100%;
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: repeat(4, minmax(0, 1fr));
-  gap: clamp(8px, 1.8vw, 13px);
+  gap: clamp(6px, 1.35vw, 10px);
+  overflow: hidden;
 }
 
 .shop-item-card {
   position: relative;
   min-width: 0;
   min-height: 0;
+  height: 100%;
   display: grid;
-  grid-template-columns: clamp(82px, 23vw, 128px) minmax(0, 1fr) clamp(62px, 17vw, 96px);
+  grid-template-columns: clamp(84px, 22vw, 124px) minmax(0, 1fr) clamp(64px, 16.5vw, 92px);
   align-items: center;
-  gap: clamp(8px, 2vw, 14px);
-  padding: clamp(7px, 1.6vw, 12px);
+  gap: clamp(7px, 1.7vw, 12px);
+  padding: clamp(6px, 1.35vw, 10px);
   border: 2px solid rgba(233, 189, 88, 0.92);
   border-radius: clamp(12px, 2.8vw, 18px);
   background: linear-gradient(180deg, rgba(24, 65, 106, 0.97), rgba(5, 24, 52, 0.98));
@@ -786,10 +798,19 @@ button {
 }
 
 .shop-pagination {
+  position: relative;
+  z-index: 25;
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  align-self: stretch;
   gap: clamp(12px, 3vw, 22px);
+  padding: clamp(3px, .8vw, 7px) 12px;
+  border-top: 1px solid rgba(233, 189, 88, 0.28);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(7, 29, 60, 0.1), rgba(3, 19, 42, 0.78));
+  box-shadow: 0 -8px 18px rgba(2, 17, 37, 0.22);
 }
 
 .shop-page-button {
@@ -919,4 +940,66 @@ button {
   font-size: clamp(17px, 4.6vw, 25px);
   font-weight: 900;
   cursor: pointer;
+}
+
+
+/* 낮은 모바일 브라우저 화면에서 마지막 카드와 페이지 버튼이 겹치지 않도록 압축 */
+@media (max-height: 760px) {
+  .shop-content-layer {
+    top: calc(max(6px, env(safe-area-inset-top)) + clamp(104px, 21vw, 150px));
+    bottom: calc(max(8px, env(safe-area-inset-bottom)) + 14px);
+    grid-template-rows: auto minmax(0, 1fr) 44px;
+    gap: 5px;
+  }
+
+  .shop-heading-row {
+    gap: 4px;
+  }
+
+  .shop-title {
+    font-size: clamp(22px, 5.3vw, 34px);
+  }
+
+  .shop-category-button {
+    min-height: 31px;
+    font-size: clamp(12px, 2.8vw, 17px);
+  }
+
+  .shop-item-grid {
+    gap: 5px;
+  }
+
+  .shop-item-card {
+    grid-template-columns: clamp(72px, 20vw, 100px) minmax(0, 1fr) clamp(58px, 15vw, 82px);
+    gap: 6px;
+    padding: 5px;
+    border-radius: 12px;
+  }
+
+  .shop-item-name {
+    margin-bottom: 3px;
+    font-size: clamp(14px, 3.7vw, 21px);
+  }
+
+  .shop-item-price {
+    font-size: clamp(12px, 2.9vw, 17px);
+  }
+
+  .shop-item-actions {
+    gap: 4px;
+  }
+
+  .shop-item-action-button {
+    min-height: 30px;
+    font-size: clamp(11px, 2.7vw, 15px);
+  }
+
+  .shop-page-button {
+    width: 36px;
+  }
+
+  .shop-page-indicator {
+    min-width: 64px;
+    font-size: 14px;
+  }
 }
