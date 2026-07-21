@@ -1841,6 +1841,9 @@ button {
 }
 
 .stage-island-image {
+  --stage-image-scale: 1;
+  --stage-image-x: 0px;
+  --stage-image-y: 0px;
   display: block;
   width: min(100%, 480px);
   max-height: 100%;
@@ -1881,8 +1884,14 @@ button {
 }
 
 @keyframes stage-island-float {
-  0%, 100% { transform: translateY(3px) rotate(-0.35deg); }
-  50% { transform: translateY(-7px) rotate(0.35deg); }
+  0%, 100% {
+    transform: translate(var(--stage-image-x), calc(var(--stage-image-y) + 3px))
+      scale(var(--stage-image-scale)) rotate(-0.35deg);
+  }
+  50% {
+    transform: translate(var(--stage-image-x), calc(var(--stage-image-y) - 7px))
+      scale(var(--stage-image-scale)) rotate(0.35deg);
+  }
 }
 
 .stage-arrow-button {
@@ -1974,12 +1983,28 @@ button {
 .stage-card.slide-right .stage-island-image { animation: stage-island-enter-left 260ms ease, stage-island-float 3.1s ease-in-out 260ms infinite; }
 
 @keyframes stage-island-enter-right {
-  from { opacity: 0; transform: translateX(35px) scale(0.88); }
-  to { opacity: 1; transform: translateX(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translate(calc(var(--stage-image-x) + 35px), var(--stage-image-y))
+      scale(var(--stage-image-scale));
+  }
+  to {
+    opacity: 1;
+    transform: translate(var(--stage-image-x), var(--stage-image-y))
+      scale(var(--stage-image-scale));
+  }
 }
 @keyframes stage-island-enter-left {
-  from { opacity: 0; transform: translateX(-35px) scale(0.88); }
-  to { opacity: 1; transform: translateX(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translate(calc(var(--stage-image-x) - 35px), var(--stage-image-y))
+      scale(var(--stage-image-scale));
+  }
+  to {
+    opacity: 1;
+    transform: translate(var(--stage-image-x), var(--stage-image-y))
+      scale(var(--stage-image-scale));
+  }
 }
 
 .stage-top-back-button:active,

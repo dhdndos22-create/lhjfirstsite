@@ -9,7 +9,8 @@ export const STAGE_DATA = Object.freeze([
     previousStageId: null,
     requiredCollectionRate: 0,
     fishPool: Object.freeze([]),
-    backgroundImage: "./images/stages/stage-1-island.png"
+    backgroundImage: "./images/stages/stage-1-island.png",
+    imageStyle: Object.freeze({ scale: 0.98, offsetX: 0, offsetY: 8 })
   }),
   Object.freeze({
     id: 2,
@@ -21,7 +22,8 @@ export const STAGE_DATA = Object.freeze([
     previousStageId: 1,
     requiredCollectionRate: 100,
     fishPool: Object.freeze([]),
-    backgroundImage: "./images/stages/stage-2-island.png"
+    backgroundImage: "./images/stages/stage-2-island.png",
+    imageStyle: Object.freeze({ scale: 0.94, offsetX: 0, offsetY: 10 })
   }),
   Object.freeze({
     id: 3,
@@ -33,7 +35,8 @@ export const STAGE_DATA = Object.freeze([
     previousStageId: 2,
     requiredCollectionRate: 100,
     fishPool: Object.freeze([]),
-    backgroundImage: "./images/stages/stage-3-island-safe.png?v=20260721b"
+    backgroundImage: "./images/stages/stage-3-island-safe.png?v=20260721c",
+    imageStyle: Object.freeze({ scale: 0.86, offsetX: 0, offsetY: 18 })
   }),
   Object.freeze({
     id: 4,
@@ -45,7 +48,8 @@ export const STAGE_DATA = Object.freeze([
     previousStageId: 3,
     requiredCollectionRate: 100,
     fishPool: Object.freeze([]),
-    backgroundImage: "./images/stages/stage-4-island-safe.png?v=20260721b"
+    backgroundImage: "./images/stages/stage-4-island-safe.png?v=20260721c",
+    imageStyle: Object.freeze({ scale: 0.82, offsetX: 0, offsetY: 22 })
   }),
   Object.freeze({
     id: 5,
@@ -57,7 +61,8 @@ export const STAGE_DATA = Object.freeze([
     previousStageId: 4,
     requiredCollectionRate: 100,
     fishPool: Object.freeze([]),
-    backgroundImage: "./images/stages/stage-5-island-safe.png?v=20260721b"
+    backgroundImage: "./images/stages/stage-5-island-safe.png?v=20260721c",
+    imageStyle: Object.freeze({ scale: 0.80, offsetX: 0, offsetY: 24 })
   })
 ]);
 

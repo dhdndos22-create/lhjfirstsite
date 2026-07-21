@@ -320,6 +320,13 @@ function renderStageSelection(direction = 0) {
   stagePreview.dataset.stage = String(stage.id);
   stageIslandImage.src = stage.backgroundImage;
   stageIslandImage.alt = `${stage.name} 스테이지 섬`;
+
+  const imageStyle = stage.imageStyle ?? {};
+  stageIslandImage.style.setProperty("--stage-image-scale", String(imageStyle.scale ?? 1));
+  stageIslandImage.style.setProperty("--stage-image-x", `${imageStyle.offsetX ?? 0}px`);
+  stageIslandImage.style.setProperty("--stage-image-y", `${imageStyle.offsetY ?? 0}px`);
+  stageIslandImage.dataset.stageId = String(stage.id);
+
   stageLockOverlay.hidden = unlocked;
 
   stagePrevButton.disabled = fishingSession.selectedStageIndex === 0;
