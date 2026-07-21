@@ -121,16 +121,14 @@ button {
 @media (hover: hover) {
   .start-button:hover {
     transform: translate(-50%, -51.5%) scale(1.025);
-    filter: brightness(1.04)
-      drop-shadow(0 1rem 0.55rem rgba(0, 38, 67, 0.38));
+    filter: brightness(1.04) drop-shadow(0 1rem 0.55rem rgba(0, 38, 67, 0.38));
   }
 }
 
 .start-button.is-pressed,
 .start-button:active {
   transform: translate(-50%, -45.5%) scale(0.94);
-  filter: brightness(0.94)
-    drop-shadow(0 0.28rem 0.18rem rgba(0, 38, 67, 0.35));
+  filter: brightness(0.94) drop-shadow(0 0.28rem 0.18rem rgba(0, 38, 67, 0.35));
 }
 
 .start-button:focus-visible,
@@ -363,15 +361,13 @@ button {
 .lobby-action-button.is-pressed,
 .lobby-action-button:active {
   transform: translateY(7%) scale(0.93);
-  filter: brightness(0.92)
-    drop-shadow(0 0.18rem 0.12rem rgba(0, 35, 53, 0.28));
+  filter: brightness(0.92) drop-shadow(0 0.18rem 0.12rem rgba(0, 35, 53, 0.28));
 }
 
 @media (hover: hover) {
   .lobby-action-button:hover {
     transform: translateY(-2%) scale(1.025);
-    filter: brightness(1.04)
-      drop-shadow(0 0.75rem 0.4rem rgba(0, 35, 53, 0.38));
+    filter: brightness(1.04) drop-shadow(0 0.75rem 0.4rem rgba(0, 35, 53, 0.38));
   }
 }
 
@@ -393,19 +389,15 @@ button {
   border: max(1px, calc(var(--bubble-size) * 0.08)) solid rgba(255, 255, 255, 0.88);
   border-radius: 50%;
   opacity: 0;
-  background: radial-gradient(
-    circle at 30% 24%,
-    rgba(255, 255, 255, 0.95) 0 10%,
-    rgba(255, 255, 255, 0.35) 11% 26%,
-    rgba(84, 207, 255, 0.18) 50%,
-    rgba(0, 116, 181, 0.08) 72%,
-    rgba(255, 255, 255, 0.18) 100%
-  );
+  background: radial-gradient(circle at 30% 24%,
+      rgba(255, 255, 255, 0.95) 0 10%,
+      rgba(255, 255, 255, 0.35) 11% 26%,
+      rgba(84, 207, 255, 0.18) 50%,
+      rgba(0, 116, 181, 0.08) 72%,
+      rgba(255, 255, 255, 0.18) 100%);
   box-shadow:
-    inset calc(var(--bubble-size) * -0.08) calc(var(--bubble-size) * -0.12)
-      calc(var(--bubble-size) * 0.18) rgba(0, 102, 164, 0.18),
-    0 calc(var(--bubble-size) * 0.08)
-      calc(var(--bubble-size) * 0.18) rgba(0, 55, 94, 0.16);
+    inset calc(var(--bubble-size) * -0.08) calc(var(--bubble-size) * -0.12) calc(var(--bubble-size) * 0.18) rgba(0, 102, 164, 0.18),
+    0 calc(var(--bubble-size) * 0.08) calc(var(--bubble-size) * 0.18) rgba(0, 55, 94, 0.16);
   transform: translate(-50%, -50%) scale(0.2);
   animation: bubble-rise var(--bubble-duration) cubic-bezier(.2, .7, .25, 1) forwards;
 }
@@ -421,20 +413,17 @@ button {
   }
 
   45% {
-    transform: translate(-50%, -50%) translateX(var(--bubble-sway))
-      translateY(calc(var(--bubble-rise) * -0.45)) scale(0.9);
+    transform: translate(-50%, -50%) translateX(var(--bubble-sway)) translateY(calc(var(--bubble-rise) * -0.45)) scale(0.9);
   }
 
   78% {
     opacity: 0.76;
-    transform: translate(-50%, -50%) translateX(calc(var(--bubble-sway) * -0.55))
-      translateY(calc(var(--bubble-rise) * -0.8)) scale(1);
+    transform: translate(-50%, -50%) translateX(calc(var(--bubble-sway) * -0.55)) translateY(calc(var(--bubble-rise) * -0.8)) scale(1);
   }
 
   100% {
     opacity: 0;
-    transform: translate(-50%, -50%) translateX(calc(var(--bubble-sway) * 0.35))
-      translateY(calc(var(--bubble-rise) * -1)) scale(1.12);
+    transform: translate(-50%, -50%) translateX(calc(var(--bubble-sway) * 0.35)) translateY(calc(var(--bubble-rise) * -1)) scale(1.12);
   }
 }
 
@@ -447,6 +436,7 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .game-screen,
   .start-button,
   .status-button,
@@ -479,7 +469,7 @@ button {
   pointer-events: none;
   transform: translateY(32px) scale(0.92);
   transform-origin: left bottom;
-  transition: opacity 180ms ease, transform 210ms cubic-bezier(.2,.85,.25,1.2), visibility 180ms ease;
+  transition: opacity 180ms ease, transform 210ms cubic-bezier(.2, .85, .25, 1.2), visibility 180ms ease;
 }
 
 .quick-menu-panel.is-open {
@@ -579,9 +569,15 @@ button {
 
 .shop-back-button {
   position: absolute;
-  left: 6%;
-  bottom: max(3.5%, env(safe-area-inset-bottom));
-  z-index: 24;
+
+  top: calc(max(8px, env(safe-area-inset-top)) + clamp(90px, 18vw, 130px));
+  right: 6%;
+
+  left: auto;
+  bottom: auto;
+
+  z-index: 30;
+  
   width: clamp(48px, 13vw, 78px);
   aspect-ratio: 1;
   border: 3px solid #e9bd58;
@@ -594,10 +590,7 @@ button {
   box-shadow:
     0 5px 0 #5c3b16,
     0 8px 14px rgba(0, 18, 39, 0.42),
-    inset 0 2px 0 rgba(255, 255, 255, 0.18);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform 90ms ease, filter 90ms ease;
+    inset 0 2px 0 rgba(255, 255, 255, .18);
 }
 
 .shop-back-button.is-pressed,
@@ -627,4 +620,3 @@ button {
   outline: 3px solid #ffffff;
   outline-offset: 4px;
 }
-
