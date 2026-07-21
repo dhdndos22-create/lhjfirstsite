@@ -21,8 +21,9 @@ export const EQUIPMENT_CATEGORIES = Object.freeze({
 });
 
 export const RARITIES = Object.freeze({
-  NORMAL: "normal",
+  COMMON: "common",
+  UNCOMMON: "uncommon",
   RARE: "rare",
-  UNIQUE: "unique",
+  EPIC: "epic",
   LEGENDARY: "legendary"
 });

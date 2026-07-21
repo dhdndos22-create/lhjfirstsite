@@ -106,6 +106,11 @@ export function normalizePlayerSave(rawSave) {
       }
     },
 
+    progression: {
+      selectedStageId: Math.min(5, toInteger(rawSave.progression?.selectedStageId, 1, 1)),
+      highestUnlockedStageId: Math.min(5, toInteger(rawSave.progression?.highestUnlockedStageId, 1, 1))
+    },
+
     fishCollection: normalizeRecordMap(rawSave.fishCollection),
     achievements: normalizeRecordMap(rawSave.achievements),
 

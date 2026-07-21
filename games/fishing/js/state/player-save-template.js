@@ -30,6 +30,11 @@ export const DEFAULT_PLAYER_SAVE = Object.freeze({
     })
   }),
 
+  progression: Object.freeze({
+    selectedStageId: 1,
+    highestUnlockedStageId: 1
+  }),
+
   fishCollection: Object.freeze({}),
   achievements: Object.freeze({}),
 

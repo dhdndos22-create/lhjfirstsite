@@ -10,6 +10,7 @@ import {
 } from "./common-panel-ui.js";
 
 import { GAME_CONFIG } from "./data/game-config.js";
+import { STAGE_DATA, getStageById } from "./data/stages.js";
 import {
   playerSave,
   replacePlayerSave,
@@ -23,7 +24,9 @@ import {
 const screens = {
   start: document.getElementById("startScreen"),
   lobby: document.getElementById("lobbyScreen"),
-  panel: document.getElementById("commonPanelScreen")
+  panel: document.getElementById("commonPanelScreen"),
+  stageSelect: document.getElementById("stageSelectScreen"),
+  fishingStage: document.getElementById("fishingStageScreen")
 };
 
 const startButton = document.getElementById("startButton");
@@ -33,7 +36,26 @@ const quickMenuPanel = document.getElementById("quickMenuPanel");
 const quickMenuItems = [...document.querySelectorAll(".quick-menu-item")];
 const lobbyStatusMount = document.getElementById("lobbyStatusMount");
 const panelStatusMount = document.getElementById("panelStatusMount");
+const stageStatusMount = document.getElementById("stageStatusMount");
+const fishingStatusMount = document.getElementById("fishingStatusMount");
 const commonPanelBackButton = document.getElementById("commonPanelBackButton");
+const stageSelectBackButton = document.getElementById("stageSelectBackButton");
+const fishingStageBackButton = document.getElementById("fishingStageBackButton");
+const stagePrevButton = document.getElementById("stagePrevButton");
+const stageNextButton = document.getElementById("stageNextButton");
+const stageEnterButton = document.getElementById("stageEnterButton");
+const stageCard = document.getElementById("stageCard");
+const stageNumberText = document.getElementById("stageNumberText");
+const stageNameText = document.getElementById("stageNameText");
+const stageDescriptionText = document.getElementById("stageDescriptionText");
+const stageDifficultyText = document.getElementById("stageDifficultyText");
+const stageRequirementText = document.getElementById("stageRequirementText");
+const stagePreview = document.getElementById("stagePreview");
+const stagePageDots = document.getElementById("stagePageDots");
+const fishingStageNumber = document.getElementById("fishingStageNumber");
+const fishingStageName = document.getElementById("fishingStageName");
+const fishingStageDescription = document.getElementById("fishingStageDescription");
+const fishingStageBackground = document.getElementById("fishingStageBackground");
 const bubbleLayer = document.getElementById("bubbleLayer");
 
 const commonPanel = new CommonPanelUI({
@@ -59,7 +81,9 @@ function syncLegacyStatusView() {
 export const fishingSession = {
   username: getLoggedInUsername(),
   currentScreen: "start",
-  activePanel: null
+  activePanel: null,
+  selectedStageIndex: 0,
+  activeStageId: null
 };
 
 let isQuickMenuOpen = false;
@@ -92,6 +116,8 @@ function createStatusBarMarkup(scope) {
 function mountSharedStatusBars() {
   lobbyStatusMount.innerHTML = createStatusBarMarkup("lobby");
   panelStatusMount.innerHTML = createStatusBarMarkup("panel");
+  stageStatusMount.innerHTML = createStatusBarMarkup("stage-select");
+  fishingStatusMount.innerHTML = createStatusBarMarkup("fishing-stage");
 
   document.querySelectorAll("[data-status-action]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -201,6 +227,138 @@ function openLobby() {
   changeScreen("lobby");
 }
 
+
+function getStageCollectionProgress(stage) {
+  const total = stage.fishPool.length;
+  if (total === 0) return { caught: 0, total: 0, rate: 0 };
+
+  const caught = stage.fishPool.filter((fishId) => {
+    const record = playerSave.fishCollection?.[fishId];
+    return Number(record?.count ?? record ?? 0) > 0;
+  }).length;
+
+  return {
+    caught,
+    total,
+    rate: Math.floor((caught / total) * 100)
+  };
+}
+
+function isStageUnlocked(stage) {
+  if (stage.id === 1) return true;
+  const previousStage = getStageById(stage.previousStageId);
+  const previousProgress = previousStage
+    ? getStageCollectionProgress(previousStage)
+    : { rate: 0 };
+
+  return playerSave.profile.level >= stage.requiredLevel
+    && previousProgress.rate >= stage.requiredCollectionRate;
+}
+
+function updateHighestUnlockedStage() {
+  const highest = STAGE_DATA.reduce((maxId, stage) => {
+    return isStageUnlocked(stage) ? Math.max(maxId, stage.id) : maxId;
+  }, 1);
+
+  playerSave.progression.highestUnlockedStageId = highest;
+}
+
+function getStageUnlockMessage(stage) {
+  if (stage.id === 1) return "처음부터 입장 가능";
+
+  const previousStage = getStageById(stage.previousStageId);
+  const progress = previousStage
+    ? getStageCollectionProgress(previousStage)
+    : { caught: 0, total: 0, rate: 0 };
+  const collectionText = progress.total > 0
+    ? `${previousStage.name} 도감 ${progress.caught}/${progress.total} (${progress.rate}%)`
+    : `${previousStage.name} 도감 데이터 준비중 (완성 필요)`;
+
+  return `해금 조건 · Lv.${stage.requiredLevel} / ${collectionText}`;
+}
+
+function renderStageDots() {
+  stagePageDots.innerHTML = "";
+  STAGE_DATA.forEach((stage, index) => {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = "stage-page-dot";
+    dot.classList.toggle("is-active", index === fishingSession.selectedStageIndex);
+    dot.setAttribute("aria-label", `${stage.name} 선택`);
+    dot.addEventListener("click", () => {
+      fishingSession.selectedStageIndex = index;
+      renderStageSelection();
+    });
+    stagePageDots.appendChild(dot);
+  });
+}
+
+function renderStageSelection(direction = 0) {
+  const stage = STAGE_DATA[fishingSession.selectedStageIndex];
+  if (!stage) return;
+
+  updateHighestUnlockedStage();
+  const unlocked = isStageUnlocked(stage);
+
+  stageCard.classList.remove("slide-left", "slide-right");
+  if (direction !== 0) {
+    void stageCard.offsetWidth;
+    stageCard.classList.add(direction > 0 ? "slide-left" : "slide-right");
+  }
+
+  stageNumberText.textContent = `STAGE ${stage.id}`;
+  stageNameText.textContent = stage.name;
+  stageDescriptionText.textContent = stage.description;
+  stageDifficultyText.textContent = `${"★".repeat(stage.difficulty)}${"☆".repeat(5 - stage.difficulty)}`;
+  stageRequirementText.textContent = unlocked ? "입장 가능" : getStageUnlockMessage(stage);
+  stageRequirementText.classList.toggle("is-locked", !unlocked);
+  stageEnterButton.disabled = !unlocked;
+  stageEnterButton.textContent = unlocked ? "입장" : "잠김";
+  stagePreview.classList.toggle("is-locked", !unlocked);
+  stagePreview.dataset.stage = String(stage.id);
+
+  stagePrevButton.disabled = fishingSession.selectedStageIndex === 0;
+  stageNextButton.disabled = fishingSession.selectedStageIndex === STAGE_DATA.length - 1;
+  renderStageDots();
+}
+
+function openStageSelect() {
+  closeQuickMenu();
+  loadPlayerState();
+  updateHighestUnlockedStage();
+  const selectedId = playerSave.progression?.selectedStageId || 1;
+  fishingSession.selectedStageIndex = Math.max(
+    0,
+    STAGE_DATA.findIndex((stage) => stage.id === selectedId)
+  );
+  updatePlayerStatus();
+  renderStageSelection();
+  changeScreen("stageSelect");
+}
+
+function moveStageSelection(offset) {
+  const nextIndex = fishingSession.selectedStageIndex + offset;
+  if (nextIndex < 0 || nextIndex >= STAGE_DATA.length) return;
+  fishingSession.selectedStageIndex = nextIndex;
+  renderStageSelection(offset);
+}
+
+function enterSelectedStage() {
+  const stage = STAGE_DATA[fishingSession.selectedStageIndex];
+  if (!stage || !isStageUnlocked(stage)) return;
+
+  fishingSession.activeStageId = stage.id;
+  playerSave.progression.selectedStageId = stage.id;
+  savePlayerState();
+
+  fishingStageNumber.textContent = `STAGE ${stage.id}`;
+  fishingStageName.textContent = stage.name;
+  fishingStageDescription.textContent = stage.description;
+  fishingStageBackground.dataset.stage = String(stage.id);
+  updatePlayerStatus();
+  changeScreen("fishingStage");
+}
+
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
 }
@@ -245,6 +403,11 @@ function bindEvents() {
   bindPressEffect(menuButton);
   bindPressEffect(fishingButton);
   bindPressEffect(commonPanelBackButton);
+  bindPressEffect(stageSelectBackButton);
+  bindPressEffect(fishingStageBackButton);
+  bindPressEffect(stagePrevButton);
+  bindPressEffect(stageNextButton);
+  bindPressEffect(stageEnterButton);
 
   startButton.addEventListener("click", () => {
     if (!requireHyojongLogin()) return;
@@ -254,13 +417,13 @@ function bindEvents() {
 
   menuButton.addEventListener("click", toggleQuickMenu);
 
-  fishingButton.addEventListener("click", () => {
-    if (playerState.energy < 1) {
-      alert("에너지가 부족합니다.");
-      return;
-    }
-    alert("낚시 기능은 다음 단계에서 연결합니다.");
-  });
+  fishingButton.addEventListener("click", openStageSelect);
+
+  stagePrevButton.addEventListener("click", () => moveStageSelection(-1));
+  stageNextButton.addEventListener("click", () => moveStageSelection(1));
+  stageEnterButton.addEventListener("click", enterSelectedStage);
+  stageSelectBackButton.addEventListener("click", openLobby);
+  fishingStageBackButton.addEventListener("click", openStageSelect);
 
   quickMenuItems.forEach((button) => {
     button.addEventListener("click", () => openCommonPanel(button.dataset.menu));
@@ -277,6 +440,8 @@ function bindEvents() {
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
     if (fishingSession.currentScreen === "panel") openLobby();
+    else if (fishingSession.currentScreen === "fishingStage") openStageSelect();
+    else if (fishingSession.currentScreen === "stageSelect") openLobby();
     else closeQuickMenu();
   });
 }

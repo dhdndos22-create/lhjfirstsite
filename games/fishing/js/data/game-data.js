@@ -5,6 +5,4 @@ export { EQUIPMENT_DATA } from "./equipment.js";
 export { FISH_DATA } from "./fish.js";
 export { ACHIEVEMENT_DATA } from "./achievements.js";
 export { SHOP_PRODUCT_DATA } from "./shop-products.js";
-
-export { BAIT_DATA } from "./bait.js";
-export { CONSUMABLE_DATA } from "./consumables.js";
+export { STAGE_DATA, getStageById } from "./stages.js";
