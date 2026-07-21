@@ -9,6 +9,17 @@ import {
   PANEL_DEFINITIONS
 } from "./common-panel-ui.js";
 
+import { GAME_CONFIG } from "./data/game-config.js";
+import {
+  playerSave,
+  replacePlayerSave,
+  getPlayerStatusView
+} from "./state/player-state.js";
+import {
+  loadPlayerSave,
+  savePlayerSave
+} from "./services/save-service.js";
+
 const screens = {
   start: document.getElementById("startScreen"),
   lobby: document.getElementById("lobbyScreen"),
@@ -33,15 +44,17 @@ const commonPanel = new CommonPanelUI({
   pagination: document.getElementById("commonPanelPagination")
 });
 
-const DEFAULT_PLAYER_STATE = Object.freeze({
-  level: 1,
-  currentExp: 0,
+export const playerState = {
+  level: GAME_CONFIG.initialLevel,
+  currentExp: GAME_CONFIG.initialExp,
   requiredExp: 100,
-  gold: 0,
-  energy: 10
-});
+  gold: GAME_CONFIG.initialGold,
+  energy: GAME_CONFIG.initialEnergy
+};
 
-export const playerState = { ...DEFAULT_PLAYER_STATE };
+function syncLegacyStatusView() {
+  Object.assign(playerState, getPlayerStatusView());
+}
 
 export const fishingSession = {
   username: getLoggedInUsername(),
@@ -93,40 +106,19 @@ function mountSharedStatusBars() {
   });
 }
 
-function getPlayerSaveKey() {
-  return `fishingPlayer:${fishingSession.username || "guest"}`;
-}
-
-function normalizeInteger(value, fallback, minimum = 0) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return fallback;
-  return Math.max(minimum, Math.floor(number));
-}
-
 function loadPlayerState() {
-  try {
-    const raw = localStorage.getItem(getPlayerSaveKey());
-
-    if (!raw) {
-      Object.assign(playerState, DEFAULT_PLAYER_STATE);
-      savePlayerState();
-      return;
-    }
-
-    const saved = JSON.parse(raw);
-    playerState.level = Math.min(100, normalizeInteger(saved.level, 1, 1));
-    playerState.currentExp = normalizeInteger(saved.currentExp, 0);
-    playerState.requiredExp = normalizeInteger(saved.requiredExp, 100, 1);
-    playerState.gold = normalizeInteger(saved.gold, 0);
-    playerState.energy = normalizeInteger(saved.energy, 10);
-  } catch (error) {
-    console.warn("플레이어 저장 데이터를 불러오지 못했습니다.", error);
-    Object.assign(playerState, DEFAULT_PLAYER_STATE);
-  }
+  const loadedSave = loadPlayerSave(fishingSession.username || "guest");
+  replacePlayerSave(loadedSave);
+  syncLegacyStatusView();
 }
 
 export function savePlayerState() {
-  localStorage.setItem(getPlayerSaveKey(), JSON.stringify(playerState));
+  const saved = savePlayerSave(
+    fishingSession.username || "guest",
+    playerSave
+  );
+  replacePlayerSave(saved);
+  syncLegacyStatusView();
 }
 
 export function updatePlayerStatus() {

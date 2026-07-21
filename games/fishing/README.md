@@ -36,3 +36,52 @@
 
 `js/common-panel-ui.js`의 `PANEL_DEFINITIONS`에 항목을 추가하고,
 로비 메뉴 버튼의 `data-menu` 값을 같은 키로 지정하면 됩니다.
+
+## 공통 게임 데이터와 유저 저장 데이터
+
+이번 버전부터 게임의 고정 정보와 유저별 진행 정보를 분리합니다.
+
+### 공통 게임 데이터
+
+```text
+js/data/
+├─ game-config.js       # 최대 레벨, 초기 골드/에너지 등
+├─ level-data.js        # 레벨별 필요 경험치
+├─ items.js             # 소모품·미끼 정의
+├─ equipment.js         # 장비 정의
+├─ fish.js              # 물고기·도감 원본 정보
+├─ achievements.js      # 업적 조건·보상
+├─ shop-products.js     # 상점 상품과 지급 보상
+└─ game-data.js         # 위 데이터를 한 곳에서 다시 export
+```
+
+공통 데이터는 모든 계정이 함께 사용하는 읽기 전용 정보입니다.
+
+### 유저 저장 데이터
+
+```text
+js/state/
+├─ player-save-template.js  # 신규 계정 기본 저장 구조
+└─ player-state.js          # 현재 접속한 유저 상태와 기본 변경 함수
+
+js/services/
+└─ save-service.js          # 계정별 localStorage 저장·불러오기·정규화·구버전 이전
+```
+
+신규 계정 기본값:
+
+```text
+레벨 1
+경험치 0
+골드 0
+에너지 10
+기본 낚싯대 1개 보유 및 장착
+```
+
+저장 키는 로그인 사용자마다 분리됩니다.
+
+```text
+fishingWorldSave:<username>
+```
+
+기존 버전의 `fishingPlayer:<username>` 저장값도 최초 불러오기 때 새 구조로 자동 이전합니다.
