@@ -33,7 +33,7 @@ export const STAGE_DATA = Object.freeze([
     previousStageId: 2,
     requiredCollectionRate: 100,
     fishPool: Object.freeze([]),
-    backgroundImage: "./images/stages/stage-3-island.png"
+    backgroundImage: "./images/stages/stage-3-island-safe.png?v=20260721b"
   }),
   Object.freeze({
     id: 4,
@@ -45,7 +45,7 @@ export const STAGE_DATA = Object.freeze([
     previousStageId: 3,
     requiredCollectionRate: 100,
     fishPool: Object.freeze([]),
-    backgroundImage: "./images/stages/stage-4-island.png"
+    backgroundImage: "./images/stages/stage-4-island-safe.png?v=20260721b"
   }),
   Object.freeze({
     id: 5,
@@ -57,7 +57,7 @@ export const STAGE_DATA = Object.freeze([
     previousStageId: 4,
     requiredCollectionRate: 100,
     fishPool: Object.freeze([]),
-    backgroundImage: "./images/stages/stage-5-island.png"
+    backgroundImage: "./images/stages/stage-5-island-safe.png?v=20260721b"
   })
 ]);
 
