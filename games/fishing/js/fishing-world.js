@@ -51,6 +51,8 @@ const stageDescriptionText = document.getElementById("stageDescriptionText");
 const stageDifficultyText = document.getElementById("stageDifficultyText");
 const stageRequirementText = document.getElementById("stageRequirementText");
 const stagePreview = document.getElementById("stagePreview");
+const stageIslandImage = document.getElementById("stageIslandImage");
+const stageLockOverlay = document.getElementById("stageLockOverlay");
 const stagePageDots = document.getElementById("stagePageDots");
 const fishingStageNumber = document.getElementById("fishingStageNumber");
 const fishingStageName = document.getElementById("fishingStageName");
@@ -313,9 +315,12 @@ function renderStageSelection(direction = 0) {
   stageRequirementText.textContent = unlocked ? "입장 가능" : getStageUnlockMessage(stage);
   stageRequirementText.classList.toggle("is-locked", !unlocked);
   stageEnterButton.disabled = !unlocked;
-  stageEnterButton.textContent = unlocked ? "입장" : "잠김";
+  stageEnterButton.textContent = unlocked ? "입장하기" : "잠김";
   stagePreview.classList.toggle("is-locked", !unlocked);
   stagePreview.dataset.stage = String(stage.id);
+  stageIslandImage.src = stage.backgroundImage;
+  stageIslandImage.alt = `${stage.name} 스테이지 섬`;
+  stageLockOverlay.hidden = unlocked;
 
   stagePrevButton.disabled = fishingSession.selectedStageIndex === 0;
   stageNextButton.disabled = fishingSession.selectedStageIndex === STAGE_DATA.length - 1;
@@ -341,6 +346,20 @@ function moveStageSelection(offset) {
   if (nextIndex < 0 || nextIndex >= STAGE_DATA.length) return;
   fishingSession.selectedStageIndex = nextIndex;
   renderStageSelection(offset);
+}
+
+let stageSwipeStartX = null;
+
+function handleStageSwipeStart(event) {
+  stageSwipeStartX = event.clientX;
+}
+
+function handleStageSwipeEnd(event) {
+  if (stageSwipeStartX === null) return;
+  const distance = event.clientX - stageSwipeStartX;
+  stageSwipeStartX = null;
+  if (Math.abs(distance) < 45) return;
+  moveStageSelection(distance < 0 ? 1 : -1);
 }
 
 function enterSelectedStage() {
@@ -421,6 +440,9 @@ function bindEvents() {
 
   stagePrevButton.addEventListener("click", () => moveStageSelection(-1));
   stageNextButton.addEventListener("click", () => moveStageSelection(1));
+  stagePreview.addEventListener("pointerdown", handleStageSwipeStart);
+  stagePreview.addEventListener("pointerup", handleStageSwipeEnd);
+  stagePreview.addEventListener("pointercancel", () => { stageSwipeStartX = null; });
   stageEnterButton.addEventListener("click", enterSelectedStage);
   stageSelectBackButton.addEventListener("click", openLobby);
   fishingStageBackButton.addEventListener("click", openStageSelect);

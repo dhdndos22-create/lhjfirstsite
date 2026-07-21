@@ -73,34 +73,47 @@
 
 
     <section id="stageSelectScreen" class="game-screen stage-select-screen" aria-label="낚시 스테이지 선택" aria-hidden="true">
-      <div class="stage-select-background" aria-hidden="true"></div>
+      <img class="screen-background stage-select-background" src="./images/stages/stage-select-background.png" alt="" draggable="false">
+      <div class="stage-select-water-overlay" aria-hidden="true"></div>
       <header id="stageStatusMount" class="status-mount"></header>
 
+      <button id="stageSelectBackButton" class="stage-top-back-button" type="button" aria-label="로비로 돌아가기">←</button>
+
       <div class="stage-select-content">
-        <h1 class="stage-select-title">스테이지 선택</h1>
-
-        <div class="stage-carousel">
-          <button id="stagePrevButton" class="stage-arrow-button" type="button" aria-label="이전 스테이지">◀</button>
-
-          <article id="stageCard" class="stage-card" aria-live="polite">
-            <div class="stage-card-number" id="stageNumberText">STAGE 1</div>
-            <div class="stage-preview" id="stagePreview">
-              <span class="stage-preview-placeholder">배경 UI 준비중</span>
-            </div>
-            <h2 id="stageNameText" class="stage-name">초보자의 연못</h2>
-            <p id="stageDescriptionText" class="stage-description"></p>
-            <div id="stageDifficultyText" class="stage-difficulty" aria-label="난이도"></div>
-            <div id="stageRequirementText" class="stage-requirement"></div>
-            <button id="stageEnterButton" class="stage-enter-button" type="button">입장</button>
-          </article>
-
-          <button id="stageNextButton" class="stage-arrow-button" type="button" aria-label="다음 스테이지">▶</button>
+        <div class="stage-heading-board">
+          <h1 class="stage-select-title">스테이지 선택</h1>
+          <p class="stage-select-guide">좌우 화살표로 낚시터를 선택하세요</p>
         </div>
 
-        <div id="stagePageDots" class="stage-page-dots" aria-label="스테이지 위치"></div>
-      </div>
+        <article id="stageCard" class="stage-card" aria-live="polite">
+          <div class="stage-title-area">
+            <span class="stage-card-number" id="stageNumberText">STAGE 1</span>
+            <h2 id="stageNameText" class="stage-name">초보자의 연못</h2>
+            <div id="stageDifficultyText" class="stage-difficulty" aria-label="난이도"></div>
+          </div>
 
-      <button id="stageSelectBackButton" class="round-back-button" type="button" aria-label="로비로 돌아가기">←</button>
+          <div class="stage-island-area">
+            <button id="stagePrevButton" class="stage-arrow-button stage-arrow-left" type="button" aria-label="이전 스테이지">◀</button>
+            <div class="stage-preview" id="stagePreview">
+              <img id="stageIslandImage" class="stage-island-image" src="./images/stages/stage-1-island.png" alt="초보자의 연못 섬" draggable="false">
+              <div id="stageLockOverlay" class="stage-lock-overlay" hidden>
+                <span class="stage-lock-icon" aria-hidden="true">🔒</span>
+                <span>잠긴 스테이지</span>
+              </div>
+            </div>
+            <button id="stageNextButton" class="stage-arrow-button stage-arrow-right" type="button" aria-label="다음 스테이지">▶</button>
+          </div>
+
+          <div id="stagePageDots" class="stage-page-dots" aria-label="스테이지 위치"></div>
+
+          <div class="stage-info-panel">
+            <p id="stageDescriptionText" class="stage-description"></p>
+            <div id="stageRequirementText" class="stage-requirement"></div>
+          </div>
+
+          <button id="stageEnterButton" class="stage-enter-button" type="button">입장하기</button>
+        </article>
+      </div>
     </section>
 
     <section id="fishingStageScreen" class="game-screen fishing-stage-screen" aria-label="스테이지 낚시 화면" aria-hidden="true">
