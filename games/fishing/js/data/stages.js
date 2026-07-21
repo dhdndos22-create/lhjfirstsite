@@ -36,7 +36,7 @@ export const STAGE_DATA = Object.freeze([
     requiredCollectionRate: 100,
     fishPool: Object.freeze([]),
     backgroundImage: "./images/stages/stage-3-island-safe.png?v=20260721c",
-    imageStyle: Object.freeze({ scale: 0.86, offsetX: 0, offsetY: 18 })
+    imageStyle: Object.freeze({ scale: 0.86, offsetX: 6, offsetY: 18 })
   }),
   Object.freeze({
     id: 4,
