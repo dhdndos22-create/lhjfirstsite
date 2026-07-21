@@ -6,338 +6,67 @@
   <meta name="theme-color" content="#008fd3">
   <title>피싱월드</title>
   <link rel="stylesheet" href="./css/fishing-world.css">
+  <link rel="stylesheet" href="./css/common-panel-ui.css">
 </head>
 <body>
   <main id="app">
-    <!-- 게임 시작 화면 -->
-    <section
-      id="startScreen"
-      class="game-screen start-screen is-active"
-      aria-label="피싱월드 시작 화면"
-      aria-hidden="false"
-    >
-      <img
-        class="screen-background start-background"
-        src="./images/start-background.png"
-        alt=""
-        draggable="false"
-      >
-
-      <button
-        id="startButton"
-        class="game-button start-button"
-        type="button"
-        aria-label="게임 시작"
-      >
-        <img
-          src="./images/start-button.png"
-          alt="게임 시작"
-          draggable="false"
-        >
+    <section id="startScreen" class="game-screen start-screen is-active" aria-label="피싱월드 시작 화면" aria-hidden="false">
+      <img class="screen-background start-background" src="./images/start-background.png" alt="" draggable="false">
+      <button id="startButton" class="game-button start-button" type="button" aria-label="게임 시작">
+        <img src="./images/start-button.png" alt="게임 시작" draggable="false">
       </button>
     </section>
 
-    <!-- 메인 로비 화면 -->
-    <section
-      id="lobbyScreen"
-      class="game-screen lobby-screen"
-      aria-label="피싱월드 메인 로비"
-      aria-hidden="true"
-    >
-      <img
-        class="screen-background lobby-background"
-        src="./images/lobby-background.png"
-        alt=""
-        draggable="false"
-      >
+    <section id="lobbyScreen" class="game-screen lobby-screen" aria-label="피싱월드 메인 로비" aria-hidden="true">
+      <img class="screen-background lobby-background" src="./images/lobby-background.png" alt="" draggable="false">
 
-      <!-- 로비 상단 상태 UI -->
-      <header class="lobby-status-bar" aria-label="플레이어 상태">
-        <button
-          id="levelStatusButton"
-          class="status-button level-status"
-          type="button"
-          aria-label="레벨 정보"
-        >
-          <img
-            src="./images/level-status-ui-new.png"
-            class="status-ui-image"
-            alt=""
-            draggable="false"
-          >
+      <header id="lobbyStatusMount" class="status-mount"></header>
 
-          <span id="playerLevel" class="level-number">1</span>
-
-          <span class="level-progress-area" aria-hidden="true">
-            <span id="levelProgressFill" class="level-progress-fill"></span>
-          </span>
-
-          <span id="levelExperience" class="level-experience">0 / 100</span>
-        </button>
-
-        <button
-          id="goldStatusButton"
-          class="status-button gold-status"
-          type="button"
-          aria-label="보유 골드"
-        >
-          <img
-            src="./images/gold-status-ui-new.png"
-            class="status-ui-image"
-            alt=""
-            draggable="false"
-          >
-
-          <span id="playerGold" class="gold-number">0</span>
-        </button>
-
-        <button
-          id="energyStatusButton"
-          class="status-button energy-status"
-          type="button"
-          aria-label="에너지 정보"
-        >
-          <img
-            src="./images/energy-status-ui-new.png"
-            class="status-ui-image"
-            alt=""
-            draggable="false"
-          >
-
-          <span id="playerEnergy" class="energy-number">10</span>
-        </button>
-      </header>
-
-
-      <!-- 메뉴 버튼을 누르면 위로 펼쳐지는 메뉴 -->
-      <nav
-        id="quickMenuPanel"
-        class="quick-menu-panel"
-        aria-label="확장 메뉴"
-        aria-hidden="true"
-      >
-        <button class="quick-menu-item" type="button" data-menu="shop">
-          <span class="quick-menu-icon" aria-hidden="true">🛒</span>
-          <span>상점</span>
-        </button>
-
-        <button class="quick-menu-item" type="button" data-menu="inventory">
-          <span class="quick-menu-icon" aria-hidden="true">🎒</span>
-          <span>인벤토리</span>
-        </button>
-
-        <button class="quick-menu-item" type="button" data-menu="equipment">
-          <span class="quick-menu-icon" aria-hidden="true">🎣</span>
-          <span>장비</span>
-        </button>
-
-        <button class="quick-menu-item" type="button" data-menu="draw">
-          <span class="quick-menu-icon" aria-hidden="true">🎁</span>
-          <span>뽑기</span>
-        </button>
-
-        <button class="quick-menu-item" type="button" data-menu="achievement">
-          <span class="quick-menu-icon" aria-hidden="true">🏆</span>
-          <span>업적</span>
-        </button>
-
-        <button class="quick-menu-item" type="button" data-menu="mail">
-          <span class="quick-menu-icon" aria-hidden="true">✉️</span>
-          <span>우편</span>
-        </button>
+      <nav id="quickMenuPanel" class="quick-menu-panel" aria-label="확장 메뉴" aria-hidden="true">
+        <button class="quick-menu-item" type="button" data-menu="shop"><span aria-hidden="true">🛒</span><span>상점</span></button>
+        <button class="quick-menu-item" type="button" data-menu="inventory"><span aria-hidden="true">🎒</span><span>인벤토리</span></button>
+        <button class="quick-menu-item" type="button" data-menu="equipment"><span aria-hidden="true">🎣</span><span>장비</span></button>
+        <button class="quick-menu-item" type="button" data-menu="draw"><span aria-hidden="true">🎁</span><span>뽑기</span></button>
+        <button class="quick-menu-item" type="button" data-menu="achievement"><span aria-hidden="true">🏆</span><span>업적</span></button>
+        <button class="quick-menu-item" type="button" data-menu="mail"><span aria-hidden="true">✉️</span><span>우편</span></button>
       </nav>
 
-      <!-- 로비 하단 버튼 -->
-      <div id="lobbyMenu" class="lobby-menu" aria-label="로비 메뉴">
-        <button
-          id="menuButton"
-          class="lobby-action-button lobby-menu-button"
-          type="button"
-          aria-label="메뉴 열기"
-        >
+      <div class="lobby-menu" aria-label="로비 메뉴">
+        <button id="menuButton" class="lobby-action-button lobby-menu-button" type="button" aria-label="메뉴 열기">
           <img src="./images/menu-button-1.png" alt="" draggable="false">
           <span class="lobby-button-label lobby-menu-label">메뉴</span>
         </button>
-
-        <button
-          id="fishingButton"
-          class="lobby-action-button lobby-fishing-button"
-          type="button"
-          aria-label="낚시하기"
-        >
+        <button id="fishingButton" class="lobby-action-button lobby-fishing-button" type="button" aria-label="낚시하기">
           <img src="./images/menu-button-2.png" alt="" draggable="false">
           <span class="lobby-button-label lobby-fishing-label">낚시하기</span>
         </button>
       </div>
     </section>
 
+    <!-- 상점·인벤토리·장비·뽑기·업적·우편이 공통으로 사용하는 단일 화면 -->
+    <section id="commonPanelScreen" class="game-screen common-panel-screen" aria-hidden="true">
+      <img class="screen-background common-panel-background" src="./images/shop-background.jpeg" alt="" draggable="false">
+      <header id="panelStatusMount" class="status-mount"></header>
+      <img class="common-panel-overlay" src="./images/shop-panel-overlay.png" alt="" draggable="false">
 
-
-    <!-- 상점 메인 화면 -->
-    <section
-      id="shopScreen"
-      class="game-screen shop-screen"
-      aria-label="피싱월드 상점"
-      aria-hidden="true"
-    >
-      <img
-        class="screen-background shop-background"
-        src="./images/shop-background.jpeg"
-        alt=""
-        draggable="false"
-      >
-
-      <img
-        class="shop-panel-overlay"
-        src="./images/shop-panel-overlay.png"
-        alt=""
-        draggable="false"
-      >
-
-      <!-- 상점 상단 상태 UI -->
-      <header class="lobby-status-bar shop-status-bar" aria-label="플레이어 상태">
-        <button class="status-button level-status" type="button" data-status="level" aria-label="레벨 정보">
-          <img src="./images/level-status-ui-new.png" class="status-ui-image" alt="" draggable="false">
-          <span id="shopPlayerLevel" class="level-number">Lv. 1</span>
-          <span class="level-progress-area" aria-hidden="true">
-            <span id="shopLevelProgressFill" class="level-progress-fill"></span>
-          </span>
-          <span id="shopLevelExperience" class="level-experience">0 / 100</span>
-        </button>
-
-        <button class="status-button gold-status" type="button" data-status="gold" aria-label="보유 골드">
-          <img src="./images/gold-status-ui-new.png" class="status-ui-image" alt="" draggable="false">
-          <span id="shopPlayerGold" class="gold-number">0</span>
-        </button>
-
-        <button class="status-button energy-status" type="button" data-status="energy" aria-label="에너지 정보">
-          <img src="./images/energy-status-ui-new.png" class="status-ui-image" alt="" draggable="false">
-          <span id="shopPlayerEnergy" class="energy-number">10</span>
-        </button>
-      </header>
-
-      <div class="shop-content-layer">
-        <div class="shop-heading-row">
-          <h1 class="shop-title">상점</h1>
-
-          <div class="shop-category-tabs" role="tablist" aria-label="상점 카테고리">
-            <button class="shop-category-button" type="button" role="tab" data-category="equipment" aria-selected="false">장비</button>
-            <button class="shop-category-button" type="button" role="tab" data-category="consumable" aria-selected="false">소모품</button>
-            <button class="shop-category-button is-active" type="button" role="tab" data-category="currency" aria-selected="true">제화</button>
-          </div>
+      <div class="common-panel-content">
+        <div class="common-panel-heading">
+          <h1 id="commonPanelTitle" class="common-panel-title">메뉴</h1>
+          <div id="commonPanelTabs" class="common-panel-tabs" role="tablist"></div>
         </div>
 
-        <div id="shopItemGrid" class="shop-item-grid" aria-live="polite"></div>
+        <!-- 각 기능의 카드/목록/장비 UI는 이 슬롯에 별도로 렌더링 -->
+        <div id="commonPanelBody" class="common-panel-body" aria-live="polite"></div>
 
-        <div class="shop-pagination" aria-label="상품 페이지 이동">
-          <button id="shopPrevPageButton" class="shop-page-button" type="button" aria-label="이전 페이지">◀</button>
-          <span id="shopPageIndicator" class="shop-page-indicator">1 / 1</span>
-          <button id="shopNextPageButton" class="shop-page-button" type="button" aria-label="다음 페이지">▶</button>
+        <!-- 페이지가 필요한 기능만 JS에서 표시 -->
+        <div id="commonPanelPagination" class="common-panel-pagination" hidden>
+          <button id="commonPrevButton" class="common-page-button" type="button" aria-label="이전 페이지">◀</button>
+          <span id="commonPageIndicator" class="common-page-indicator">1 / 1</span>
+          <button id="commonNextButton" class="common-page-button" type="button" aria-label="다음 페이지">▶</button>
         </div>
       </div>
 
-      <div id="shopItemModal" class="shop-modal" aria-hidden="true">
-        <button class="shop-modal-backdrop" type="button" data-modal-close aria-label="상품 정보 닫기"></button>
-        <section class="shop-modal-panel" role="dialog" aria-modal="true" aria-labelledby="shopModalItemName">
-          <button id="shopModalCloseButton" class="shop-modal-close" type="button" aria-label="닫기">×</button>
-          <div class="shop-modal-image-placeholder" aria-hidden="true">이미지</div>
-          <h2 id="shopModalItemName" class="shop-modal-item-name"></h2>
-          <p id="shopModalItemDescription" class="shop-modal-description"></p>
-          <p class="shop-modal-price-row">가격 <strong id="shopModalItemPrice"></strong></p>
-          <button id="shopModalBuyButton" class="shop-modal-buy-button" type="button">구매</button>
-        </section>
-      </div>
-
-      <button
-        id="shopBackButton"
-        class="shop-back-button"
-        type="button"
-        aria-label="로비로 돌아가기"
-      >
-        <span aria-hidden="true">←</span>
-      </button>
-    </section>
-
-
-    <!-- 인벤토리 화면 -->
-    <section
-      id="inventoryScreen"
-      class="game-screen inventory-screen"
-      aria-label="피싱월드 인벤토리"
-      aria-hidden="true"
-    >
-      <img
-        class="screen-background inventory-background"
-        src="./images/shop-background.jpeg"
-        alt=""
-        draggable="false"
-      >
-
-      <img
-        class="inventory-panel-overlay"
-        src="./images/shop-panel-overlay.png"
-        alt=""
-        draggable="false"
-      >
-
-      <header class="lobby-status-bar inventory-status-bar" aria-label="플레이어 상태">
-        <button class="status-button level-status" type="button" data-inventory-status="level" aria-label="레벨 정보">
-          <img src="./images/level-status-ui-new.png" class="status-ui-image" alt="" draggable="false">
-          <span id="inventoryPlayerLevel" class="level-number">Lv. 1</span>
-          <span class="level-progress-area" aria-hidden="true">
-            <span id="inventoryLevelProgressFill" class="level-progress-fill"></span>
-          </span>
-          <span id="inventoryLevelExperience" class="level-experience">0 / 100</span>
-        </button>
-
-        <button class="status-button gold-status" type="button" data-inventory-status="gold" aria-label="보유 골드">
-          <img src="./images/gold-status-ui-new.png" class="status-ui-image" alt="" draggable="false">
-          <span id="inventoryPlayerGold" class="gold-number">0</span>
-        </button>
-
-        <button class="status-button energy-status" type="button" data-inventory-status="energy" aria-label="에너지 정보">
-          <img src="./images/energy-status-ui-new.png" class="status-ui-image" alt="" draggable="false">
-          <span id="inventoryPlayerEnergy" class="energy-number">10</span>
-        </button>
-      </header>
-
-      <div class="inventory-content-layer">
-        <div class="inventory-heading-row">
-          <h1 class="inventory-title">인벤토리</h1>
-
-          <div class="inventory-category-tabs" role="tablist" aria-label="인벤토리 카테고리">
-            <button class="inventory-category-button is-active" type="button" role="tab" data-inventory-category="consumable" aria-selected="true">소모품</button>
-            <button class="inventory-category-button" type="button" role="tab" data-inventory-category="bait" aria-selected="false">미끼</button>
-          </div>
-        </div>
-
-        <div id="inventoryItemGrid" class="inventory-item-grid" aria-live="polite"></div>
-
-        <div class="inventory-pagination" aria-label="인벤토리 페이지 이동">
-          <button id="inventoryPrevPageButton" class="inventory-page-button" type="button" aria-label="이전 페이지">◀</button>
-          <span id="inventoryPageIndicator" class="inventory-page-indicator">1 / 1</span>
-          <button id="inventoryNextPageButton" class="inventory-page-button" type="button" aria-label="다음 페이지">▶</button>
-        </div>
-      </div>
-
-      <div id="inventoryItemModal" class="inventory-modal" aria-hidden="true">
-        <button class="inventory-modal-backdrop" type="button" data-inventory-modal-close aria-label="아이템 정보 닫기"></button>
-        <section class="inventory-modal-panel" role="dialog" aria-modal="true" aria-labelledby="inventoryModalItemName">
-          <button id="inventoryModalCloseButton" class="inventory-modal-close" type="button" aria-label="닫기">×</button>
-          <div class="inventory-modal-image-placeholder" aria-hidden="true">이미지</div>
-          <h2 id="inventoryModalItemName" class="inventory-modal-item-name"></h2>
-          <p id="inventoryModalItemDescription" class="inventory-modal-description"></p>
-          <p class="inventory-modal-count-row">보유 수량 <strong id="inventoryModalItemCount"></strong></p>
-          <button id="inventoryModalUseButton" class="inventory-modal-use-button" type="button">사용</button>
-        </section>
-      </div>
-
-      <button
-        id="inventoryBackButton"
-        class="inventory-back-button"
-        type="button"
-        aria-label="로비로 돌아가기"
-      >
+      <button id="commonPanelBackButton" class="common-panel-back-button" type="button" aria-label="로비로 돌아가기">
         <span aria-hidden="true">←</span>
       </button>
     </section>
