@@ -31,6 +31,18 @@ const shopLevelExperience = document.getElementById("shopLevelExperience");
 const shopLevelProgressFill = document.getElementById("shopLevelProgressFill");
 const shopStatusButtons = [...document.querySelectorAll("#shopScreen .status-button")];
 
+const shopCategoryButtons = [...document.querySelectorAll(".shop-category-button")];
+const shopItemGrid = document.getElementById("shopItemGrid");
+const shopPrevPageButton = document.getElementById("shopPrevPageButton");
+const shopNextPageButton = document.getElementById("shopNextPageButton");
+const shopPageIndicator = document.getElementById("shopPageIndicator");
+const shopItemModal = document.getElementById("shopItemModal");
+const shopModalCloseButton = document.getElementById("shopModalCloseButton");
+const shopModalBuyButton = document.getElementById("shopModalBuyButton");
+const shopModalItemName = document.getElementById("shopModalItemName");
+const shopModalItemDescription = document.getElementById("shopModalItemDescription");
+const shopModalItemPrice = document.getElementById("shopModalItemPrice");
+
 const bubbleLayer = document.getElementById("bubbleLayer");
 
 const PRESS_DURATION = 170;
@@ -40,6 +52,24 @@ const BUBBLE_COUNT_MAX = 11;
 
 let isOpeningLobby = false;
 let isQuickMenuOpen = false;
+let activeShopCategory = "currency";
+let currentShopPage = 1;
+let selectedShopItemId = null;
+
+const SHOP_ITEMS_PER_PAGE = 8;
+
+const SHOP_ITEMS = Object.freeze([
+  { id: "energy_5", category: "currency", name: "에너지 5개", price: 500, rewardAmount: 5, description: "구매 즉시 에너지 5개를 획득합니다." },
+  { id: "energy_10", category: "currency", name: "에너지 10개", price: 900, rewardAmount: 10, description: "구매 즉시 에너지 10개를 획득합니다." },
+  { id: "energy_20", category: "currency", name: "에너지 20개", price: 1700, rewardAmount: 20, description: "구매 즉시 에너지 20개를 획득합니다." },
+  { id: "energy_30", category: "currency", name: "에너지 30개", price: 2400, rewardAmount: 30, description: "구매 즉시 에너지 30개를 획득합니다." },
+  { id: "energy_50", category: "currency", name: "에너지 50개", price: 3800, rewardAmount: 50, description: "구매 즉시 에너지 50개를 획득합니다." },
+  { id: "energy_75", category: "currency", name: "에너지 75개", price: 5400, rewardAmount: 75, description: "구매 즉시 에너지 75개를 획득합니다." },
+  { id: "energy_100", category: "currency", name: "에너지 100개", price: 6800, rewardAmount: 100, description: "구매 즉시 에너지 100개를 획득합니다." },
+  { id: "energy_150", category: "currency", name: "에너지 150개", price: 9500, rewardAmount: 150, description: "구매 즉시 에너지 150개를 획득합니다." },
+  { id: "energy_250", category: "currency", name: "에너지 250개", price: 15000, rewardAmount: 250, description: "구매 즉시 에너지 250개를 획득합니다." },
+  { id: "energy_500", category: "currency", name: "에너지 500개", price: 28000, rewardAmount: 500, description: "구매 즉시 에너지 500개를 획득합니다." }
+]);
 
 /*
   계정 최초 접속 기본값
@@ -268,6 +298,105 @@ function bindBubbleButton(button, onClick) {
   button.addEventListener("click", onClick);
 }
 
+function getShopItemsByCategory(category) {
+  return SHOP_ITEMS.filter((item) => item.category === category);
+}
+
+function getShopTotalPages(category = activeShopCategory) {
+  const itemCount = getShopItemsByCategory(category).length;
+  return Math.max(1, Math.ceil(itemCount / SHOP_ITEMS_PER_PAGE));
+}
+
+function createShopItemCard(item) {
+  return `
+    <article class="shop-item-card" data-item-id="${item.id}" tabindex="0" aria-label="${item.name} 상품 정보 열기">
+      <div class="shop-item-image-placeholder" aria-hidden="true">이미지 칸</div>
+      <h3 class="shop-item-name">${item.name}</h3>
+      <p class="shop-item-price">${item.price.toLocaleString("ko-KR")} 골드</p>
+      <button class="shop-item-buy-mini" type="button" data-buy-item-id="${item.id}">구매</button>
+    </article>
+  `;
+}
+
+function renderShopItems() {
+  const categoryItems = getShopItemsByCategory(activeShopCategory);
+  const totalPages = getShopTotalPages();
+
+  currentShopPage = Math.min(Math.max(1, currentShopPage), totalPages);
+
+  const startIndex = (currentShopPage - 1) * SHOP_ITEMS_PER_PAGE;
+  const pageItems = categoryItems.slice(startIndex, startIndex + SHOP_ITEMS_PER_PAGE);
+
+  if (pageItems.length === 0) {
+    shopItemGrid.innerHTML = '<p class="shop-empty-state">이 카테고리의 상품은 준비 중입니다.</p>';
+  } else {
+    shopItemGrid.innerHTML = pageItems.map(createShopItemCard).join("");
+  }
+
+  shopPageIndicator.textContent = `${currentShopPage} / ${totalPages}`;
+  shopPrevPageButton.disabled = currentShopPage <= 1;
+  shopNextPageButton.disabled = currentShopPage >= totalPages;
+}
+
+function setShopCategory(category) {
+  activeShopCategory = category;
+  currentShopPage = 1;
+
+  shopCategoryButtons.forEach((button) => {
+    const isActive = button.dataset.category === category;
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-selected", String(isActive));
+  });
+
+  renderShopItems();
+}
+
+function findShopItem(itemId) {
+  return SHOP_ITEMS.find((item) => item.id === itemId) ?? null;
+}
+
+function openShopItemModal(itemId) {
+  const item = findShopItem(itemId);
+
+  if (!item) {
+    return;
+  }
+
+  selectedShopItemId = item.id;
+  shopModalItemName.textContent = item.name;
+  shopModalItemDescription.textContent = item.description;
+  shopModalItemPrice.textContent = `${item.price.toLocaleString("ko-KR")} 골드`;
+  shopItemModal.classList.add("is-open");
+  shopItemModal.setAttribute("aria-hidden", "false");
+}
+
+function closeShopItemModal() {
+  selectedShopItemId = null;
+  shopItemModal.classList.remove("is-open");
+  shopItemModal.setAttribute("aria-hidden", "true");
+}
+
+function buyShopItem(itemId) {
+  const item = findShopItem(itemId);
+
+  if (!item) {
+    return;
+  }
+
+  if (playerState.gold < item.price) {
+    alert(`골드가 부족합니다.\n필요 골드: ${item.price.toLocaleString("ko-KR")}`);
+    return;
+  }
+
+  playerState.gold -= item.price;
+  playerState.energy += item.rewardAmount;
+  savePlayerState();
+  updateLobbyStatus(playerState);
+  closeShopItemModal();
+
+  alert(`${item.name}을 구매했습니다.\n에너지 +${item.rewardAmount}`);
+}
+
 function initializeFishingLogin() {
   fishingSession.username = getLoggedInUsername();
 
@@ -366,6 +495,7 @@ quickMenuItems.forEach((button) => {
     if (menuType === "shop") {
       setQuickMenuOpen(false);
       window.setTimeout(() => {
+        renderShopItems();
         changeScreen("shop");
       }, 120);
       return;
@@ -384,6 +514,65 @@ quickMenuItems.forEach((button) => {
       alert(`${menuName} 화면은 다음 단계에서 연결할 예정입니다.`);
     }, 100);
   });
+});
+
+shopCategoryButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setShopCategory(button.dataset.category);
+  });
+});
+
+shopPrevPageButton.addEventListener("click", () => {
+  if (currentShopPage > 1) {
+    currentShopPage -= 1;
+    renderShopItems();
+  }
+});
+
+shopNextPageButton.addEventListener("click", () => {
+  const totalPages = getShopTotalPages();
+
+  if (currentShopPage < totalPages) {
+    currentShopPage += 1;
+    renderShopItems();
+  }
+});
+
+shopItemGrid.addEventListener("click", (event) => {
+  const buyButton = event.target.closest("[data-buy-item-id]");
+
+  if (buyButton) {
+    event.stopPropagation();
+    openShopItemModal(buyButton.dataset.buyItemId);
+    return;
+  }
+
+  const card = event.target.closest(".shop-item-card");
+
+  if (card) {
+    openShopItemModal(card.dataset.itemId);
+  }
+});
+
+shopItemGrid.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" && event.key !== " ") {
+    return;
+  }
+
+  const card = event.target.closest(".shop-item-card");
+
+  if (card && !event.target.closest("button")) {
+    event.preventDefault();
+    openShopItemModal(card.dataset.itemId);
+  }
+});
+
+shopModalCloseButton.addEventListener("click", closeShopItemModal);
+shopItemModal.querySelector("[data-modal-close]").addEventListener("click", closeShopItemModal);
+shopModalBuyButton.addEventListener("click", () => {
+  if (selectedShopItemId) {
+    buyShopItem(selectedShopItemId);
+  }
 });
 
 bindBubbleButton(shopBackButton, () => {
@@ -407,6 +596,11 @@ document.addEventListener("pointerdown", (event) => {
 
 window.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
+    if (shopItemModal.classList.contains("is-open")) {
+      closeShopItemModal();
+      return;
+    }
+
     setQuickMenuOpen(false);
   }
 });
@@ -418,4 +612,5 @@ bindBubbleButton(fishingButton, () => {
 });
 
 updateLobbyStatus(playerState);
+renderShopItems();
 initializeFishingLogin();
