@@ -7,6 +7,7 @@ import {
 const startScreen = document.getElementById("startScreen");
 const lobbyScreen = document.getElementById("lobbyScreen");
 const shopScreen = document.getElementById("shopScreen");
+const inventoryScreen = document.getElementById("inventoryScreen");
 
 const startButton = document.getElementById("startButton");
 const menuButton = document.getElementById("menuButton");
@@ -14,6 +15,7 @@ const fishingButton = document.getElementById("fishingButton");
 const quickMenuPanel = document.getElementById("quickMenuPanel");
 const quickMenuItems = [...document.querySelectorAll(".quick-menu-item")];
 const shopBackButton = document.getElementById("shopBackButton");
+const inventoryBackButton = document.getElementById("inventoryBackButton");
 
 const levelStatusButton = document.getElementById("levelStatusButton");
 const goldStatusButton = document.getElementById("goldStatusButton");
@@ -30,6 +32,12 @@ const shopPlayerEnergy = document.getElementById("shopPlayerEnergy");
 const shopLevelExperience = document.getElementById("shopLevelExperience");
 const shopLevelProgressFill = document.getElementById("shopLevelProgressFill");
 const shopStatusButtons = [...document.querySelectorAll("#shopScreen .status-button")];
+const inventoryPlayerLevel = document.getElementById("inventoryPlayerLevel");
+const inventoryPlayerGold = document.getElementById("inventoryPlayerGold");
+const inventoryPlayerEnergy = document.getElementById("inventoryPlayerEnergy");
+const inventoryLevelExperience = document.getElementById("inventoryLevelExperience");
+const inventoryLevelProgressFill = document.getElementById("inventoryLevelProgressFill");
+const inventoryStatusButtons = [...document.querySelectorAll("#inventoryScreen .status-button")];
 
 const shopCategoryButtons = [...document.querySelectorAll(".shop-category-button")];
 const shopItemGrid = document.getElementById("shopItemGrid");
@@ -43,6 +51,18 @@ const shopModalItemName = document.getElementById("shopModalItemName");
 const shopModalItemDescription = document.getElementById("shopModalItemDescription");
 const shopModalItemPrice = document.getElementById("shopModalItemPrice");
 
+const inventoryCategoryButtons = [...document.querySelectorAll(".inventory-category-button")];
+const inventoryItemGrid = document.getElementById("inventoryItemGrid");
+const inventoryPrevPageButton = document.getElementById("inventoryPrevPageButton");
+const inventoryNextPageButton = document.getElementById("inventoryNextPageButton");
+const inventoryPageIndicator = document.getElementById("inventoryPageIndicator");
+const inventoryItemModal = document.getElementById("inventoryItemModal");
+const inventoryModalCloseButton = document.getElementById("inventoryModalCloseButton");
+const inventoryModalUseButton = document.getElementById("inventoryModalUseButton");
+const inventoryModalItemName = document.getElementById("inventoryModalItemName");
+const inventoryModalItemDescription = document.getElementById("inventoryModalItemDescription");
+const inventoryModalItemCount = document.getElementById("inventoryModalItemCount");
+
 const bubbleLayer = document.getElementById("bubbleLayer");
 
 const PRESS_DURATION = 170;
@@ -55,8 +75,12 @@ let isQuickMenuOpen = false;
 let activeShopCategory = "currency";
 let currentShopPage = 1;
 let selectedShopItemId = null;
+let activeInventoryCategory = "consumable";
+let currentInventoryPage = 1;
+let selectedInventoryItemId = null;
 
 const SHOP_ITEMS_PER_PAGE = 4;
+const INVENTORY_ITEMS_PER_PAGE = 8;
 
 const SHOP_ITEMS = Object.freeze([
   { id: "energy_5", category: "currency", name: "에너지 5개", price: 500, rewardAmount: 5, description: "구매 즉시 에너지 5개를 획득합니다." },
@@ -70,6 +94,13 @@ const SHOP_ITEMS = Object.freeze([
   { id: "energy_250", category: "currency", name: "에너지 250개", price: 15000, rewardAmount: 250, description: "구매 즉시 에너지 250개를 획득합니다." },
   { id: "energy_500", category: "currency", name: "에너지 500개", price: 28000, rewardAmount: 500, description: "구매 즉시 에너지 500개를 획득합니다." }
 ]);
+
+/*
+  인벤토리 데이터 구조 예시
+  실제 아이템이 생기면 아래 배열에 추가하면 된다.
+  category: "consumable" 또는 "bait"
+*/
+const INVENTORY_ITEMS = Object.freeze([]);
 
 /*
   계정 최초 접속 기본값
@@ -102,7 +133,8 @@ function changeScreen(nextScreenName) {
   const screens = {
     start: startScreen,
     lobby: lobbyScreen,
-    shop: shopScreen
+    shop: shopScreen,
+    inventory: inventoryScreen
   };
 
   const nextScreen = screens[nextScreenName];
@@ -153,6 +185,12 @@ export function updateLobbyStatus({
   if (shopLevelProgressFill) {
     shopLevelProgressFill.style.width = `${progress}%`;
   }
+
+  if (inventoryPlayerLevel) inventoryPlayerLevel.textContent = levelLabel;
+  if (inventoryPlayerGold) inventoryPlayerGold.textContent = goldLabel;
+  if (inventoryPlayerEnergy) inventoryPlayerEnergy.textContent = energyLabel;
+  if (inventoryLevelExperience) inventoryLevelExperience.textContent = expLabel;
+  if (inventoryLevelProgressFill) inventoryLevelProgressFill.style.width = `${progress}%`;
 }
 
 function getPlayerSaveKey() {
@@ -349,7 +387,53 @@ function setShopCategory(category) {
   activeShopCategory = category;
   currentShopPage = 1;
 
-  shopCategoryButtons.forEach((button) => {
+  
+inventoryCategoryButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setInventoryCategory(button.dataset.inventoryCategory);
+  });
+});
+
+inventoryPrevPageButton.addEventListener("click", () => {
+  if (currentInventoryPage > 1) {
+    currentInventoryPage -= 1;
+    renderInventoryItems();
+  }
+});
+
+inventoryNextPageButton.addEventListener("click", () => {
+  const totalPages = getInventoryTotalPages();
+  if (currentInventoryPage < totalPages) {
+    currentInventoryPage += 1;
+    renderInventoryItems();
+  }
+});
+
+inventoryItemGrid.addEventListener("click", (event) => {
+  const card = event.target.closest(".inventory-item-card");
+  if (card) openInventoryItemModal(card.dataset.inventoryItemId);
+});
+
+inventoryItemGrid.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  const card = event.target.closest(".inventory-item-card");
+  if (card) {
+    event.preventDefault();
+    openInventoryItemModal(card.dataset.inventoryItemId);
+  }
+});
+
+inventoryModalCloseButton.addEventListener("click", closeInventoryItemModal);
+inventoryItemModal.querySelector("[data-inventory-modal-close]").addEventListener("click", closeInventoryItemModal);
+inventoryModalUseButton.addEventListener("click", () => {
+  if (selectedInventoryItemId) useInventoryItem(selectedInventoryItemId);
+});
+
+bindBubbleButton(inventoryBackButton, () => {
+  window.setTimeout(() => changeScreen("lobby"), 100);
+});
+
+shopCategoryButtons.forEach((button) => {
     const isActive = button.dataset.category === category;
     button.classList.toggle("is-active", isActive);
     button.setAttribute("aria-selected", String(isActive));
@@ -402,6 +486,98 @@ function buyShopItem(itemId) {
   closeShopItemModal();
 
   alert(`${item.name}을 구매했습니다.\n에너지 +${item.rewardAmount}`);
+}
+
+
+function getInventoryItemsByCategory(category) {
+  return INVENTORY_ITEMS.filter((item) => item.category === category);
+}
+
+function getInventoryTotalPages(category = activeInventoryCategory) {
+  const itemCount = getInventoryItemsByCategory(category).length;
+  return Math.max(1, Math.ceil(itemCount / INVENTORY_ITEMS_PER_PAGE));
+}
+
+function createInventoryItemCard(item) {
+  return `
+    <article class="inventory-item-card" data-inventory-item-id="${item.id}" tabindex="0" aria-label="${item.name} 정보 열기">
+      <div class="inventory-item-image-placeholder" aria-hidden="true">이미지</div>
+      <h3 class="inventory-item-name">${item.name}</h3>
+      <span class="inventory-item-count">x${Number(item.count ?? 0).toLocaleString("ko-KR")}</span>
+    </article>
+  `;
+}
+
+function createInventoryEmptySlot(index) {
+  return `
+    <div class="inventory-empty-slot" aria-hidden="true">
+      <span>${index + 1}</span>
+    </div>
+  `;
+}
+
+function renderInventoryItems() {
+  const categoryItems = getInventoryItemsByCategory(activeInventoryCategory);
+  const totalPages = getInventoryTotalPages();
+
+  currentInventoryPage = Math.min(Math.max(1, currentInventoryPage), totalPages);
+
+  const startIndex = (currentInventoryPage - 1) * INVENTORY_ITEMS_PER_PAGE;
+  const pageItems = categoryItems.slice(startIndex, startIndex + INVENTORY_ITEMS_PER_PAGE);
+  const slots = [];
+
+  for (let index = 0; index < INVENTORY_ITEMS_PER_PAGE; index += 1) {
+    const item = pageItems[index];
+    slots.push(item ? createInventoryItemCard(item) : createInventoryEmptySlot(index));
+  }
+
+  inventoryItemGrid.innerHTML = slots.join("");
+  inventoryPageIndicator.textContent = `${currentInventoryPage} / ${totalPages}`;
+  inventoryPrevPageButton.disabled = currentInventoryPage <= 1;
+  inventoryNextPageButton.disabled = currentInventoryPage >= totalPages;
+}
+
+function setInventoryCategory(category) {
+  activeInventoryCategory = category;
+  currentInventoryPage = 1;
+
+  inventoryCategoryButtons.forEach((button) => {
+    const isActive = button.dataset.inventoryCategory === category;
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-selected", String(isActive));
+  });
+
+  renderInventoryItems();
+}
+
+function findInventoryItem(itemId) {
+  return INVENTORY_ITEMS.find((item) => item.id === itemId) ?? null;
+}
+
+function openInventoryItemModal(itemId) {
+  const item = findInventoryItem(itemId);
+
+  if (!item) return;
+
+  selectedInventoryItemId = item.id;
+  inventoryModalItemName.textContent = item.name;
+  inventoryModalItemDescription.textContent = item.description ?? "아이템 설명이 없습니다.";
+  inventoryModalItemCount.textContent = `${Number(item.count ?? 0).toLocaleString("ko-KR")}개`;
+  inventoryModalUseButton.disabled = Number(item.count ?? 0) <= 0;
+  inventoryItemModal.classList.add("is-open");
+  inventoryItemModal.setAttribute("aria-hidden", "false");
+}
+
+function closeInventoryItemModal() {
+  selectedInventoryItemId = null;
+  inventoryItemModal.classList.remove("is-open");
+  inventoryItemModal.setAttribute("aria-hidden", "true");
+}
+
+function useInventoryItem(itemId) {
+  const item = findInventoryItem(itemId);
+  if (!item) return;
+  alert(`${item.name} 사용 기능은 아이템 효과를 정할 때 연결할 예정입니다.`);
 }
 
 function initializeFishingLogin() {
@@ -476,6 +652,23 @@ shopStatusButtons.forEach((button) => {
   });
 });
 
+
+inventoryStatusButtons.forEach((button) => {
+  bindBubbleButton(button, () => {
+    const statusType = button.dataset.inventoryStatus;
+
+    window.setTimeout(() => {
+      if (statusType === "level") {
+        alert(`레벨 ${playerState.level}\n경험치 ${playerState.currentExp} / ${playerState.requiredExp}`);
+      } else if (statusType === "gold") {
+        alert(`보유 골드: ${playerState.gold.toLocaleString("ko-KR")}`);
+      } else if (statusType === "energy") {
+        alert(`보유 에너지: ${playerState.energy.toLocaleString("ko-KR")}\n낚시 1회당 에너지 1개를 사용합니다.`);
+      }
+    }, 100);
+  });
+});
+
 function setQuickMenuOpen(open) {
   isQuickMenuOpen = open;
   quickMenuPanel.classList.toggle("is-open", open);
@@ -504,6 +697,15 @@ quickMenuItems.forEach((button) => {
       window.setTimeout(() => {
         renderShopItems();
         changeScreen("shop");
+      }, 120);
+      return;
+    }
+
+    if (menuType === "inventory") {
+      setQuickMenuOpen(false);
+      window.setTimeout(() => {
+        renderInventoryItems();
+        changeScreen("inventory");
       }, 120);
       return;
     }
@@ -617,6 +819,11 @@ window.addEventListener("keydown", (event) => {
       return;
     }
 
+    if (inventoryItemModal.classList.contains("is-open")) {
+      closeInventoryItemModal();
+      return;
+    }
+
     setQuickMenuOpen(false);
   }
 });
@@ -629,4 +836,5 @@ bindBubbleButton(fishingButton, () => {
 
 updateLobbyStatus(playerState);
 renderShopItems();
+renderInventoryItems();
 initializeFishingLogin();

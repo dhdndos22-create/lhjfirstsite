@@ -121,6 +121,11 @@
           <span>상점</span>
         </button>
 
+        <button class="quick-menu-item" type="button" data-menu="inventory">
+          <span class="quick-menu-icon" aria-hidden="true">🎒</span>
+          <span>인벤토리</span>
+        </button>
+
         <button class="quick-menu-item" type="button" data-menu="equipment">
           <span class="quick-menu-icon" aria-hidden="true">🎣</span>
           <span>장비</span>
@@ -246,6 +251,90 @@
       <button
         id="shopBackButton"
         class="shop-back-button"
+        type="button"
+        aria-label="로비로 돌아가기"
+      >
+        <span aria-hidden="true">←</span>
+      </button>
+    </section>
+
+
+    <!-- 인벤토리 화면 -->
+    <section
+      id="inventoryScreen"
+      class="game-screen inventory-screen"
+      aria-label="피싱월드 인벤토리"
+      aria-hidden="true"
+    >
+      <img
+        class="screen-background inventory-background"
+        src="./images/shop-background.jpeg"
+        alt=""
+        draggable="false"
+      >
+
+      <img
+        class="inventory-panel-overlay"
+        src="./images/shop-panel-overlay.png"
+        alt=""
+        draggable="false"
+      >
+
+      <header class="lobby-status-bar inventory-status-bar" aria-label="플레이어 상태">
+        <button class="status-button level-status" type="button" data-inventory-status="level" aria-label="레벨 정보">
+          <img src="./images/level-status-ui-new.png" class="status-ui-image" alt="" draggable="false">
+          <span id="inventoryPlayerLevel" class="level-number">Lv. 1</span>
+          <span class="level-progress-area" aria-hidden="true">
+            <span id="inventoryLevelProgressFill" class="level-progress-fill"></span>
+          </span>
+          <span id="inventoryLevelExperience" class="level-experience">0 / 100</span>
+        </button>
+
+        <button class="status-button gold-status" type="button" data-inventory-status="gold" aria-label="보유 골드">
+          <img src="./images/gold-status-ui-new.png" class="status-ui-image" alt="" draggable="false">
+          <span id="inventoryPlayerGold" class="gold-number">0</span>
+        </button>
+
+        <button class="status-button energy-status" type="button" data-inventory-status="energy" aria-label="에너지 정보">
+          <img src="./images/energy-status-ui-new.png" class="status-ui-image" alt="" draggable="false">
+          <span id="inventoryPlayerEnergy" class="energy-number">10</span>
+        </button>
+      </header>
+
+      <div class="inventory-content-layer">
+        <div class="inventory-heading-row">
+          <h1 class="inventory-title">인벤토리</h1>
+
+          <div class="inventory-category-tabs" role="tablist" aria-label="인벤토리 카테고리">
+            <button class="inventory-category-button is-active" type="button" role="tab" data-inventory-category="consumable" aria-selected="true">소모품</button>
+            <button class="inventory-category-button" type="button" role="tab" data-inventory-category="bait" aria-selected="false">미끼</button>
+          </div>
+        </div>
+
+        <div id="inventoryItemGrid" class="inventory-item-grid" aria-live="polite"></div>
+
+        <div class="inventory-pagination" aria-label="인벤토리 페이지 이동">
+          <button id="inventoryPrevPageButton" class="inventory-page-button" type="button" aria-label="이전 페이지">◀</button>
+          <span id="inventoryPageIndicator" class="inventory-page-indicator">1 / 1</span>
+          <button id="inventoryNextPageButton" class="inventory-page-button" type="button" aria-label="다음 페이지">▶</button>
+        </div>
+      </div>
+
+      <div id="inventoryItemModal" class="inventory-modal" aria-hidden="true">
+        <button class="inventory-modal-backdrop" type="button" data-inventory-modal-close aria-label="아이템 정보 닫기"></button>
+        <section class="inventory-modal-panel" role="dialog" aria-modal="true" aria-labelledby="inventoryModalItemName">
+          <button id="inventoryModalCloseButton" class="inventory-modal-close" type="button" aria-label="닫기">×</button>
+          <div class="inventory-modal-image-placeholder" aria-hidden="true">이미지</div>
+          <h2 id="inventoryModalItemName" class="inventory-modal-item-name"></h2>
+          <p id="inventoryModalItemDescription" class="inventory-modal-description"></p>
+          <p class="inventory-modal-count-row">보유 수량 <strong id="inventoryModalItemCount"></strong></p>
+          <button id="inventoryModalUseButton" class="inventory-modal-use-button" type="button">사용</button>
+        </section>
+      </div>
+
+      <button
+        id="inventoryBackButton"
+        class="inventory-back-button"
         type="button"
         aria-label="로비로 돌아가기"
       >
