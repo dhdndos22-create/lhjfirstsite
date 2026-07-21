@@ -46,17 +46,22 @@
 }
 
 .common-panel-heading {
+  position: relative;
   display: grid;
   gap: clamp(8px, 2vw, 14px);
-  padding: 0 clamp(54px, 14vw, 86px) 0 0;
+  width: 100%;
+  padding: 0;
 }
 
 .common-panel-title {
+  width: 100%;
   margin: 0;
+  padding: 0;
   color: #fff0b5;
   font-size: clamp(30px, 8vw, 48px);
   font-weight: 900;
   text-align: center;
+  white-space: nowrap;
   text-shadow: 0 3px 0 #604016, 0 6px 9px rgba(0, 0, 0, 0.45);
 }
 
