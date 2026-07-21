@@ -535,71 +535,96 @@ button {
 
 
 /* 상점 메인 화면 */
+/* 상점 화면 */
 .shop-screen {
-  background: #071a32;
+  background: #0b8ed0;
 }
 
-.shop-main-background {
+.shop-background {
+  object-fit: cover;
+  object-position: center;
+}
+
+/*
+  업로드한 남색 UI 이미지를 상점 배경과 분리된 레이어로 사용한다.
+  상단 상태 UI의 높이만큼 여백을 확보해 겹치지 않도록 배치한다.
+*/
+.shop-panel-overlay {
+  position: absolute;
+  z-index: 10;
+  top: calc(max(8px, env(safe-area-inset-top)) + clamp(74px, 15vw, 116px));
+  left: 3.2%;
+  width: 93.6%;
+  height: calc(100% - max(8px, env(safe-area-inset-top)) - clamp(90px, 18vw, 135px));
   object-fit: fill;
+  opacity: 0.78;
+  pointer-events: none;
+  filter: drop-shadow(0 8px 15px rgba(0, 17, 43, 0.34));
+}
+
+.shop-content-layer {
+  position: absolute;
+  z-index: 18;
+  top: calc(max(8px, env(safe-area-inset-top)) + clamp(125px, 25vw, 190px));
+  left: 9%;
+  right: 9%;
+  bottom: 10%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
 }
 
 .shop-back-button {
   position: absolute;
-  top: max(18px, env(safe-area-inset-top));
-  left: 4%;
+  left: 6%;
+  bottom: max(3.5%, env(safe-area-inset-bottom));
   z-index: 24;
-  width: clamp(44px, 12vw, 72px);
+  width: clamp(48px, 13vw, 78px);
   aspect-ratio: 1;
-  border: 2px solid rgba(255, 214, 112, 0.95);
+  border: 3px solid #e9bd58;
   border-radius: 50%;
-  background: rgba(4, 24, 49, 0.88);
-  color: #fff3c4;
-  font-size: clamp(26px, 7vw, 42px);
+  background: linear-gradient(180deg, #173d69, #071c39);
+  color: #fff3c2;
+  font-size: clamp(28px, 8vw, 48px);
   font-weight: 900;
   line-height: 1;
-  display: grid;
-  place-items: center;
+  box-shadow:
+    0 5px 0 #5c3b16,
+    0 8px 14px rgba(0, 18, 39, 0.42),
+    inset 0 2px 0 rgba(255, 255, 255, 0.18);
   cursor: pointer;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.15);
-  transition: transform 90ms ease, filter 90ms ease;
   -webkit-tap-highlight-color: transparent;
+  transition: transform 90ms ease, filter 90ms ease;
 }
 
 .shop-back-button.is-pressed,
 .shop-back-button:active {
-  transform: translateY(4px) scale(0.93);
-  filter: brightness(0.9);
+  transform: translateY(5%) scale(0.94);
+  filter: brightness(0.92);
 }
 
 .shop-title {
-  position: absolute;
-  top: max(22px, env(safe-area-inset-top));
-  left: 50%;
-  z-index: 22;
-  margin: 0;
-  transform: translateX(-50%);
-  color: #fff4ca;
-  font-size: clamp(24px, 7vw, 44px);
+  margin: 0 0 18px;
+  color: #fff1bf;
+  font-size: clamp(30px, 8vw, 52px);
   font-weight: 900;
-  text-shadow: 0 3px 0 #5e3b08, 0 5px 10px rgba(0,0,0,0.45);
+  text-shadow: 0 3px 0 #5b3b14, 0 6px 8px rgba(0, 0, 0, 0.4);
 }
 
 .shop-ready-text {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 22;
-  width: 72%;
   margin: 0;
-  transform: translate(-50%, -50%);
-  color: rgba(255,255,255,0.78);
-  font-size: clamp(14px, 3.8vw, 23px);
-  font-weight: 700;
-  text-align: center;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+  color: #ffffff;
+  font-size: clamp(17px, 4.5vw, 28px);
+  font-weight: 800;
+  line-height: 1.45;
+  text-shadow: 0 3px 5px rgba(0, 0, 0, 0.7);
 }
 
 .shop-back-button:focus-visible {
   outline: 3px solid #ffffff;
   outline-offset: 4px;
 }
+
