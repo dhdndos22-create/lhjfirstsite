@@ -56,7 +56,7 @@ let activeShopCategory = "currency";
 let currentShopPage = 1;
 let selectedShopItemId = null;
 
-const SHOP_ITEMS_PER_PAGE = 8;
+const SHOP_ITEMS_PER_PAGE = 4;
 
 const SHOP_ITEMS = Object.freeze([
   { id: "energy_5", category: "currency", name: "에너지 5개", price: 500, rewardAmount: 5, description: "구매 즉시 에너지 5개를 획득합니다." },
@@ -311,9 +311,16 @@ function createShopItemCard(item) {
   return `
     <article class="shop-item-card" data-item-id="${item.id}" tabindex="0" aria-label="${item.name} 상품 정보 열기">
       <div class="shop-item-image-placeholder" aria-hidden="true">이미지 칸</div>
-      <h3 class="shop-item-name">${item.name}</h3>
-      <p class="shop-item-price">${item.price.toLocaleString("ko-KR")} 골드</p>
-      <button class="shop-item-buy-mini" type="button" data-buy-item-id="${item.id}">구매</button>
+
+      <div class="shop-item-center">
+        <h3 class="shop-item-name">${item.name}</h3>
+        <p class="shop-item-price">가격: ${item.price.toLocaleString("ko-KR")} 골드</p>
+      </div>
+
+      <div class="shop-item-actions">
+        <button class="shop-item-action-button shop-item-buy-mini" type="button" data-buy-item-id="${item.id}">구매</button>
+        <button class="shop-item-action-button shop-item-sell-mini" type="button" data-sell-item-id="${item.id}">판매</button>
+      </div>
     </article>
   `;
 }
@@ -544,6 +551,15 @@ shopItemGrid.addEventListener("click", (event) => {
   if (buyButton) {
     event.stopPropagation();
     openShopItemModal(buyButton.dataset.buyItemId);
+    return;
+  }
+
+  const sellButton = event.target.closest("[data-sell-item-id]");
+
+  if (sellButton) {
+    event.stopPropagation();
+    const item = findShopItem(sellButton.dataset.sellItemId);
+    alert(`${item?.name ?? "상품"} 판매 기능은 인벤토리 구현 후 연결할 예정입니다.`);
     return;
   }
 
