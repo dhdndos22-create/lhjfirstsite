@@ -2921,3 +2921,85 @@ button {
   from { transform: translateX(-75%) rotate(8deg); }
   to { transform: translateX(75%) rotate(8deg); }
 }
+
+
+/* 낚싯대 상점/장비 카드 */
+.equipment-card-list {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  padding: 4px;
+}
+
+.equipment-product-card {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 2px solid rgba(255,255,255,.28);
+  border-radius: 18px;
+  background: rgba(4, 37, 68, .78);
+}
+
+.equipment-card-visual {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 16px;
+  background: rgba(255,255,255,.14);
+  font-size: 36px;
+}
+
+.equipment-card-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.equipment-card-content {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  color: #fff;
+}
+
+.equipment-card-content strong { font-size: 17px; }
+.equipment-card-content p { margin: 0; font-size: 13px; opacity: .9; }
+.equipment-card-content small { font-size: 11px; opacity: .78; }
+.equipment-card-rarity { font-size: 11px; font-weight: 800; opacity: .9; }
+
+.equipment-card-action {
+  min-width: 84px;
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 13px;
+  background: #f5c84b;
+  color: #17324d;
+  font-weight: 900;
+}
+
+.equipment-card-action:disabled {
+  background: rgba(255,255,255,.2);
+  color: rgba(255,255,255,.72);
+}
+
+.equipment-card-actions {
+  display: grid;
+  gap: 7px;
+}
+
+.equipment-card-action.secondary { background: rgba(255,255,255,.16); color: #fff; }
+
+@media (max-width: 520px) {
+  .equipment-product-card {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+  .equipment-card-visual { width: 60px; }
+  .equipment-card-action,
+  .equipment-card-actions { grid-column: 1 / -1; width: 100%; }
+  .equipment-card-actions { grid-template-columns: 1fr 1fr; }
+}

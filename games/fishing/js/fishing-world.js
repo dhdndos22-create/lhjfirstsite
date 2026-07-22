@@ -12,13 +12,16 @@ import {
 import { GAME_CONFIG, RARITY_LABELS, RARITY_ORDER } from "./data/game-config.js";
 import { FISH_DATA, getFishByStage } from "./data/fish.js";
 import { STAGE_DATA, getStageById } from "./data/stages.js";
+import { EQUIPMENT_DATA } from "./data/equipment.js";
+import { SHOP_PRODUCT_DATA } from "./data/shop-products.js";
 import {
   playerSave,
   replacePlayerSave,
   getPlayerStatusView,
   addCaughtFish,
   addExp,
-  sellInventoryFish
+  sellInventoryFish,
+  spendGold
 } from "./state/player-state.js";
 import {
   loadPlayerSave,
@@ -458,9 +461,169 @@ function renderCollectionPanel(tabId, panel) {
   panel.setBody(wrapper);
 }
 
+
+function getOwnedEquipmentCount(equipmentId) {
+  return Math.max(0, Number(playerSave.equipment?.owned?.[equipmentId]) || 0);
+}
+
+function equipRod(equipmentId) {
+  if (getOwnedEquipmentCount(equipmentId) < 1) return false;
+  playerSave.equipment.equipped.rod = equipmentId;
+  savePlayerState();
+  return true;
+}
+
+function purchaseShopProduct(product) {
+  const equipmentReward = product.rewards?.find((reward) => reward.type === "equipment");
+  if (equipmentReward && getOwnedEquipmentCount(equipmentReward.equipmentId) > 0) {
+    alert("이미 보유 중인 장비입니다.");
+    return false;
+  }
+
+  const price = Math.max(0, Number(product.price?.amount) || 0);
+  if (product.price?.type === "gold" && !spendGold(price)) {
+    alert("골드가 부족합니다.");
+    return false;
+  }
+
+  for (const reward of product.rewards ?? []) {
+    if (reward.type === "equipment") {
+      playerSave.equipment.owned[reward.equipmentId] = 1;
+    } else if (reward.type === "energy") {
+      playerSave.currency.energy += Math.max(0, Number(reward.amount) || 0);
+    } else if (reward.type === "item") {
+      const itemId = reward.itemId;
+      playerSave.inventory.items[itemId] =
+        Math.max(0, Number(playerSave.inventory.items[itemId]) || 0) +
+        Math.max(0, Number(reward.amount) || 0);
+    }
+  }
+
+  playerSave.shop.purchaseCounts[product.id] =
+    Math.max(0, Number(playerSave.shop.purchaseCounts[product.id]) || 0) + 1;
+  savePlayerState();
+  updatePlayerStatus();
+  return true;
+}
+
+function createEquipmentVisual(equipment) {
+  const visual = document.createElement("span");
+  visual.className = `equipment-card-visual rarity-${equipment.rarity}`;
+  if (equipment.image) {
+    const image = document.createElement("img");
+    image.src = equipment.image;
+    image.alt = equipment.name;
+    visual.appendChild(image);
+  } else {
+    visual.textContent = "🎣";
+    visual.setAttribute("aria-label", "낚싯대 이미지 준비 중");
+  }
+  return visual;
+}
+
+function renderShopEquipment(panel) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "equipment-card-list";
+
+  const products = Object.values(SHOP_PRODUCT_DATA).filter((product) => product.category === "equipment");
+  products.forEach((product) => {
+    const reward = product.rewards?.find((item) => item.type === "equipment");
+    const equipment = reward ? EQUIPMENT_DATA[reward.equipmentId] : null;
+    if (!equipment) return;
+
+    const owned = getOwnedEquipmentCount(equipment.id) > 0;
+    const equipped = playerSave.equipment?.equipped?.rod === equipment.id;
+    const card = document.createElement("article");
+    card.className = `equipment-product-card rarity-${equipment.rarity}`;
+    card.appendChild(createEquipmentVisual(equipment));
+
+    const content = document.createElement("div");
+    content.className = "equipment-card-content";
+    content.innerHTML = `
+      <span class="equipment-card-rarity">${RARITY_LABELS[equipment.rarity] ?? equipment.rarity}</span>
+      <strong>${equipment.name}</strong>
+      <p>${equipment.description}</p>
+      <small>릴링 힘 ${equipment.stats.reelPower} · 제어력 ${equipment.stats.rodControl} · 줄 내구도 ${equipment.stats.lineStrength}</small>
+    `;
+    card.appendChild(content);
+
+    const action = document.createElement("button");
+    action.type = "button";
+    action.className = "equipment-card-action";
+    action.disabled = owned;
+    action.textContent = equipped ? "장착 중" : owned ? "보유 중" : `${product.price.amount.toLocaleString("ko-KR")} 골드`;
+    action.addEventListener("click", () => {
+      if (!purchaseShopProduct(product)) return;
+      renderShopEquipment(panel);
+    });
+    card.appendChild(action);
+    wrapper.appendChild(card);
+  });
+
+  panel.setBody(wrapper);
+}
+
+function renderEquipmentPanel(panel) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "equipment-card-list";
+
+  Object.values(EQUIPMENT_DATA)
+    .filter((equipment) => getOwnedEquipmentCount(equipment.id) > 0)
+    .forEach((equipment) => {
+      const equipped = playerSave.equipment?.equipped?.rod === equipment.id;
+      const card = document.createElement("article");
+      card.className = `equipment-product-card rarity-${equipment.rarity}`;
+      card.appendChild(createEquipmentVisual(equipment));
+
+      const content = document.createElement("div");
+      content.className = "equipment-card-content";
+      content.innerHTML = `
+        <span class="equipment-card-rarity">${RARITY_LABELS[equipment.rarity] ?? equipment.rarity}</span>
+        <strong>${equipment.name}</strong>
+        <p>${equipment.description}</p>
+        <small>릴링 힘 ${equipment.stats.reelPower} · 제어력 ${equipment.stats.rodControl} · 줄 내구도 ${equipment.stats.lineStrength}</small>
+      `;
+      card.appendChild(content);
+
+      const actions = document.createElement("div");
+      actions.className = "equipment-card-actions";
+      const equipButton = document.createElement("button");
+      equipButton.type = "button";
+      equipButton.className = "equipment-card-action";
+      equipButton.disabled = equipped;
+      equipButton.textContent = equipped ? "장착 중" : "장착하기";
+      equipButton.addEventListener("click", () => {
+        equipRod(equipment.id);
+        renderEquipmentPanel(panel);
+      });
+      actions.appendChild(equipButton);
+
+      const sellButton = document.createElement("button");
+      sellButton.type = "button";
+      sellButton.className = "equipment-card-action secondary";
+      sellButton.disabled = true;
+      sellButton.textContent = equipment.sellable === false ? "판매 불가" : "판매 준비 중";
+      actions.appendChild(sellButton);
+      card.appendChild(actions);
+      wrapper.appendChild(card);
+    });
+
+  panel.setBody(wrapper);
+}
+
 function renderPanelSlot(type, tabId, panel) {
   if (type === "collection") {
     renderCollectionPanel(tabId, panel);
+    return;
+  }
+
+  if (type === "shop" && tabId === "equipment") {
+    renderShopEquipment(panel);
+    return;
+  }
+
+  if (type === "equipment") {
+    renderEquipmentPanel(panel);
     return;
   }
 

@@ -7,7 +7,7 @@ export const PANEL_DEFINITIONS = Object.freeze({
       { id: "consumable", label: "소모품" },
       { id: "currency", label: "제화" }
     ],
-    defaultTab: "currency",
+    defaultTab: "equipment",
     emptyMessage: "상품카드는 별도 컴포넌트로 이 영역에 배치합니다."
   },
   inventory: {

@@ -31,9 +31,35 @@ export const SHOP_PRODUCT_DATA = Object.freeze({
     name: "낡은 낚싯대",
     description: "처음 사용하는 기본 낚싯대입니다.",
     image: null,
-    price: Object.freeze({ type: "gold", amount: 100 }),
+    price: Object.freeze({ type: "gold", amount: 0 }),
     rewards: Object.freeze([
       Object.freeze({ type: "equipment", equipmentId: "basic_rod", amount: 1 })
+    ]),
+    purchaseLimit: 1
+  }),
+
+  good_rod_product: Object.freeze({
+    id: "good_rod_product",
+    category: "equipment",
+    name: "좋은 낚싯대",
+    description: "유니크 물고기를 안정적으로 상대할 수 있는 테스트용 낚싯대입니다.",
+    image: null,
+    price: Object.freeze({ type: "gold", amount: 0 }),
+    rewards: Object.freeze([
+      Object.freeze({ type: "equipment", equipmentId: "good_rod", amount: 1 })
+    ]),
+    purchaseLimit: 1
+  }),
+
+  great_rod_product: Object.freeze({
+    id: "great_rod_product",
+    category: "equipment",
+    name: "대단한 낚싯대",
+    description: "레전더리 물고기까지 상대할 수 있는 테스트용 낚싯대입니다.",
+    image: null,
+    price: Object.freeze({ type: "gold", amount: 0 }),
+    rewards: Object.freeze([
+      Object.freeze({ type: "equipment", equipmentId: "great_rod", amount: 1 })
     ]),
     purchaseLimit: 1
   })

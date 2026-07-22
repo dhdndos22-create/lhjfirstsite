@@ -1,11 +1,12 @@
 import {
   CASTING_CONFIG,
-  PLAYER_FISHING_EQUIPMENT,
   chooseFishForStage,
   getFishingBehavior,
   randomBehaviorRange,
   createCatchResult
 } from "./data/fishing-behaviors.js";
+import { playerSave } from "./state/player-state.js";
+import { getRodFishingStats } from "./data/equipment.js";
 
 const root = document.getElementById("fishingStageScreen");
 const canvas = document.getElementById("stage1CastingCanvas");
@@ -525,7 +526,7 @@ if (root && canvas) {
     const rapidTapBonus =
       !isStruggling && tapGap > 0 && tapGap < 230 ? 0.13 : 0;
 
-    const equipment = PLAYER_FISHING_EQUIPMENT;
+    const equipment = getRodFishingStats(playerSave.equipment?.equipped?.rod);
     const distancePull = (isStruggling
       ? profile.strugglePull
       : profile.restPull + rapidTapBonus) * equipment.reelPower;
@@ -893,7 +894,8 @@ if (root && canvas) {
 
       updateReelingUi();
 
-      if (state.tension >= PLAYER_FISHING_EQUIPMENT.lineStrength) {
+      const activeEquipment = getRodFishingStats(playerSave.equipment?.equipped?.rod);
+      if (state.tension >= activeEquipment.lineStrength) {
         finishReeling(false, "낚싯줄이 끊어졌습니다!", "line-broken");
       } else if (state.distance >= state.escapeLimit) {
         finishReeling(false, "물고기가 너무 멀리 달아났습니다!", "escaped");
