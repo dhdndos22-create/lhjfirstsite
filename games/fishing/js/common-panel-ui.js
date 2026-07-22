@@ -34,6 +34,19 @@ export const PANEL_DEFINITIONS = Object.freeze({
     defaultTab: null,
     emptyMessage: "뽑기 콘텐츠가 이 영역에 배치됩니다."
   },
+  collection: {
+    title: "도감",
+    ariaLabel: "피싱월드 물고기 도감",
+    tabs: [
+      { id: "stage-1", label: "1스테이지" },
+      { id: "stage-2", label: "2스테이지" },
+      { id: "stage-3", label: "3스테이지" },
+      { id: "stage-4", label: "4스테이지" },
+      { id: "stage-5", label: "5스테이지" }
+    ],
+    defaultTab: "stage-1",
+    emptyMessage: "스테이지별 도감이 이 영역에 표시됩니다."
+  },
   achievement: {
     title: "업적",
     ariaLabel: "피싱월드 업적",

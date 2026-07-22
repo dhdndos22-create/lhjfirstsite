@@ -189,3 +189,167 @@
     font-size: clamp(25px, 7vw, 39px);
   }
 }
+
+
+/* =========================
+   스테이지별 도감
+========================= */
+.collection-view {
+  display: grid;
+  gap: clamp(14px, 3.4vw, 22px);
+  padding: 2px 2px 20px;
+}
+
+.collection-summary {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: clamp(10px, 2.8vw, 16px);
+  border: 2px solid rgba(235, 192, 86, 0.72);
+  border-radius: 18px;
+  background: rgba(4, 29, 58, 0.94);
+  color: #fff3c4;
+  box-shadow: 0 5px 12px rgba(0, 12, 31, 0.32);
+}
+
+.collection-summary > div {
+  display: grid;
+  gap: 2px;
+}
+
+.collection-stage-label {
+  color: #78d6ff;
+  font-size: clamp(11px, 2.7vw, 15px);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.collection-summary strong {
+  font-size: clamp(17px, 4.5vw, 25px);
+}
+
+.collection-progress {
+  min-width: 72px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(9, 73, 116, 0.92);
+  color: white;
+  font-size: clamp(14px, 3.7vw, 20px);
+  font-weight: 900;
+  text-align: center;
+}
+
+.collection-rarity-section {
+  display: grid;
+  gap: 9px;
+}
+
+.collection-rarity-title {
+  margin: 0;
+  padding-left: 10px;
+  border-left: 6px solid currentColor;
+  color: #eef8ff;
+  font-size: clamp(17px, 4.7vw, 25px);
+  font-weight: 900;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.55);
+}
+
+.collection-rarity-section.rarity-normal .collection-rarity-title { color: #d9e8ef; }
+.collection-rarity-section.rarity-rare .collection-rarity-title { color: #61cfff; }
+.collection-rarity-section.rarity-unique .collection-rarity-title { color: #d993ff; }
+.collection-rarity-section.rarity-legendary .collection-rarity-title { color: #ffd45d; }
+
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(9px, 2.4vw, 14px);
+}
+
+.collection-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 2px solid rgba(220, 239, 250, 0.58);
+  border-radius: 17px;
+  background: linear-gradient(180deg, rgba(20, 75, 113, 0.96), rgba(4, 30, 61, 0.96));
+  box-shadow: 0 5px 10px rgba(0, 11, 30, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  color: white;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.collection-card:active {
+  transform: translateY(2px) scale(0.98);
+}
+
+.collection-card.rarity-rare { border-color: rgba(72, 197, 255, 0.92); }
+.collection-card.rarity-unique { border-color: rgba(192, 91, 255, 0.94); }
+.collection-card.rarity-legendary {
+  border-color: rgba(255, 206, 61, 0.98);
+  box-shadow: 0 0 13px rgba(255, 201, 43, 0.28), 0 5px 10px rgba(0, 11, 30, 0.38);
+}
+
+.collection-image-frame {
+  position: relative;
+  aspect-ratio: 1.15 / 1;
+  overflow: hidden;
+  background: rgba(80, 175, 215, 0.2);
+}
+
+.collection-image-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.collection-count {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 999px;
+  background: rgba(2, 18, 40, 0.8);
+  color: #ffffff;
+  font-size: clamp(10px, 2.7vw, 14px);
+  font-weight: 900;
+}
+
+.collection-card-info {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 5px;
+  padding: clamp(8px, 2.3vw, 12px);
+}
+
+.collection-fish-name {
+  overflow: hidden;
+  color: #fff7d7;
+  font-size: clamp(14px, 3.8vw, 20px);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collection-fish-size {
+  color: #a9dcf3;
+  font-size: clamp(9px, 2.4vw, 13px);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+@media (max-width: 390px) {
+  .common-panel-tabs {
+    gap: 4px;
+  }
+
+  .common-panel-tab {
+    min-height: 36px;
+    padding-inline: 2px;
+    font-size: 11px;
+  }
+}

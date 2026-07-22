@@ -1,0 +1,85 @@
+{
+  "stage": 1,
+  "folder": "images/fish/stage1",
+  "style": "피싱월드 통일형 모바일 게임 일러스트, 투명 배경",
+  "assets": [
+    {
+      "id": "drink_can",
+      "file": "drink-can.png",
+      "name": "음료수 캔",
+      "rarity": "normal"
+    },
+    {
+      "id": "loach",
+      "file": "loach.png",
+      "name": "미꾸라지",
+      "rarity": "normal"
+    },
+    {
+      "id": "sea_monkey",
+      "file": "sea-monkey.png",
+      "name": "씨몽키",
+      "rarity": "normal"
+    },
+    {
+      "id": "tadpole",
+      "file": "tadpole.png",
+      "name": "올챙이",
+      "rarity": "normal"
+    },
+    {
+      "id": "minnow",
+      "file": "minnow.png",
+      "name": "송사리",
+      "rarity": "rare"
+    },
+    {
+      "id": "tree_frog",
+      "file": "tree-frog.png",
+      "name": "청개구리",
+      "rarity": "rare"
+    },
+    {
+      "id": "crucian_carp",
+      "file": "crucian-carp.png",
+      "name": "붕어",
+      "rarity": "rare"
+    },
+    {
+      "id": "crayfish",
+      "file": "crayfish.png",
+      "name": "가재",
+      "rarity": "rare"
+    },
+    {
+      "id": "largemouth_bass",
+      "file": "largemouth-bass.png",
+      "name": "베스",
+      "rarity": "unique"
+    },
+    {
+      "id": "flounder",
+      "file": "flounder.png",
+      "name": "광어",
+      "rarity": "unique"
+    },
+    {
+      "id": "king_crab",
+      "file": "king-crab.png",
+      "name": "킹크랩",
+      "rarity": "unique"
+    },
+    {
+      "id": "golden_carp",
+      "file": "golden-carp.png",
+      "name": "황금 잉어",
+      "rarity": "legendary"
+    },
+    {
+      "id": "giant_crayfish",
+      "file": "giant-crayfish.png",
+      "name": "거대 가재",
+      "rarity": "legendary"
+    }
+  ]
+}

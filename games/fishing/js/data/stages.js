@@ -1,3 +1,5 @@
+import { STAGE_1_FISH_IDS } from "./fish.js";
+
 export const STAGE_DATA = Object.freeze([
   Object.freeze({
     id: 1,
@@ -8,7 +10,7 @@ export const STAGE_DATA = Object.freeze([
     requiredLevel: 1,
     previousStageId: null,
     requiredCollectionRate: 0,
-    fishPool: Object.freeze([]),
+    fishPool: STAGE_1_FISH_IDS,
     backgroundImage: "./images/stages/stage-1-island.png",
     imageStyle: Object.freeze({ scale: 0.98, offsetX: 0, offsetY: 8 })
   }),
@@ -36,7 +38,7 @@ export const STAGE_DATA = Object.freeze([
     requiredCollectionRate: 100,
     fishPool: Object.freeze([]),
     backgroundImage: "./images/stages/stage-3-island-safe.png?v=20260721c",
-    imageStyle: Object.freeze({ scale: 0.86, offsetX: 6, offsetY: 18 })
+    imageStyle: Object.freeze({ scale: 0.86, offsetX: 0, offsetY: 18 })
   }),
   Object.freeze({
     id: 4,
@@ -49,7 +51,7 @@ export const STAGE_DATA = Object.freeze([
     requiredCollectionRate: 100,
     fishPool: Object.freeze([]),
     backgroundImage: "./images/stages/stage-4-island-safe.png?v=20260721c",
-    imageStyle: Object.freeze({ scale: 0.82, offsetX: 0, offsetY: 18 })
+    imageStyle: Object.freeze({ scale: 0.82, offsetX: 0, offsetY: 22 })
   }),
   Object.freeze({
     id: 5,
@@ -62,7 +64,7 @@ export const STAGE_DATA = Object.freeze([
     requiredCollectionRate: 100,
     fishPool: Object.freeze([]),
     backgroundImage: "./images/stages/stage-5-island-safe.png?v=20260721c",
-    imageStyle: Object.freeze({ scale: 0.80, offsetX: 0, offsetY: 20 })
+    imageStyle: Object.freeze({ scale: 0.80, offsetX: 0, offsetY: 24 })
   })
 ]);
 

@@ -21,9 +21,28 @@ export const EQUIPMENT_CATEGORIES = Object.freeze({
 });
 
 export const RARITIES = Object.freeze({
-  COMMON: "common",
-  UNCOMMON: "uncommon",
+  // 피싱월드 도감에서 사용하는 4단계 희귀도
+  NORMAL: "normal",
   RARE: "rare",
-  EPIC: "epic",
-  LEGENDARY: "legendary"
+  UNIQUE: "unique",
+  LEGENDARY: "legendary",
+
+  // 기존 데이터와의 호환성을 위해 유지
+  COMMON: "normal",
+  UNCOMMON: "rare",
+  EPIC: "unique"
 });
+
+export const RARITY_LABELS = Object.freeze({
+  [RARITIES.NORMAL]: "노말",
+  [RARITIES.RARE]: "레어",
+  [RARITIES.UNIQUE]: "유니크",
+  [RARITIES.LEGENDARY]: "레전더리"
+});
+
+export const RARITY_ORDER = Object.freeze([
+  RARITIES.NORMAL,
+  RARITIES.RARE,
+  RARITIES.UNIQUE,
+  RARITIES.LEGENDARY
+]);

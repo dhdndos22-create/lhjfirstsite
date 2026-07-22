@@ -9,7 +9,8 @@ import {
   PANEL_DEFINITIONS
 } from "./common-panel-ui.js";
 
-import { GAME_CONFIG } from "./data/game-config.js";
+import { GAME_CONFIG, RARITY_LABELS, RARITY_ORDER } from "./data/game-config.js";
+import { getFishByStage } from "./data/fish.js";
 import { STAGE_DATA, getStageById } from "./data/stages.js";
 import {
   playerSave,
@@ -198,7 +199,96 @@ function toggleQuickMenu() {
   menuButton.setAttribute("aria-expanded", String(isQuickMenuOpen));
 }
 
+function getCollectionCount(fishId) {
+  const record = playerSave.fishCollection?.[fishId];
+  return Number(record?.count ?? record ?? 0);
+}
+
+function renderCollectionPanel(tabId, panel) {
+  const stageId = Number(String(tabId).replace("stage-", ""));
+  const fishList = getFishByStage(stageId);
+
+  panel.hidePagination();
+
+  if (fishList.length === 0) {
+    panel.renderEmpty(
+      `<strong>${stageId}스테이지 도감</strong><br>출현 생물 데이터가 아직 등록되지 않았습니다.`
+    );
+    return;
+  }
+
+  const stage = getStageById(stageId);
+  const acquiredCount = fishList.filter((fish) => getCollectionCount(fish.id) > 0).length;
+
+  const wrapper = document.createElement("section");
+  wrapper.className = "collection-view";
+
+  const summary = document.createElement("div");
+  summary.className = "collection-summary";
+  summary.innerHTML = `
+    <div>
+      <span class="collection-stage-label">STAGE ${stageId}</span>
+      <strong>${stage?.name ?? `${stageId}스테이지`}</strong>
+    </div>
+    <span class="collection-progress">${acquiredCount} / ${fishList.length}</span>
+  `;
+  wrapper.appendChild(summary);
+
+  RARITY_ORDER.forEach((rarity) => {
+    const rarityFish = fishList.filter((fish) => fish.rarity === rarity);
+    if (rarityFish.length === 0) return;
+
+    const section = document.createElement("section");
+    section.className = `collection-rarity-section rarity-${rarity}`;
+
+    const title = document.createElement("h2");
+    title.className = "collection-rarity-title";
+    title.textContent = RARITY_LABELS[rarity] ?? rarity;
+    section.appendChild(title);
+
+    const grid = document.createElement("div");
+    grid.className = "collection-grid";
+
+    rarityFish.forEach((fish) => {
+      const count = getCollectionCount(fish.id);
+      const card = document.createElement("article");
+      card.className = `collection-card rarity-${fish.rarity}`;
+      card.dataset.fishId = fish.id;
+
+      card.innerHTML = `
+        <div class="collection-image-frame">
+          <img src="${fish.image}" alt="${fish.name}" draggable="false">
+          <span class="collection-count">${count > 0 ? `× ${count}` : "미획득"}</span>
+        </div>
+        <div class="collection-card-info">
+          <strong class="collection-fish-name">${fish.name}</strong>
+          <span class="collection-fish-size">${fish.minSize}~${fish.maxSize}cm</span>
+        </div>
+      `;
+
+      card.addEventListener("click", () => {
+        alert(
+          `${fish.name}\n${RARITY_LABELS[fish.rarity]}\n${fish.description}\n` +
+          `크기: ${fish.minSize}~${fish.maxSize}cm\n기본 판매가: ${fish.baseGold.toLocaleString("ko-KR")} 골드`
+        );
+      });
+
+      grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+    wrapper.appendChild(section);
+  });
+
+  panel.setBody(wrapper);
+}
+
 function renderPanelSlot(type, tabId, panel) {
+  if (type === "collection") {
+    renderCollectionPanel(tabId, panel);
+    return;
+  }
+
   const definition = PANEL_DEFINITIONS[type];
   const selectedTab = definition.tabs.find((tab) => tab.id === tabId);
   const tabName = selectedTab ? selectedTab.label : definition.title;

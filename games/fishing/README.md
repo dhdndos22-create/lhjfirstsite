@@ -101,3 +101,35 @@ fishingWorldSave:<username>
 - 스테이지 선택 배경: `images/stages/stage-select-background.png`
 - 스테이지 섬 이미지: `images/stages/stage-1-island.png` ~ `stage-5-island.png`
 - 잠긴 스테이지는 섬이 어둡게 표시되고 입장 버튼이 비활성화됩니다.
+
+
+## 1스테이지 도감 데이터
+
+`js/data/fish.js`와 `js/data/stages.js`에 아래 13종이 등록되어 있습니다.
+
+- 노말: 음료수 캔, 미꾸라지, 씨몽키, 올챙이
+- 레어: 송사리, 청개구리, 붕어, 가재
+- 유니크: 베스, 광어, 킹크랩
+- 레전더리: 황금 잉어, 거대 가재
+
+이미지 연결 경로는 `images/fish/stage1/`입니다.
+
+예시:
+
+```text
+images/fish/stage1/drink-can.png
+images/fish/stage1/loach.png
+images/fish/stage1/golden-carp.png
+```
+
+이미지 파일이 준비되면 위 폴더에 같은 파일명으로 넣는 것만으로
+도감과 낚시 결과 화면에서 공통으로 사용할 수 있습니다.
+
+
+## 스테이지별 도감 화면
+
+- 로비 메뉴에 `도감` 버튼이 추가되었습니다.
+- 도감 상단에서 1~5스테이지를 선택할 수 있습니다.
+- 1스테이지에는 13종의 이미지·이름·희귀도·크기·획득 수량이 표시됩니다.
+- 2~5스테이지는 이후 데이터를 넣을 수 있도록 빈 카테고리로 준비되어 있습니다.
+- 각 카드를 누르면 설명, 크기와 기본 판매가를 확인할 수 있습니다.
