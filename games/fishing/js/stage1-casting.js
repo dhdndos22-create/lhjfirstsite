@@ -63,6 +63,17 @@ if (root && canvas) {
     catchData: null,
     reelingElapsed: 0,
     auraPulse: 0,
+    reelKick: 0,
+    bobberVisualX: 0.5,
+    bobberVisualY: 0.83,
+    jumpActive: false,
+    jumpElapsed: 0,
+    jumpDuration: 0,
+    nextJumpAt: 0,
+    landingActive: false,
+    landingElapsed: 0,
+    landingDuration: 1.05,
+    hookedFishImage: null,
     lastTime: performance.now(),
     frameId: 0,
     width: 0,
@@ -264,6 +275,17 @@ if (root && canvas) {
     state.lastReelTapAt = 0;
     state.reelingElapsed = 0;
     state.auraPulse = 0;
+    state.reelKick = 0;
+    state.jumpActive = false;
+    state.jumpElapsed = 0;
+    state.nextJumpAt =
+      ["unique", "legendary"].includes(state.hookedFish.rarity)
+        ? 2.2 + Math.random() * 2.8
+        : Number.POSITIVE_INFINITY;
+    state.bobberVisualX = state.bobber.x;
+    state.bobberVisualY = state.bobber.y;
+    state.hookedFishImage = new Image();
+    state.hookedFishImage.src = state.hookedFish.image;
 
     afterCastControls.hidden = true;
     reelingArea.hidden = false;
@@ -287,8 +309,81 @@ if (root && canvas) {
     );
   }
 
+  function spawnReelRipple(power = 1) {
+    state.ripples.push({
+      x: state.bobberVisualX,
+      y: state.bobberVisualY,
+      age: 0,
+      life: 0.42 + power * 0.16
+    });
+
+    const particleCount = Math.round(3 + power * 3);
+    for (let i = 0; i < particleCount; i += 1) {
+      state.splashes.push({
+        x: state.bobberVisualX + (Math.random() - 0.5) * 0.025,
+        y: state.bobberVisualY,
+        vx: (Math.random() - 0.5) * 0.15 * power,
+        vy: -0.035 - Math.random() * 0.09 * power,
+        age: 0,
+        life: 0.28 + Math.random() * 0.22,
+        size: 1.2 + Math.random() * 2.2 * power
+      });
+    }
+  }
+
+  function beginFishJump() {
+    if (
+      state.jumpActive ||
+      state.mode !== "reeling" ||
+      !["unique", "legendary"].includes(state.hookedFish?.rarity)
+    ) {
+      return;
+    }
+
+    state.jumpActive = true;
+    state.jumpElapsed = 0;
+    state.jumpDuration =
+      state.hookedFish.rarity === "legendary" ? 1.05 : 0.82;
+    state.nextJumpAt =
+      state.reelingElapsed +
+      (state.hookedFish.rarity === "legendary"
+        ? 2.8 + Math.random() * 3.2
+        : 4.2 + Math.random() * 4.5);
+
+    showToast("물고기가 뛰어오른다! 릴을 멈춰라!", state.hookedFish.rarity, 850);
+    spawnReelRipple(state.hookedFish.rarity === "legendary" ? 2.3 : 1.7);
+  }
+
+  function beginLandingAnimation() {
+    state.mode = "landing";
+    state.landingActive = true;
+    state.landingElapsed = 0;
+    reelButton.disabled = true;
+    reelingArea.dataset.phase = "success";
+    fishStateText.textContent = "마지막으로 끌어올린다!";
+
+    for (let i = 0; i < 36; i += 1) {
+      state.splashes.push({
+        x: state.bobberVisualX + (Math.random() - 0.5) * 0.09,
+        y: state.bobberVisualY,
+        vx: (Math.random() - 0.5) * 0.34,
+        vy: -0.12 - Math.random() * 0.34,
+        age: 0,
+        life: 0.55 + Math.random() * 0.55,
+        size: 2 + Math.random() * 5
+      });
+    }
+
+    state.ripples.push({
+      x: state.bobberVisualX,
+      y: state.bobberVisualY,
+      age: 0,
+      life: 1.1
+    });
+  }
+
   function finishReeling(success, message) {
-    if (state.mode !== "reeling") return;
+    if (!["reeling", "landing"].includes(state.mode)) return;
 
     state.mode = success ? "caught" : "line-broken";
     reelButton.disabled = true;
@@ -381,7 +476,8 @@ if (root && canvas) {
 
     const isStruggling =
       state.fishPhase === "struggle" ||
-      state.fishPhase === "fake";
+      state.fishPhase === "fake" ||
+      state.jumpActive;
     const profile = state.rarityProfile;
     const rapidTapBonus =
       !isStruggling && tapGap > 0 && tapGap < 230 ? 0.13 : 0;
@@ -394,8 +490,23 @@ if (root && canvas) {
       ? profile.struggleTapTension
       : profile.restTapTension;
 
-    state.distance = Math.max(0, state.distance - distancePull);
-    state.tension = Math.min(110, state.tension + tensionGain);
+    const jumpPenalty = state.jumpActive ? 1.6 : 1;
+    state.distance = Math.max(
+      0,
+      state.distance - distancePull / jumpPenalty
+    );
+    state.tension = Math.min(
+      110,
+      state.tension + tensionGain * jumpPenalty
+    );
+    state.reelKick = Math.min(1, state.reelKick + 0.72);
+    spawnReelRipple(
+      state.jumpActive
+        ? 1.7
+        : state.fishPhase === "struggle"
+          ? 1.15
+          : 0.75
+    );
 
     reelButton.classList.remove("is-tapped");
     void reelButton.offsetWidth;
@@ -432,6 +543,14 @@ if (root && canvas) {
     state.catchData = null;
     state.reelingElapsed = 0;
     state.auraPulse = 0;
+    state.reelKick = 0;
+    state.jumpActive = false;
+    state.jumpElapsed = 0;
+    state.jumpDuration = 0;
+    state.nextJumpAt = 0;
+    state.landingActive = false;
+    state.landingElapsed = 0;
+    state.hookedFishImage = null;
     state.bobber.visible = false;
     state.ripples.length = 0;
     state.splashes.length = 0;
@@ -662,6 +781,42 @@ if (root && canvas) {
 
       state.tension = clamp(state.tension, 0, 110);
 
+      const distanceRatio = clamp(state.distance / state.maxDistance, 0, 1);
+      const targetX = 0.47 - (1 - distanceRatio) * 0.055;
+      const targetY = 0.42 + (1 - distanceRatio) * 0.29;
+      const strugglePush =
+        state.fishPhase === "struggle"
+          ? Math.sin(state.reelingElapsed * 7.5) * 0.012 * profile.lineShake
+          : 0;
+      const sidePull =
+        Math.sin(state.reelingElapsed * (2.3 + profile.lineShake)) *
+        0.028 * profile.lineShake;
+
+      state.bobberVisualX +=
+        (targetX + sidePull + strugglePush - state.bobberVisualX) *
+        Math.min(1, delta * 5.8);
+      state.bobberVisualY +=
+        (targetY - state.bobberVisualY) *
+        Math.min(1, delta * 5.5);
+
+      state.bobber.x = state.bobberVisualX;
+      state.bobber.y = state.bobberVisualY;
+      state.reelKick = Math.max(0, state.reelKick - delta * 5.2);
+
+      if (
+        state.reelingElapsed >= state.nextJumpAt &&
+        state.fishPhase === "struggle"
+      ) {
+        beginFishJump();
+      }
+
+      if (state.jumpActive) {
+        state.jumpElapsed += delta;
+        if (state.jumpElapsed >= state.jumpDuration) {
+          state.jumpActive = false;
+        }
+      }
+
       if (state.fishPhaseElapsed >= state.fishPhaseDuration) {
         setFishPhase(
           state.fishPhase === "struggle"
@@ -675,6 +830,29 @@ if (root && canvas) {
       if (state.tension >= 100) {
         finishReeling(false, "낚싯줄이 끊어졌습니다!");
       } else if (state.distance <= 0) {
+        beginLandingAnimation();
+      }
+    }
+
+    if (state.mode === "landing") {
+      state.landingElapsed += delta;
+      state.reelKick = Math.max(state.reelKick, 0.75);
+
+      const progress = clamp(
+        state.landingElapsed / state.landingDuration,
+        0,
+        1
+      );
+
+      state.bobberVisualX +=
+        (0.43 - state.bobberVisualX) * Math.min(1, delta * 7);
+      state.bobberVisualY +=
+        (0.78 - state.bobberVisualY) * Math.min(1, delta * 8);
+      state.bobber.x = state.bobberVisualX;
+      state.bobber.y = state.bobberVisualY;
+
+      if (progress >= 1) {
+        state.landingActive = false;
         finishReeling(true, "낚시 성공!");
       }
     }
@@ -703,8 +881,19 @@ if (root && canvas) {
 
     const baseX = width * 0.53;
     const baseY = height * 1.02;
-    const tipX = width * 0.43;
-    const tipY = height * 0.67;
+    const tensionBend =
+      state.mode === "reeling" || state.mode === "landing"
+        ? clamp(state.tension / 100, 0, 1)
+        : 0;
+    const kick = state.reelKick;
+    const jumpKick = state.jumpActive
+      ? Math.sin((state.jumpElapsed / Math.max(0.01, state.jumpDuration)) * Math.PI) * 0.035
+      : 0;
+
+    const tipX =
+      width * (0.43 + tensionBend * 0.022 - kick * 0.012 + jumpKick);
+    const tipY =
+      height * (0.67 + tensionBend * 0.045 - kick * 0.022 - jumpKick * 0.55);
 
     ctx.save();
     ctx.lineCap = "round";
@@ -796,10 +985,26 @@ if (root && canvas) {
       Math.cos(performance.now() * 0.031) * activeShake * height * 0.003;
     const x = state.bobber.x * width + shakeX;
     const y = state.bobber.y * height + shakeY;
-    const size = Math.max(7, width * 0.025);
+    const distanceRatio =
+      state.maxDistance > 0
+        ? clamp(state.distance / state.maxDistance, 0, 1)
+        : 1;
+    const proximityScale =
+      state.mode === "reeling" || state.mode === "landing"
+        ? 0.72 + (1 - distanceRatio) * 0.72
+        : 1;
+    const jumpProgress =
+      state.jumpActive
+        ? state.jumpElapsed / Math.max(0.01, state.jumpDuration)
+        : 0;
+    const jumpLift =
+      state.jumpActive
+        ? Math.sin(jumpProgress * Math.PI) * height * 0.035
+        : 0;
+    const size = Math.max(7, width * 0.025) * proximityScale;
 
     ctx.save();
-    ctx.translate(x, y);
+    ctx.translate(x, y - jumpLift);
 
     ctx.beginPath();
     ctx.ellipse(
@@ -835,6 +1040,89 @@ if (root && canvas) {
     ctx.restore();
   }
 
+  function drawFishActionAnimation() {
+    if (
+      !state.hookedFishImage ||
+      !state.hookedFishImage.complete ||
+      state.hookedFishImage.naturalWidth < 1
+    ) {
+      return;
+    }
+
+    const width = state.width;
+    const height = state.height;
+    const image = state.hookedFishImage;
+    const rarityScale =
+      state.hookedFish?.rarity === "legendary"
+        ? 1.35
+        : state.hookedFish?.rarity === "unique"
+          ? 1.12
+          : 0.9;
+
+    if (state.jumpActive) {
+      const progress =
+        state.jumpElapsed / Math.max(0.01, state.jumpDuration);
+      const arc = Math.sin(progress * Math.PI);
+      const x =
+        state.bobberVisualX * width +
+        Math.sin(progress * Math.PI * 2) * width * 0.045;
+      const y =
+        state.bobberVisualY * height -
+        arc * height * 0.18;
+      const drawWidth = width * 0.19 * rarityScale;
+      const ratio = image.naturalHeight / image.naturalWidth;
+      const drawHeight = drawWidth * ratio;
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate((progress - 0.5) * Math.PI * 0.9);
+      ctx.globalAlpha = Math.min(1, arc * 2.6);
+      ctx.drawImage(
+        image,
+        -drawWidth / 2,
+        -drawHeight / 2,
+        drawWidth,
+        drawHeight
+      );
+      ctx.restore();
+    }
+
+    if (state.mode === "landing" && state.landingActive) {
+      const progress = clamp(
+        state.landingElapsed / state.landingDuration,
+        0,
+        1
+      );
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const startX = state.bobberVisualX * width;
+      const startY = state.bobberVisualY * height;
+      const endX = width * 0.52;
+      const endY = height * 0.48;
+      const x = startX + (endX - startX) * eased;
+      const y =
+        startY +
+        (endY - startY) * eased -
+        Math.sin(progress * Math.PI) * height * 0.23;
+      const drawWidth =
+        width * (0.16 + progress * 0.16) * rarityScale;
+      const ratio = image.naturalHeight / image.naturalWidth;
+      const drawHeight = drawWidth * ratio;
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(progress * Math.PI * 1.35);
+      ctx.globalAlpha = Math.min(1, progress * 4);
+      ctx.drawImage(
+        image,
+        -drawWidth / 2,
+        -drawHeight / 2,
+        drawWidth,
+        drawHeight
+      );
+      ctx.restore();
+    }
+  }
+
   function drawHookedFishPresence() {
     if (
       !state.hookedFish ||
@@ -859,8 +1147,20 @@ if (root && canvas) {
       height * (rarity === "legendary" ? 0.12 : 0.085) +
       Math.cos(time * 2.1) * height * 0.012;
 
-    const shadowWidth = width * 0.12 * profile.shadowScale;
-    const shadowHeight = shadowWidth * 0.28;
+    const distanceRatio =
+      state.maxDistance > 0
+        ? clamp(state.distance / state.maxDistance, 0, 1)
+        : 1;
+    const phaseStretch =
+      state.fishPhase === "struggle"
+        ? 1.22 + Math.sin(time * 9) * 0.12
+        : 0.92 + Math.sin(time * 3) * 0.06;
+    const proximityScale = 0.78 + (1 - distanceRatio) * 0.58;
+    const shadowWidth =
+      width * 0.12 * profile.shadowScale * phaseStretch * proximityScale;
+    const shadowHeight =
+      shadowWidth *
+      (state.fishPhase === "struggle" ? 0.22 : 0.3);
 
     ctx.save();
 
@@ -976,6 +1276,7 @@ if (root && canvas) {
     ctx.clearRect(0, 0, state.width, state.height);
     drawHookedFishPresence();
     drawEffects();
+    drawFishActionAnimation();
     drawRod();
     drawBobber();
   }
