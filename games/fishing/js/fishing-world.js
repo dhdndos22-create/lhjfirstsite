@@ -11,13 +11,15 @@ import {
 
 import { GAME_CONFIG, RARITY_LABELS, RARITY_ORDER } from "./data/game-config.js";
 import { FISH_DATA, getFishByStage } from "./data/fish.js";
+import { StageFishingGame } from "./stage1-fishing-game.js";
 import { STAGE_DATA, getStageById } from "./data/stages.js";
 import {
   playerSave,
   replacePlayerSave,
   getPlayerStatusView,
   addCaughtFish,
-  sellInventoryFish
+  sellInventoryFish,
+  spendEnergy
 } from "./state/player-state.js";
 import {
   loadPlayerSave,
@@ -59,8 +61,7 @@ const stageLockOverlay = document.getElementById("stageLockOverlay");
 const stagePageDots = document.getElementById("stagePageDots");
 const fishingStageNumber = document.getElementById("fishingStageNumber");
 const fishingStageName = document.getElementById("fishingStageName");
-const fishingStageDescription = document.getElementById("fishingStageDescription");
-const fishingStageBackground = document.getElementById("fishingStageBackground");
+const stage1FishingRoot = document.getElementById("stage1FishingGame");
 const bubbleLayer = document.getElementById("bubbleLayer");
 
 const fishDetailModal = document.getElementById("fishDetailModal");
@@ -111,6 +112,8 @@ export const fishingSession = {
 };
 
 let isQuickMenuOpen = false;
+
+let stageFishingGame = null;
 
 function createStatusBarMarkup(scope) {
   return `
@@ -614,10 +617,13 @@ function enterSelectedStage() {
 
   fishingStageNumber.textContent = `STAGE ${stage.id}`;
   fishingStageName.textContent = stage.name;
-  fishingStageDescription.textContent = stage.description;
-  fishingStageBackground.dataset.stage = String(stage.id);
   updatePlayerStatus();
   changeScreen("fishingStage");
+
+  if (stage.id === 1 && stageFishingGame) {
+    stageFishingGame.setFishList(getFishByStage(1));
+    stageFishingGame.reset();
+  }
 }
 
 function randomBetween(min, max) {
@@ -687,7 +693,10 @@ function bindEvents() {
   stagePreview.addEventListener("pointercancel", () => { stageSwipeStartX = null; });
   stageEnterButton.addEventListener("click", enterSelectedStage);
   stageSelectBackButton.addEventListener("click", openLobby);
-  fishingStageBackButton.addEventListener("click", openStageSelect);
+  fishingStageBackButton.addEventListener("click", () => {
+    stageFishingGame?.reset();
+    openStageSelect();
+  });
 
   quickMenuItems.forEach((button) => {
     button.addEventListener("click", () => openCommonPanel(button.dataset.menu));
@@ -757,6 +766,26 @@ function bindEvents() {
 
 function initialize() {
   mountSharedStatusBars();
+
+  stageFishingGame = new StageFishingGame({
+    root: stage1FishingRoot,
+    fishList: getFishByStage(1),
+
+    onEnergyUse() {
+      const success = spendEnergy(GAME_CONFIG.fishingEnergyCost);
+      if (!success) return false;
+      savePlayerState();
+      updatePlayerStatus();
+      return true;
+    },
+
+    onCatch({ fish, size }) {
+      addCaughtFish(fish.id, { size });
+      savePlayerState();
+      updatePlayerStatus();
+    }
+  });
+
   bindEvents();
   loadPlayerState();
   updatePlayerStatus();

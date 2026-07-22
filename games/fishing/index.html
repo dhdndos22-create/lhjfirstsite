@@ -118,19 +118,99 @@
     </section>
 
     <section id="fishingStageScreen" class="game-screen fishing-stage-screen" aria-label="스테이지 낚시 화면" aria-hidden="true">
-      <div id="fishingStageBackground" class="fishing-stage-background" aria-hidden="true"></div>
-      <header id="fishingStatusMount" class="status-mount"></header>
+      <img class="screen-background fishing-pond-background" src="./images/fishing/stage-1-pond-background.png" alt="" draggable="false">
+      <canvas id="fishingCanvas" class="fishing-canvas" aria-hidden="true"></canvas>
 
-      <div class="fishing-stage-content">
-        <div class="fishing-stage-badge" id="fishingStageNumber">STAGE 1</div>
-        <h1 id="fishingStageName" class="fishing-stage-title">초보자의 연못</h1>
-        <p id="fishingStageDescription" class="fishing-stage-description"></p>
-        <div class="fishing-stage-placeholder">
-          <span>낚시 기능 및 스테이지 배경 UI 준비중</span>
+      <header id="fishingStatusMount" class="status-mount fishing-status-mount"></header>
+
+      <div id="stage1FishingGame" class="stage1-fishing-game">
+        <div class="fishing-stage-labels">
+          <span id="fishingStageNumber" class="fishing-stage-number">STAGE 1</span>
+          <strong id="fishingStageName" class="fishing-stage-name">초보자의 연못</strong>
         </div>
+
+        <div class="fishing-message-box" aria-live="polite">
+          <strong id="fishingMessage">캐스팅 준비 완료</strong>
+          <span id="fishingSubMessage">버튼을 길게 누른 뒤 좋은 구간에서 놓으세요.</span>
+        </div>
+
+        <div id="biteAlert" class="bite-alert" hidden>
+          <strong>!</strong>
+          <span>입질</span>
+        </div>
+
+        <section class="fishing-meters" aria-label="낚시 상태">
+          <div class="fishing-meter-card cast-meter-card">
+            <div class="fishing-meter-heading">
+              <span>캐스팅 파워</span>
+              <small>초록 구간을 노리세요</small>
+            </div>
+            <div class="cast-power-track">
+              <span class="cast-good-zone"></span>
+              <span id="castPowerFill" class="cast-power-fill"></span>
+              <span id="castPowerMarker" class="cast-power-marker"></span>
+            </div>
+          </div>
+
+          <div class="fishing-meter-card fight-meter-card">
+            <div class="fight-meter-row">
+              <div class="fishing-meter-heading">
+                <span>남은 거리</span>
+                <strong id="fishDistanceText">100m</strong>
+              </div>
+              <div class="fishing-progress-track">
+                <span id="fishDistanceFill" class="fish-distance-fill"></span>
+              </div>
+            </div>
+
+            <div class="fight-meter-row">
+              <div class="fishing-meter-heading">
+                <span>낚싯줄 장력</span>
+                <strong id="lineTensionText">24%</strong>
+              </div>
+              <div class="fishing-progress-track tension-track">
+                <span class="tension-safe-zone"></span>
+                <span id="lineTensionFill" class="line-tension-fill" data-level="safe"></span>
+              </div>
+            </div>
+
+            <div id="fishBehaviorText" class="fish-behavior-text">대기 중</div>
+          </div>
+        </section>
+
+        <div class="fishing-controls">
+          <button id="castButton" class="fishing-main-button cast-button" type="button">
+            <span class="button-icon">🎣</span>
+            <span>길게 눌러 캐스팅</span>
+          </button>
+
+          <button id="catchButton" class="fishing-main-button catch-button" type="button" hidden>
+            <span class="button-icon">!</span>
+            <span>캐치!</span>
+          </button>
+
+          <button id="reelButton" class="fishing-main-button reel-button" type="button" hidden>
+            <span class="button-icon">⟳</span>
+            <span>누르고 릴 감기</span>
+          </button>
+
+          <button id="fishingResetButton" class="fishing-main-button reset-button" type="button" hidden>
+            <span>다시 낚시하기</span>
+          </button>
+        </div>
+
+        <section id="fishingResultPanel" class="fishing-result-panel" hidden>
+          <div id="fishingResultRarity" class="fishing-result-rarity">노말</div>
+          <div class="fishing-result-image-area">
+            <img id="fishingResultImage" src="" alt="" draggable="false">
+          </div>
+          <strong id="fishingResultName" class="fishing-result-name"></strong>
+          <span id="fishingResultSize" class="fishing-result-size"></span>
+          <span id="fishingResultReward" class="fishing-result-reward"></span>
+        </section>
       </div>
 
-      <button id="fishingStageBackButton" class="round-back-button" type="button" aria-label="스테이지 선택으로 돌아가기">←</button>
+      <button id="fishingStageBackButton" class="round-back-button fishing-screen-back-button" type="button" aria-label="스테이지 선택으로 돌아가기">←</button>
     </section>
 
 
