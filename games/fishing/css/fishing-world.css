@@ -2841,3 +2841,83 @@ button {
 .collection-card.is-undiscovered:active {
   transform: none;
 }
+
+
+/* =========================================================
+   STAGE FISHING - 최초 발견 / 최고 기록 연출
+========================================================= */
+.stage1-catch-special-banner {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 2px;
+  margin: -4px 0 12px;
+  padding: 11px 14px;
+  border: 2px solid rgba(255,255,255,.9);
+  border-radius: 18px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,.3);
+}
+
+.stage1-catch-special-banner[hidden] {
+  display: none !important;
+}
+
+.stage1-catch-special-banner::after {
+  content: "";
+  position: absolute;
+  inset: -60% -35%;
+  background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.75) 50%, transparent 62%);
+  transform: translateX(-75%) rotate(8deg);
+  pointer-events: none;
+}
+
+.stage1-catch-special-banner.is-playing {
+  animation: stage1SpecialBannerIn .62s cubic-bezier(.16,.86,.25,1.28);
+}
+
+.stage1-catch-special-banner.is-playing::after {
+  animation: stage1SpecialBannerShine .9s .12s ease-out both;
+}
+
+.first-catch-banner {
+  background: linear-gradient(135deg, #1597c8, #1857c9 55%, #6936c5);
+  box-shadow: 0 0 26px rgba(67,190,255,.55), 0 8px 20px rgba(0,0,0,.3);
+}
+
+.new-record-banner {
+  background: linear-gradient(135deg, #ed8c17, #d64a18 58%, #9d245d);
+  box-shadow: 0 0 28px rgba(255,178,48,.6), 0 8px 20px rgba(0,0,0,.3);
+}
+
+.stage1-special-kicker {
+  color: #fff6a6;
+  font-size: 13px;
+  font-weight: 1000;
+  letter-spacing: .12em;
+  text-shadow: 0 2px 5px rgba(0,0,0,.45);
+}
+
+.stage1-catch-special-banner strong {
+  font-size: clamp(18px, 5.3vw, 24px);
+  font-weight: 1000;
+  text-shadow: 0 3px 6px rgba(0,0,0,.42);
+}
+
+.stage1-catch-special-banner > span:last-child {
+  font-size: 13px;
+  font-weight: 800;
+  opacity: .96;
+}
+
+@keyframes stage1SpecialBannerIn {
+  0% { opacity: 0; transform: translateY(-18px) scale(.72) rotate(-2deg); }
+  62% { opacity: 1; transform: translateY(3px) scale(1.045) rotate(1deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+}
+
+@keyframes stage1SpecialBannerShine {
+  from { transform: translateX(-75%) rotate(8deg); }
+  to { transform: translateX(75%) rotate(8deg); }
+}

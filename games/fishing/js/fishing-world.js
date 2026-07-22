@@ -806,6 +806,11 @@ function initialize() {
       const fish = FISH_DATA[fishId];
       if (!fish) throw new Error(`등록되지 않은 물고기입니다: ${fishId}`);
 
+      const previousRecord = playerSave.fishCollection?.[fishId] ?? null;
+      const previousCount = Number(previousRecord?.count ?? previousRecord ?? 0) || 0;
+      const previousMaxSize = Number(previousRecord?.maxSize ?? 0) || 0;
+      const caughtSize = Math.max(0, Number(options.size) || 0);
+
       addCaughtFish(fishId, options);
       addExp(options.exp ?? fish.baseExp ?? 0);
       savePlayerState();
@@ -815,7 +820,11 @@ function initialize() {
         fish,
         inventoryCount: getInventoryFishCount(fishId),
         collectionCount: getCollectionCount(fishId),
-        expGained: Number(options.exp ?? fish.baseExp ?? 0)
+        expGained: Number(options.exp ?? fish.baseExp ?? 0),
+        isFirstCatch: previousCount < 1,
+        isNewRecord: previousCount > 0 && caughtSize > previousMaxSize,
+        previousMaxSize,
+        currentMaxSize: Math.max(previousMaxSize, caughtSize)
       };
     }
   });

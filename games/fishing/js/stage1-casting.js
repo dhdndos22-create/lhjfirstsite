@@ -422,11 +422,18 @@ if (root && canvas) {
     state.catchData = createCatchResult(fish);
 
     try {
-      window.FishingWorldFish?.catch(fish.id, {
+      const saveResult = window.FishingWorldFish?.catch(fish.id, {
         size: state.catchData.size,
         exp: state.catchData.exp,
         caughtAt: state.catchData.caughtAt
       });
+
+      if (saveResult) {
+        state.catchData.isFirstCatch = Boolean(saveResult.isFirstCatch);
+        state.catchData.isNewRecord = Boolean(saveResult.isNewRecord);
+        state.catchData.previousMaxSize = Number(saveResult.previousMaxSize) || 0;
+        state.catchData.currentMaxSize = Number(saveResult.currentMaxSize) || state.catchData.size;
+      }
     } catch (error) {
       console.error("물고기 저장 실패:", error);
     }
@@ -475,6 +482,31 @@ if (root && canvas) {
     catchSize.textContent = `${data.size.toFixed(1)}cm`;
     catchExp.textContent = `+${data.exp.toLocaleString("ko-KR")} EXP`;
     catchGold.textContent = `${data.goldValue.toLocaleString("ko-KR")} G`;
+
+    const firstCatchBanner = document.getElementById("stage1FirstCatchBanner");
+    const newRecordBanner = document.getElementById("stage1NewRecordBanner");
+    const previousRecordText = document.getElementById("stage1PreviousRecord");
+
+    if (firstCatchBanner) {
+      firstCatchBanner.hidden = !data.isFirstCatch;
+      firstCatchBanner.classList.remove("is-playing");
+      if (data.isFirstCatch) {
+        void firstCatchBanner.offsetWidth;
+        firstCatchBanner.classList.add("is-playing");
+      }
+    }
+
+    if (newRecordBanner) {
+      newRecordBanner.hidden = !data.isNewRecord;
+      newRecordBanner.classList.remove("is-playing");
+      if (data.isNewRecord) {
+        if (previousRecordText) {
+          previousRecordText.textContent = `이전 ${data.previousMaxSize.toFixed(1)}cm → 신기록 ${data.size.toFixed(1)}cm`;
+        }
+        void newRecordBanner.offsetWidth;
+        newRecordBanner.classList.add("is-playing");
+      }
+    }
   }
 
   function handleReelTap(event) {
