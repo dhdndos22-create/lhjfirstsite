@@ -7,8 +7,10 @@ if (root && canvas) {
   const castButton = document.getElementById("stage1CastButton");
   const resetButton = document.getElementById("stage1CastResetButton");
   const buttonText = document.getElementById("stage1CastButtonText");
-  const guideTitle = document.getElementById("castingGuideTitle");
-  const guideText = document.getElementById("castingGuideText");
+  const afterCastControls = document.getElementById("stage1AfterCastControls");
+  const hookButton = document.getElementById("stage1HookButton");
+  const eventToast = document.getElementById("stage1EventToast");
+  const powerPanel = document.querySelector(".casting-power-panel");
   const powerFill = document.getElementById("castingPowerFill");
   const powerMarker = document.getElementById("castingPowerMarker");
   const powerPercent = document.getElementById("castingPowerPercent");
@@ -19,6 +21,10 @@ if (root && canvas) {
     power: 0,
     direction: 1,
     castQuality: 0,
+    biteTimer: null,
+    biteWindowTimer: null,
+    biteActive: false,
+    toastTimer: null,
     lastTime: performance.now(),
     frameId: 0,
     width: 0,
@@ -53,9 +59,41 @@ if (root && canvas) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  function setGuide(title, text) {
-    guideTitle.textContent = title;
-    guideText.textContent = text;
+  function showToast(message, type = "normal", duration = 1100) {
+    if (!eventToast) return;
+    window.clearTimeout(state.toastTimer);
+    eventToast.textContent = message;
+    eventToast.dataset.type = type;
+    eventToast.hidden = false;
+    state.toastTimer = window.setTimeout(() => { eventToast.hidden = true; }, duration);
+  }
+
+  function clearBiteTimers() {
+    window.clearTimeout(state.biteTimer);
+    window.clearTimeout(state.biteWindowTimer);
+    state.biteTimer = null;
+    state.biteWindowTimer = null;
+    state.biteActive = false;
+    hookButton?.classList.remove("is-biting");
+  }
+
+  function scheduleBite() {
+    clearBiteTimers();
+    const delay = 1800 + Math.random() * 3200;
+    state.biteTimer = window.setTimeout(() => {
+      if (state.mode !== "waiting") return;
+      state.biteActive = true;
+      hookButton?.classList.add("is-biting");
+      showToast("입질!", "bite", 1200);
+      state.ripples.push({ x: state.bobber.x, y: state.bobber.y, age: 0, life: 0.7 });
+      state.biteWindowTimer = window.setTimeout(() => {
+        if (!state.biteActive || state.mode !== "waiting") return;
+        state.biteActive = false;
+        hookButton?.classList.remove("is-biting");
+        showToast("입질을 놓쳤습니다", "fail", 1300);
+        scheduleBite();
+      }, 1150);
+    }, delay);
   }
 
   function updatePowerUi() {
@@ -74,14 +112,14 @@ if (root && canvas) {
     state.bobber.visible = false;
     state.ripples.length = 0;
     state.splashes.length = 0;
+    clearBiteTimers();
 
     castButton.hidden = false;
-    resetButton.hidden = true;
-    buttonText.textContent = "길게 눌러 캐스팅";
-    setGuide(
-      "캐스팅 준비 완료",
-      "버튼을 길게 누른 뒤 초록 구간에서 손을 떼세요."
-    );
+    afterCastControls.hidden = true;
+    powerPanel.hidden = false;
+    buttonText.textContent = "캐스팅";
+    hookButton.disabled = false;
+    hookButton.textContent = "후킹";
     updatePowerUi();
   }
 
@@ -91,8 +129,7 @@ if (root && canvas) {
     state.holding = true;
     state.power = 0;
     state.direction = 1;
-    buttonText.textContent = "손을 떼어 캐스팅";
-    setGuide("힘을 모으는 중…", "초록 구간에서 손을 떼세요.");
+    buttonText.textContent = "캐스팅";
   }
 
   function releaseHolding(event) {
@@ -125,21 +162,16 @@ if (root && canvas) {
       state.castQuality >= 0.84 ? "PERFECT!" :
       state.castQuality >= 0.58 ? "GOOD!" :
       "캐스팅!";
-
-    setGuide(qualityText, "찌가 연못으로 날아갑니다.");
+    showToast(qualityText, "cast", 800);
   }
 
   function finishCast() {
-    state.mode = "landed";
+    state.mode = "waiting";
     state.cast = null;
-    resetButton.hidden = false;
+    castButton.hidden = true;
+    powerPanel.hidden = true;
+    afterCastControls.hidden = false;
 
-    const qualityText =
-      state.castQuality >= 0.84 ? "완벽한 캐스팅!" :
-      state.castQuality >= 0.58 ? "좋은 캐스팅!" :
-      "캐스팅 완료";
-
-    setGuide(qualityText, "다음 단계에서는 이 상태에서 입질을 기다리게 됩니다.");
     state.ripples.push({
       x: state.bobber.x,
       y: state.bobber.y,
@@ -158,6 +190,23 @@ if (root && canvas) {
         size: 1.5 + Math.random() * 3.3
       });
     }
+    scheduleBite();
+  }
+
+  function handleHook() {
+    if (state.mode !== "waiting") return;
+    if (!state.biteActive) {
+      clearBiteTimers();
+      state.mode = "failed";
+      showToast("낚시 실패! 입질 타이밍이 아닙니다", "fail", 1600);
+      return;
+    }
+    clearBiteTimers();
+    state.mode = "hooked";
+    showToast("후킹 성공! 낚시 게임 시작", "success", 1700);
+    hookButton.textContent = "후킹 성공";
+    hookButton.disabled = true;
+    window.dispatchEvent(new CustomEvent("fishingworld:hook-success", { detail: { stageId: 1, castPower: state.power, castQuality: state.castQuality } }));
   }
 
   function update(delta) {
@@ -394,6 +443,7 @@ if (root && canvas) {
   window.addEventListener("pointerup", releaseHolding);
   window.addEventListener("pointercancel", releaseHolding);
   resetButton?.addEventListener("click", resetCasting);
+  hookButton?.addEventListener("click", handleHook);
   window.addEventListener("resize", resizeCanvas);
 
   const screenObserver = new MutationObserver(() => {

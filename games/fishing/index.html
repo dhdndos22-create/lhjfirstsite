@@ -136,11 +136,6 @@
           <p id="fishingStageDescription"></p>
         </div>
 
-        <div id="castingGuide" class="casting-guide" aria-live="polite">
-          <strong id="castingGuideTitle">캐스팅 준비 완료</strong>
-          <span id="castingGuideText">버튼을 길게 누른 뒤 초록 구간에서 손을 떼세요.</span>
-        </div>
-
         <section class="casting-power-panel" aria-label="캐스팅 파워">
           <div class="casting-power-heading">
             <span>캐스팅 파워</span>
@@ -157,13 +152,16 @@
         <div class="casting-control-area">
           <button id="stage1CastButton" class="stage1-cast-button" type="button">
             <span class="stage1-cast-icon" aria-hidden="true">🎣</span>
-            <span id="stage1CastButtonText">길게 눌러 캐스팅</span>
+            <span id="stage1CastButtonText">캐스팅</span>
           </button>
 
-          <button id="stage1CastResetButton" class="stage1-cast-reset-button" type="button" hidden>
-            다시 캐스팅
-          </button>
+          <div id="stage1AfterCastControls" class="stage1-after-cast-controls" hidden>
+            <button id="stage1CastResetButton" class="stage1-cast-reset-button" type="button">다시 캐스팅</button>
+            <button id="stage1HookButton" class="stage1-hook-button" type="button">후킹</button>
+          </div>
         </div>
+
+        <div id="stage1EventToast" class="stage1-event-toast" role="status" aria-live="assertive" hidden></div>
       </div>
 
       <button id="fishingStageBackButton" class="round-back-button stage1-fishing-back-button" type="button" aria-label="스테이지 선택으로 돌아가기">←</button>
