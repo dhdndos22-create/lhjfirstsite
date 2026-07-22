@@ -7,6 +7,14 @@ export const CASTING_CONFIG = Object.freeze({
   perfectMaxPower: 0.77
 });
 
+// 현재는 모든 플레이어가 사용하는 기본 장비입니다.
+// 이후 장비 시스템에서는 저장된 낚싯대/릴/줄 수치로 이 값을 교체하면 됩니다.
+export const PLAYER_FISHING_EQUIPMENT = Object.freeze({
+  reelPower: 1,
+  rodControl: 1,
+  lineStrength: 100
+});
+
 export const STAGE_RARITY_WEIGHTS = Object.freeze({
   1: Object.freeze({
     normal: 68,
@@ -44,12 +52,14 @@ export const RARITY_BEHAVIORS = Object.freeze({
   normal: Object.freeze({
     hookWindowMs: 1250,
     startDistance: 24,
+    escapeLimit: 34,
     startTension: 18,
     restDuration: Object.freeze([2.8, 4.2]),
     struggleDuration: Object.freeze([1.0, 1.7]),
     restTensionDrop: 16,
     struggleTensionRise: 7,
-    escapeSpeed: 0.12,
+    escapeSpeed: 0.34,
+    burstEscapeSpeed: 1.15,
     restPull: 0.72,
     strugglePull: 0.28,
     restTapTension: 5.2,
@@ -62,12 +72,14 @@ export const RARITY_BEHAVIORS = Object.freeze({
   rare: Object.freeze({
     hookWindowMs: 950,
     startDistance: 31,
+    escapeLimit: 43,
     startTension: 24,
     restDuration: Object.freeze([2.2, 3.4]),
     struggleDuration: Object.freeze([1.3, 2.1]),
     restTensionDrop: 13,
     struggleTensionRise: 9.5,
-    escapeSpeed: 0.25,
+    escapeSpeed: 0.52,
+    burstEscapeSpeed: 1.75,
     restPull: 0.62,
     strugglePull: 0.22,
     restTapTension: 6,
@@ -80,12 +92,14 @@ export const RARITY_BEHAVIORS = Object.freeze({
   unique: Object.freeze({
     hookWindowMs: 690,
     startDistance: 40,
+    escapeLimit: 54,
     startTension: 31,
     restDuration: Object.freeze([1.7, 2.7]),
     struggleDuration: Object.freeze([1.7, 2.8]),
     restTensionDrop: 10.5,
     struggleTensionRise: 12.5,
-    escapeSpeed: 0.48,
+    escapeSpeed: 0.72,
+    burstEscapeSpeed: 2.65,
     restPull: 0.54,
     strugglePull: 0.16,
     restTapTension: 6.8,
@@ -98,12 +112,14 @@ export const RARITY_BEHAVIORS = Object.freeze({
   legendary: Object.freeze({
     hookWindowMs: 480,
     startDistance: 52,
+    escapeLimit: 68,
     startTension: 38,
     restDuration: Object.freeze([1.15, 2.1]),
     struggleDuration: Object.freeze([2.0, 3.4]),
     restTensionDrop: 8.5,
     struggleTensionRise: 15.5,
-    escapeSpeed: 0.72,
+    escapeSpeed: 0.92,
+    burstEscapeSpeed: 3.55,
     restPull: 0.46,
     strugglePull: 0.11,
     restTapTension: 7.8,
@@ -119,7 +135,8 @@ export const RARITY_BEHAVIORS = Object.freeze({
 export const FISH_BEHAVIOR_OVERRIDES = Object.freeze({
   drink_can: Object.freeze({
     startDistance: 18,
-    escapeSpeed: 0,
+    escapeSpeed: 0.02,
+    burstEscapeSpeed: 0.08,
     struggleTensionRise: 2.5,
     lineShake: 0.08,
     shadowScale: 0.48,
@@ -137,7 +154,8 @@ export const FISH_BEHAVIOR_OVERRIDES = Object.freeze({
     behaviorType: "tiny"
   }),
   tadpole: Object.freeze({
-    escapeSpeed: 0.19,
+    escapeSpeed: 0.42,
+    burstEscapeSpeed: 1.45,
     lineShake: 0.5,
     behaviorType: "hop"
   }),
@@ -165,7 +183,8 @@ export const FISH_BEHAVIOR_OVERRIDES = Object.freeze({
   largemouth_bass: Object.freeze({
     struggleTensionRise: 14.5,
     struggleDuration: Object.freeze([1.1, 2.6]),
-    escapeSpeed: 0.68,
+    escapeSpeed: 0.78,
+    burstEscapeSpeed: 3.15,
     lineShake: 1.25,
     behaviorType: "burst"
   }),
@@ -181,7 +200,8 @@ export const FISH_BEHAVIOR_OVERRIDES = Object.freeze({
     restPull: 0.34,
     strugglePull: 0.07,
     startTension: 42,
-    escapeSpeed: 0.16,
+    escapeSpeed: 0.38,
+    burstEscapeSpeed: 1.35,
     behaviorType: "heavy"
   }),
   golden_carp: Object.freeze({
@@ -198,7 +218,9 @@ export const FISH_BEHAVIOR_OVERRIDES = Object.freeze({
     restPull: 0.31,
     strugglePull: 0.055,
     struggleTensionRise: 17,
-    escapeSpeed: 0.28,
+    escapeLimit: 76,
+    escapeSpeed: 0.55,
+    burstEscapeSpeed: 2.15,
     behaviorType: "boss_heavy"
   })
 });

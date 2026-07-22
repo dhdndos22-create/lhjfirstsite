@@ -1,5 +1,6 @@
 import {
   CASTING_CONFIG,
+  PLAYER_FISHING_EQUIPMENT,
   chooseFishForStage,
   getFishingBehavior,
   randomBehaviorRange,
@@ -52,12 +53,14 @@ if (root && canvas) {
     failureResetTimer: null,
     reelingStartTimer: null,
     distance: 30,
-    maxDistance: 30,
+    maxDistance: 40,
+    escapeLimit: 40,
     tension: 25,
     fishPhase: "rest",
     fishPhaseElapsed: 0,
     fishPhaseDuration: 2.8,
     lastReelTapAt: 0,
+    escapeRippleElapsed: 0,
     hookedFish: null,
     rarityProfile: getFishingBehavior(null),
     catchData: null,
@@ -185,7 +188,7 @@ if (root && canvas) {
   }
 
   function updateReelingUi() {
-    const distanceRatio = clamp(state.distance / state.maxDistance, 0, 1);
+    const distanceRatio = clamp(state.distance / state.escapeLimit, 0, 1);
     const tensionRatio = clamp(state.tension / 100, 0, 1);
 
     distanceText.textContent = state.distance.toFixed(1);
@@ -269,10 +272,15 @@ if (root && canvas) {
     const profile = state.rarityProfile;
 
     state.mode = "reeling";
-    state.maxDistance = profile.startDistance;
-    state.distance = state.maxDistance;
+    state.distance = profile.startDistance;
+    state.escapeLimit = Math.max(
+      profile.startDistance + 5,
+      Number(profile.escapeLimit || profile.startDistance + 10)
+    );
+    state.maxDistance = state.escapeLimit;
     state.tension = profile.startTension;
     state.lastReelTapAt = 0;
+    state.escapeRippleElapsed = 0;
     state.reelingElapsed = 0;
     state.auraPulse = 0;
     state.reelKick = 0;
@@ -382,15 +390,17 @@ if (root && canvas) {
     });
   }
 
-  function finishReeling(success, message) {
+  function finishReeling(success, message, failureType = "line-broken") {
     if (!["reeling", "landing"].includes(state.mode)) return;
 
-    state.mode = success ? "caught" : "line-broken";
+    state.mode = success ? "caught" : failureType;
     reelButton.disabled = true;
     reelingArea.dataset.phase = success ? "success" : "failed";
 
     if (!success) {
-      fishStateText.textContent = "낚싯줄이 끊어졌다!";
+      fishStateText.textContent = failureType === "escaped"
+        ? "물고기가 너무 멀리 달아났다!"
+        : "낚싯줄이 끊어졌다!";
       showToast(message, "fail", 1500);
 
       window.dispatchEvent(new CustomEvent("fishingworld:reeling-failed", {
@@ -399,7 +409,8 @@ if (root && canvas) {
           distance: state.distance,
           tension: state.tension,
           fishId: state.hookedFish?.id ?? null,
-          fish: state.hookedFish
+          fish: state.hookedFish,
+          reason: failureType
         }
       }));
 
@@ -482,13 +493,14 @@ if (root && canvas) {
     const rapidTapBonus =
       !isStruggling && tapGap > 0 && tapGap < 230 ? 0.13 : 0;
 
-    const distancePull = isStruggling
+    const equipment = PLAYER_FISHING_EQUIPMENT;
+    const distancePull = (isStruggling
       ? profile.strugglePull
-      : profile.restPull + rapidTapBonus;
+      : profile.restPull + rapidTapBonus) * equipment.reelPower;
 
-    const tensionGain = isStruggling
+    const tensionGain = (isStruggling
       ? profile.struggleTapTension
-      : profile.restTapTension;
+      : profile.restTapTension) / equipment.rodControl;
 
     const jumpPenalty = state.jumpActive ? 1.6 : 1;
     state.distance = Math.max(
@@ -514,8 +526,8 @@ if (root && canvas) {
 
     updateReelingUi();
 
-    if (state.tension >= 100) {
-      finishReeling(false, "낚싯줄이 끊어졌습니다!");
+    if (state.tension >= equipment.lineStrength) {
+      finishReeling(false, "낚싯줄이 끊어졌습니다!", "line-broken");
     } else if (state.distance <= 0) {
       finishReeling(true, "낚시 성공!");
     }
@@ -753,12 +765,23 @@ if (root && canvas) {
       state.auraPulse += delta;
       state.fishPhaseElapsed += delta;
 
-      if (state.fishPhase === "struggle") {
+      const isStruggling =
+        state.fishPhase === "struggle" ||
+        state.fishPhase === "fake" ||
+        state.jumpActive;
+
+      // 물고기는 모든 상태에서 바깥쪽으로 달아납니다.
+      // 폭주 중에는 훨씬 빠르게 도망가므로 텐션을 낮추는 동안에도
+      // 거리 제한을 계속 신경 써야 합니다.
+      const escapeSpeed = isStruggling
+        ? Number(profile.burstEscapeSpeed || profile.escapeSpeed * 3)
+        : Number(profile.escapeSpeed || 0);
+
+      state.distance += escapeSpeed * delta;
+      state.escapeRippleElapsed += delta * (0.7 + escapeSpeed);
+
+      if (isStruggling) {
         state.tension += profile.struggleTensionRise * delta;
-        state.distance = Math.min(
-          state.maxDistance,
-          state.distance + profile.escapeSpeed * delta
-        );
 
         // 등급이 높을수록 수면과 찌가 더 격하게 흔들립니다.
         const splashChance =
@@ -779,9 +802,20 @@ if (root && canvas) {
         state.tension -= profile.restTensionDrop * delta;
       }
 
+      // 릴링을 쉬는 동안에도 찌가 바깥으로 끌려가고 잔물결이 생깁니다.
+      if (state.escapeRippleElapsed >= 1) {
+        state.escapeRippleElapsed = 0;
+        state.ripples.push({
+          x: state.bobberVisualX,
+          y: state.bobberVisualY,
+          age: 0,
+          life: isStruggling ? 0.5 : 0.72
+        });
+      }
+
       state.tension = clamp(state.tension, 0, 110);
 
-      const distanceRatio = clamp(state.distance / state.maxDistance, 0, 1);
+      const distanceRatio = clamp(state.distance / state.escapeLimit, 0, 1);
       const targetX = 0.47 - (1 - distanceRatio) * 0.055;
       const targetY = 0.42 + (1 - distanceRatio) * 0.29;
       const strugglePush =
@@ -827,8 +861,10 @@ if (root && canvas) {
 
       updateReelingUi();
 
-      if (state.tension >= 100) {
-        finishReeling(false, "낚싯줄이 끊어졌습니다!");
+      if (state.tension >= PLAYER_FISHING_EQUIPMENT.lineStrength) {
+        finishReeling(false, "낚싯줄이 끊어졌습니다!", "line-broken");
+      } else if (state.distance >= state.escapeLimit) {
+        finishReeling(false, "물고기가 너무 멀리 달아났습니다!", "escaped");
       } else if (state.distance <= 0) {
         beginLandingAnimation();
       }
