@@ -296,14 +296,19 @@
   position: relative;
   aspect-ratio: 1.15 / 1;
   overflow: hidden;
-  background: rgba(80, 175, 215, 0.2);
+  background:
+    radial-gradient(circle at 50% 44%, rgba(118, 222, 255, 0.28), transparent 58%),
+    linear-gradient(180deg, rgba(16, 81, 122, 0.55), rgba(4, 34, 65, 0.62));
 }
 
 .collection-image-frame img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  box-sizing: border-box;
+  padding: clamp(7px, 2vw, 13px);
   display: block;
+  filter: drop-shadow(0 8px 7px rgba(0, 9, 25, 0.42));
 }
 
 .collection-count {
@@ -352,4 +357,310 @@
     padding-inline: 2px;
     font-size: 11px;
   }
+}
+
+
+/* =========================
+   물고기 상세 팝업
+========================= */
+.has-modal-open {
+  overflow: hidden;
+}
+
+.fish-detail-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+}
+
+.fish-detail-modal[hidden] {
+  display: none;
+}
+
+.fish-detail-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: rgba(0, 10, 28, 0.78);
+  backdrop-filter: blur(5px);
+}
+
+.fish-detail-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(92vw, 430px);
+  max-height: min(88vh, 760px);
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 20px 18px 18px;
+  border: 3px solid #79d6ff;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(34, 136, 188, 0.72), transparent 42%),
+    linear-gradient(180deg, #09395f 0%, #031c39 100%);
+  color: #fff;
+  box-shadow:
+    0 22px 50px rgba(0, 5, 18, 0.62),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.fish-detail-modal[data-rarity="rare"] .fish-detail-dialog {
+  border-color: #5fd5ff;
+}
+
+.fish-detail-modal[data-rarity="unique"] .fish-detail-dialog {
+  border-color: #d485ff;
+  box-shadow: 0 0 28px rgba(187, 78, 255, 0.26), 0 22px 50px rgba(0, 5, 18, 0.62);
+}
+
+.fish-detail-modal[data-rarity="legendary"] .fish-detail-dialog {
+  border-color: #ffd45d;
+  box-shadow: 0 0 32px rgba(255, 200, 48, 0.32), 0 22px 50px rgba(0, 5, 18, 0.62);
+}
+
+.fish-detail-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 2;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 50%;
+  background: rgba(1, 19, 42, 0.78);
+  color: #fff;
+  font-size: 27px;
+  line-height: 1;
+}
+
+.fish-detail-rarity {
+  width: max-content;
+  margin: 0 auto 6px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(0, 13, 35, 0.66);
+  color: #dff6ff;
+  font-weight: 900;
+}
+
+.fish-detail-image-area {
+  display: grid;
+  place-items: center;
+  min-height: 230px;
+  margin: 4px 0 2px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle, rgba(81, 192, 235, 0.32), transparent 64%);
+}
+
+.fish-detail-image-area img {
+  width: min(100%, 330px);
+  height: 240px;
+  object-fit: contain;
+  filter: drop-shadow(0 15px 12px rgba(0, 5, 17, 0.52));
+}
+
+.fish-detail-name {
+  margin: 0;
+  color: #fff4c7;
+  font-size: clamp(25px, 7vw, 34px);
+  text-align: center;
+}
+
+.fish-detail-description {
+  margin: 9px 0 14px;
+  color: #d5effc;
+  font-size: 14px;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.fish-detail-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.fish-detail-stats > div {
+  display: grid;
+  gap: 3px;
+  padding: 10px;
+  border: 1px solid rgba(119, 205, 244, 0.26);
+  border-radius: 13px;
+  background: rgba(0, 18, 42, 0.5);
+}
+
+.fish-detail-stats dt {
+  color: #8fcde9;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.fish-detail-stats dd {
+  margin: 0;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.fish-sell-area {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.fish-sell-quantity {
+  display: grid;
+  grid-template-columns: 42px minmax(60px, 1fr) 42px auto;
+  align-items: center;
+  gap: 7px;
+}
+
+.fish-sell-quantity button {
+  min-height: 40px;
+  border: 1px solid rgba(143, 221, 255, 0.5);
+  border-radius: 12px;
+  background: rgba(5, 54, 88, 0.96);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.fish-sell-quantity strong {
+  text-align: center;
+  font-size: 19px;
+}
+
+.fish-sell-quantity .fish-sell-all {
+  padding: 0 13px;
+  font-size: 14px;
+}
+
+.fish-sell-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  padding: 0 17px;
+  border: 2px solid #f6d365;
+  border-radius: 15px;
+  background: linear-gradient(180deg, #f6a628, #cf6b0a);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 900;
+  text-shadow: 0 2px 2px rgba(84, 32, 0, 0.58);
+}
+
+.fish-sell-button:disabled {
+  opacity: 0.48;
+}
+
+/* =========================
+   인벤토리 - 물고기
+========================= */
+.fish-inventory-view {
+  display: grid;
+  gap: 12px;
+  padding: 2px 2px 20px;
+}
+
+.fish-inventory-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.fish-inventory-summary > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  padding: 10px 12px;
+  border: 1px solid rgba(116, 210, 249, 0.32);
+  border-radius: 14px;
+  background: rgba(2, 29, 58, 0.78);
+  color: #bde9fb;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.fish-inventory-summary strong {
+  color: #fff2b8;
+  font-size: 15px;
+}
+
+.fish-inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.fish-inventory-card {
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  border: 2px solid rgba(211, 235, 246, 0.52);
+  border-radius: 17px;
+  background: linear-gradient(180deg, rgba(12, 72, 108, 0.98), rgba(3, 29, 57, 0.98));
+  color: #fff;
+  text-align: left;
+}
+
+.fish-inventory-card.rarity-rare { border-color: #57cfff; }
+.fish-inventory-card.rarity-unique { border-color: #cf79ff; }
+.fish-inventory-card.rarity-legendary { border-color: #ffd45d; }
+
+.fish-inventory-image {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1.18 / 1;
+  background:
+    radial-gradient(circle, rgba(81, 198, 238, 0.3), transparent 64%);
+}
+
+.fish-inventory-image img {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 9px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 6px rgba(0, 7, 21, 0.45));
+}
+
+.fish-inventory-info {
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px 10px;
+}
+
+.fish-inventory-info strong {
+  overflow: hidden;
+  color: #fff2c5;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fish-inventory-info small {
+  color: #8fd4f1;
+  font-weight: 800;
+}
+
+.fish-inventory-info span {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.fish-inventory-info em {
+  color: #ffd96d;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 900;
 }

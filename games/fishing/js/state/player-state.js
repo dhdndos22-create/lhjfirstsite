@@ -48,3 +48,48 @@ export function spendEnergy(amount = GAME_CONFIG.fishingEnergyCost) {
   playerSave.statistics.totalEnergySpent += value;
   return true;
 }
+
+
+export function addCaughtFish(fishId, {
+  count = 1,
+  size = 0,
+  caughtAt = new Date().toISOString()
+} = {}) {
+  const amount = Math.max(1, Math.floor(Number(count) || 1));
+
+  if (!playerSave.inventory.fish) playerSave.inventory.fish = {};
+  if (!playerSave.fishCollection) playerSave.fishCollection = {};
+
+  playerSave.inventory.fish[fishId] =
+    Math.max(0, Number(playerSave.inventory.fish[fishId]) || 0) + amount;
+
+  const previous = playerSave.fishCollection[fishId] ?? {};
+  const previousCount = Number(previous.count ?? previous ?? 0) || 0;
+  const previousMaxSize = Number(previous.maxSize ?? 0) || 0;
+
+  playerSave.fishCollection[fishId] = {
+    count: previousCount + amount,
+    maxSize: Math.max(previousMaxSize, Number(size) || 0),
+    firstCaughtAt: previous.firstCaughtAt || caughtAt,
+    lastCaughtAt: caughtAt
+  };
+
+  playerSave.statistics.totalFishingCount += amount;
+  playerSave.statistics.totalFishCaught += amount;
+}
+
+export function sellInventoryFish(fishId, quantity, unitPrice) {
+  const amount = Math.max(0, Math.floor(Number(quantity) || 0));
+  const price = Math.max(0, Math.floor(Number(unitPrice) || 0));
+  const owned = Math.max(0, Number(playerSave.inventory.fish?.[fishId]) || 0);
+
+  if (amount < 1 || owned < amount) return false;
+
+  playerSave.inventory.fish[fishId] = owned - amount;
+  if (playerSave.inventory.fish[fishId] <= 0) {
+    delete playerSave.inventory.fish[fishId];
+  }
+
+  addGold(amount * price);
+  return true;
+}

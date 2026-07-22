@@ -17,7 +17,8 @@ export const DEFAULT_PLAYER_SAVE = Object.freeze({
 
   inventory: Object.freeze({
     items: Object.freeze({}),
-    bait: Object.freeze({})
+    bait: Object.freeze({}),
+    fish: Object.freeze({})
   }),
 
   equipment: Object.freeze({

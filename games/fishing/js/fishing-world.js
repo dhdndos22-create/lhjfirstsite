@@ -10,12 +10,14 @@ import {
 } from "./common-panel-ui.js";
 
 import { GAME_CONFIG, RARITY_LABELS, RARITY_ORDER } from "./data/game-config.js";
-import { getFishByStage } from "./data/fish.js";
+import { FISH_DATA, getFishByStage } from "./data/fish.js";
 import { STAGE_DATA, getStageById } from "./data/stages.js";
 import {
   playerSave,
   replacePlayerSave,
-  getPlayerStatusView
+  getPlayerStatusView,
+  addCaughtFish,
+  sellInventoryFish
 } from "./state/player-state.js";
 import {
   loadPlayerSave,
@@ -60,6 +62,25 @@ const fishingStageName = document.getElementById("fishingStageName");
 const fishingStageDescription = document.getElementById("fishingStageDescription");
 const fishingStageBackground = document.getElementById("fishingStageBackground");
 const bubbleLayer = document.getElementById("bubbleLayer");
+
+const fishDetailModal = document.getElementById("fishDetailModal");
+const fishDetailCloseButton = document.getElementById("fishDetailCloseButton");
+const fishDetailImage = document.getElementById("fishDetailImage");
+const fishDetailRarity = document.getElementById("fishDetailRarity");
+const fishDetailName = document.getElementById("fishDetailName");
+const fishDetailDescription = document.getElementById("fishDetailDescription");
+const fishDetailSize = document.getElementById("fishDetailSize");
+const fishDetailPrice = document.getElementById("fishDetailPrice");
+const fishDetailCollectionCount = document.getElementById("fishDetailCollectionCount");
+const fishDetailInventoryCount = document.getElementById("fishDetailInventoryCount");
+const fishSellArea = document.getElementById("fishSellArea");
+const fishSellMinusButton = document.getElementById("fishSellMinusButton");
+const fishSellPlusButton = document.getElementById("fishSellPlusButton");
+const fishSellAllButton = document.getElementById("fishSellAllButton");
+const fishSellQuantity = document.getElementById("fishSellQuantity");
+const fishSellButton = document.getElementById("fishSellButton");
+const fishSellTotalPrice = document.getElementById("fishSellTotalPrice");
+
 
 const commonPanel = new CommonPanelUI({
   screen: screens.panel,
@@ -204,6 +225,128 @@ function getCollectionCount(fishId) {
   return Number(record?.count ?? record ?? 0);
 }
 
+function getInventoryFishCount(fishId) {
+  return Math.max(0, Number(playerSave.inventory?.fish?.[fishId]) || 0);
+}
+
+const fishDetailState = {
+  fish: null,
+  mode: "collection",
+  quantity: 1
+};
+
+function closeFishDetailModal() {
+  fishDetailModal.hidden = true;
+  document.body.classList.remove("has-modal-open");
+  fishDetailState.fish = null;
+}
+
+function updateFishSellView() {
+  const fish = fishDetailState.fish;
+  if (!fish) return;
+
+  const owned = getInventoryFishCount(fish.id);
+  fishDetailState.quantity = Math.min(
+    Math.max(1, fishDetailState.quantity),
+    Math.max(1, owned)
+  );
+
+  fishSellQuantity.textContent = fishDetailState.quantity.toLocaleString("ko-KR");
+  fishSellTotalPrice.textContent =
+    `${(fish.baseGold * fishDetailState.quantity).toLocaleString("ko-KR")} G`;
+
+  fishSellMinusButton.disabled = fishDetailState.quantity <= 1;
+  fishSellPlusButton.disabled = fishDetailState.quantity >= owned;
+  fishSellButton.disabled = owned < 1;
+}
+
+function openFishDetailModal(fish, mode = "collection") {
+  const collectionCount = getCollectionCount(fish.id);
+  const inventoryCount = getInventoryFishCount(fish.id);
+
+  fishDetailState.fish = fish;
+  fishDetailState.mode = mode;
+  fishDetailState.quantity = 1;
+
+  fishDetailModal.dataset.rarity = fish.rarity;
+  fishDetailImage.src = fish.image;
+  fishDetailImage.alt = fish.name;
+  fishDetailRarity.textContent = RARITY_LABELS[fish.rarity] ?? fish.rarity;
+  fishDetailName.textContent = fish.name;
+  fishDetailDescription.textContent = fish.description;
+  fishDetailSize.textContent = `${fish.minSize}~${fish.maxSize}cm`;
+  fishDetailPrice.textContent = `${fish.baseGold.toLocaleString("ko-KR")} G`;
+  fishDetailCollectionCount.textContent = `${collectionCount.toLocaleString("ko-KR")}회`;
+  fishDetailInventoryCount.textContent = `${inventoryCount.toLocaleString("ko-KR")}마리`;
+
+  fishSellArea.hidden = mode !== "inventory" || inventoryCount < 1;
+  updateFishSellView();
+
+  fishDetailModal.hidden = false;
+  document.body.classList.add("has-modal-open");
+  fishDetailCloseButton.focus();
+}
+
+function renderFishInventory(panel) {
+  panel.hidePagination();
+
+  const ownedFish = Object.entries(playerSave.inventory?.fish ?? {})
+    .map(([fishId, count]) => ({
+      fish: FISH_DATA[fishId],
+      count: Math.max(0, Number(count) || 0)
+    }))
+    .filter(({ fish, count }) => fish && count > 0)
+    .sort((a, b) => {
+      const rarityDifference =
+        RARITY_ORDER.indexOf(b.fish.rarity) - RARITY_ORDER.indexOf(a.fish.rarity);
+      return rarityDifference || a.fish.name.localeCompare(b.fish.name, "ko");
+    });
+
+  if (ownedFish.length === 0) {
+    panel.renderEmpty(
+      `<strong>보유한 물고기가 없습니다.</strong><br>낚시에서 잡은 물고기는 자동으로 이곳에 추가됩니다.`
+    );
+    return;
+  }
+
+  const wrapper = document.createElement("section");
+  wrapper.className = "fish-inventory-view";
+
+  const summary = document.createElement("div");
+  summary.className = "fish-inventory-summary";
+  const totalCount = ownedFish.reduce((sum, entry) => sum + entry.count, 0);
+  summary.innerHTML = `
+    <div><span>보유 어종</span><strong>${ownedFish.length}종</strong></div>
+    <div><span>총 수량</span><strong>${totalCount.toLocaleString("ko-KR")}마리</strong></div>
+  `;
+  wrapper.appendChild(summary);
+
+  const grid = document.createElement("div");
+  grid.className = "fish-inventory-grid";
+
+  ownedFish.forEach(({ fish, count }) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = `fish-inventory-card rarity-${fish.rarity}`;
+    card.innerHTML = `
+      <span class="fish-inventory-image">
+        <img src="${fish.image}" alt="${fish.name}" draggable="false">
+      </span>
+      <span class="fish-inventory-info">
+        <strong>${fish.name}</strong>
+        <small>${RARITY_LABELS[fish.rarity]}</small>
+        <span>보유 ${count.toLocaleString("ko-KR")}마리</span>
+        <em>개당 ${fish.baseGold.toLocaleString("ko-KR")} G</em>
+      </span>
+    `;
+    card.addEventListener("click", () => openFishDetailModal(fish, "inventory"));
+    grid.appendChild(card);
+  });
+
+  wrapper.appendChild(grid);
+  panel.setBody(wrapper);
+}
+
 function renderCollectionPanel(tabId, panel) {
   const stageId = Number(String(tabId).replace("stage-", ""));
   const fishList = getFishByStage(stageId);
@@ -267,10 +410,7 @@ function renderCollectionPanel(tabId, panel) {
       `;
 
       card.addEventListener("click", () => {
-        alert(
-          `${fish.name}\n${RARITY_LABELS[fish.rarity]}\n${fish.description}\n` +
-          `크기: ${fish.minSize}~${fish.maxSize}cm\n기본 판매가: ${fish.baseGold.toLocaleString("ko-KR")} 골드`
-        );
+        openFishDetailModal(fish, "collection");
       });
 
       grid.appendChild(card);
@@ -286,6 +426,11 @@ function renderCollectionPanel(tabId, panel) {
 function renderPanelSlot(type, tabId, panel) {
   if (type === "collection") {
     renderCollectionPanel(tabId, panel);
+    return;
+  }
+
+  if (type === "inventory" && tabId === "fish") {
+    renderFishInventory(panel);
     return;
   }
 
@@ -550,6 +695,47 @@ function bindEvents() {
 
   commonPanelBackButton.addEventListener("click", openLobby);
 
+  document.querySelectorAll("[data-fish-modal-close]").forEach((button) => {
+    button.addEventListener("click", closeFishDetailModal);
+  });
+  fishDetailCloseButton.addEventListener("click", closeFishDetailModal);
+
+  fishSellMinusButton.addEventListener("click", () => {
+    fishDetailState.quantity -= 1;
+    updateFishSellView();
+  });
+
+  fishSellPlusButton.addEventListener("click", () => {
+    fishDetailState.quantity += 1;
+    updateFishSellView();
+  });
+
+  fishSellAllButton.addEventListener("click", () => {
+    if (!fishDetailState.fish) return;
+    fishDetailState.quantity = getInventoryFishCount(fishDetailState.fish.id);
+    updateFishSellView();
+  });
+
+  fishSellButton.addEventListener("click", () => {
+    const fish = fishDetailState.fish;
+    if (!fish) return;
+
+    const sold = sellInventoryFish(
+      fish.id,
+      fishDetailState.quantity,
+      fish.baseGold
+    );
+    if (!sold) return;
+
+    savePlayerState();
+    updatePlayerStatus();
+    closeFishDetailModal();
+
+    if (fishingSession.activePanel === "inventory") {
+      renderPanelSlot("inventory", commonPanel.currentTab, commonPanel);
+    }
+  });
+
   document.addEventListener("pointerdown", (event) => {
     if (!isQuickMenuOpen) return;
     if (quickMenuPanel.contains(event.target) || menuButton.contains(event.target)) return;
@@ -558,6 +744,10 @@ function bindEvents() {
 
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
+    if (!fishDetailModal.hidden) {
+      closeFishDetailModal();
+      return;
+    }
     if (fishingSession.currentScreen === "panel") openLobby();
     else if (fishingSession.currentScreen === "fishingStage") openStageSelect();
     else if (fishingSession.currentScreen === "stageSelect") openLobby();
@@ -573,6 +763,22 @@ function initialize() {
 
   watchHyojongLogin((username) => {
     fishingSession.username = username;
+  });
+
+  // 낚시 성공 처리에서 같은 함수를 호출하면 도감과 인벤토리가 함께 갱신됩니다.
+  window.FishingWorldFish = Object.freeze({
+    catch(fishId, options = {}) {
+      const fish = FISH_DATA[fishId];
+      if (!fish) throw new Error(`등록되지 않은 물고기입니다: ${fishId}`);
+      addCaughtFish(fishId, options);
+      savePlayerState();
+      updatePlayerStatus();
+      return {
+        fish,
+        inventoryCount: getInventoryFishCount(fishId),
+        collectionCount: getCollectionCount(fishId)
+      };
+    }
   });
 }
 

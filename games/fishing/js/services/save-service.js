@@ -93,7 +93,8 @@ export function normalizePlayerSave(rawSave) {
 
     inventory: {
       items: normalizeCountMap(rawSave.inventory?.items),
-      bait: normalizeCountMap(rawSave.inventory?.bait)
+      bait: normalizeCountMap(rawSave.inventory?.bait),
+      fish: normalizeCountMap(rawSave.inventory?.fish)
     },
 
     equipment: {

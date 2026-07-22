@@ -14,10 +14,11 @@ export const PANEL_DEFINITIONS = Object.freeze({
     title: "인벤토리",
     ariaLabel: "피싱월드 인벤토리",
     tabs: [
+      { id: "fish", label: "물고기" },
       { id: "consumable", label: "소모품" },
       { id: "bait", label: "미끼" }
     ],
-    defaultTab: "consumable",
+    defaultTab: "fish",
     emptyMessage: "인벤토리 목록카드는 별도 컴포넌트로 이 영역에 배치합니다."
   },
   equipment: {

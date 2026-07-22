@@ -133,6 +133,43 @@
       <button id="fishingStageBackButton" class="round-back-button" type="button" aria-label="스테이지 선택으로 돌아가기">←</button>
     </section>
 
+
+    <div id="fishDetailModal" class="fish-detail-modal" hidden>
+      <button class="fish-detail-backdrop" type="button" data-fish-modal-close aria-label="상세 창 닫기"></button>
+      <section class="fish-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="fishDetailName">
+        <button id="fishDetailCloseButton" class="fish-detail-close" type="button" aria-label="닫기">×</button>
+
+        <div id="fishDetailRarity" class="fish-detail-rarity">노말</div>
+
+        <div class="fish-detail-image-area">
+          <img id="fishDetailImage" src="" alt="" draggable="false">
+        </div>
+
+        <h2 id="fishDetailName" class="fish-detail-name"></h2>
+        <p id="fishDetailDescription" class="fish-detail-description"></p>
+
+        <dl class="fish-detail-stats">
+          <div><dt>크기</dt><dd id="fishDetailSize"></dd></div>
+          <div><dt>판매가</dt><dd id="fishDetailPrice"></dd></div>
+          <div><dt>도감 획득</dt><dd id="fishDetailCollectionCount"></dd></div>
+          <div><dt>현재 보유</dt><dd id="fishDetailInventoryCount"></dd></div>
+        </dl>
+
+        <div id="fishSellArea" class="fish-sell-area" hidden>
+          <div class="fish-sell-quantity">
+            <button id="fishSellMinusButton" type="button" aria-label="판매 수량 줄이기">−</button>
+            <strong id="fishSellQuantity">1</strong>
+            <button id="fishSellPlusButton" type="button" aria-label="판매 수량 늘리기">＋</button>
+            <button id="fishSellAllButton" class="fish-sell-all" type="button">전체</button>
+          </div>
+          <button id="fishSellButton" class="fish-sell-button" type="button">
+            <span>판매하기</span>
+            <strong id="fishSellTotalPrice">0 G</strong>
+          </button>
+        </div>
+      </section>
+    </div>
+
     <div id="bubbleLayer" class="bubble-layer" aria-hidden="true"></div>
   </main>
 
