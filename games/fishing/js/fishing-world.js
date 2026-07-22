@@ -17,6 +17,7 @@ import {
   replacePlayerSave,
   getPlayerStatusView,
   addCaughtFish,
+  addExp,
   sellInventoryFish
 } from "./state/player-state.js";
 import {
@@ -770,13 +771,17 @@ function initialize() {
     catch(fishId, options = {}) {
       const fish = FISH_DATA[fishId];
       if (!fish) throw new Error(`등록되지 않은 물고기입니다: ${fishId}`);
+
       addCaughtFish(fishId, options);
+      addExp(options.exp ?? fish.baseExp ?? 0);
       savePlayerState();
       updatePlayerStatus();
+
       return {
         fish,
         inventoryCount: getInventoryFishCount(fishId),
-        collectionCount: getCollectionCount(fishId)
+        collectionCount: getCollectionCount(fishId),
+        expGained: Number(options.exp ?? fish.baseExp ?? 0)
       };
     }
   });

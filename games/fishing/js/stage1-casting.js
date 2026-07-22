@@ -1,109 +1,10 @@
-import { FISH_DATA, STAGE_1_FISH_IDS } from "./data/fish.js";
-
-
-
-const STAGE_1_RARITY_WEIGHTS = Object.freeze({
-  normal: 68,
-  rare: 23,
-  unique: 7,
-  legendary: 2
-});
-
-const RARITY_PROFILES = Object.freeze({
-  normal: Object.freeze({
-    hookWindowMs: 1250,
-    startDistance: 24,
-    startTension: 18,
-    restDuration: [2.8, 4.2],
-    struggleDuration: [1.0, 1.7],
-    restTensionDrop: 16,
-    struggleTensionRise: 7,
-    escapeSpeed: 0.12,
-    restPull: 0.72,
-    strugglePull: 0.28,
-    restTapTension: 5.2,
-    struggleTapTension: 8.0,
-    lineShake: 0.35,
-    shadowScale: 0.72,
-    splashPower: 0.7
-  }),
-  rare: Object.freeze({
-    hookWindowMs: 950,
-    startDistance: 31,
-    startTension: 24,
-    restDuration: [2.2, 3.4],
-    struggleDuration: [1.3, 2.1],
-    restTensionDrop: 13,
-    struggleTensionRise: 9.5,
-    escapeSpeed: 0.25,
-    restPull: 0.62,
-    strugglePull: 0.22,
-    restTapTension: 6.0,
-    struggleTapTension: 9.2,
-    lineShake: 0.65,
-    shadowScale: 0.92,
-    splashPower: 1.0
-  }),
-  unique: Object.freeze({
-    hookWindowMs: 690,
-    startDistance: 40,
-    startTension: 31,
-    restDuration: [1.7, 2.7],
-    struggleDuration: [1.7, 2.8],
-    restTensionDrop: 10.5,
-    struggleTensionRise: 12.5,
-    escapeSpeed: 0.48,
-    restPull: 0.54,
-    strugglePull: 0.16,
-    restTapTension: 6.8,
-    struggleTapTension: 10.5,
-    lineShake: 1.0,
-    shadowScale: 1.22,
-    splashPower: 1.45
-  }),
-  legendary: Object.freeze({
-    hookWindowMs: 480,
-    startDistance: 52,
-    startTension: 38,
-    restDuration: [1.15, 2.1],
-    struggleDuration: [2.0, 3.4],
-    restTensionDrop: 8.5,
-    struggleTensionRise: 15.5,
-    escapeSpeed: 0.72,
-    restPull: 0.46,
-    strugglePull: 0.11,
-    restTapTension: 7.8,
-    struggleTapTension: 12.2,
-    lineShake: 1.45,
-    shadowScale: 1.62,
-    splashPower: 2.0
-  })
-});
-
-function randomRange([min, max]) {
-  return min + Math.random() * (max - min);
-}
-
-function chooseWeightedRarity() {
-  const roll = Math.random() * 100;
-  let accumulated = 0;
-
-  for (const [rarity, weight] of Object.entries(STAGE_1_RARITY_WEIGHTS)) {
-    accumulated += weight;
-    if (roll < accumulated) return rarity;
-  }
-
-  return "normal";
-}
-
-function chooseStage1Fish() {
-  const rarity = chooseWeightedRarity();
-  const candidates = STAGE_1_FISH_IDS
-    .map((fishId) => FISH_DATA[fishId])
-    .filter((fish) => fish?.rarity === rarity);
-
-  return candidates[Math.floor(Math.random() * candidates.length)] ?? FISH_DATA.drink_can;
-}
+import {
+  CASTING_CONFIG,
+  chooseFishForStage,
+  getFishingBehavior,
+  randomBehaviorRange,
+  createCatchResult
+} from "./data/fishing-behaviors.js";
 
 const root = document.getElementById("fishingStageScreen");
 const canvas = document.getElementById("stage1CastingCanvas");
@@ -125,6 +26,14 @@ if (root && canvas) {
   const tensionTrack = document.getElementById("stage1TensionTrack");
   const tensionFill = document.getElementById("stage1TensionFill");
   const fishStateText = document.getElementById("stage1FishState");
+  const catchResult = document.getElementById("stage1CatchResult");
+  const catchRarity = document.getElementById("stage1CatchRarity");
+  const catchImage = document.getElementById("stage1CatchImage");
+  const catchName = document.getElementById("stage1CatchName");
+  const catchSize = document.getElementById("stage1CatchSize");
+  const catchExp = document.getElementById("stage1CatchExp");
+  const catchGold = document.getElementById("stage1CatchGold");
+  const catchConfirmButton = document.getElementById("stage1CatchConfirmButton");
   const powerPanel = document.querySelector(".casting-power-panel");
   const powerFill = document.getElementById("castingPowerFill");
   const powerMarker = document.getElementById("castingPowerMarker");
@@ -150,7 +59,8 @@ if (root && canvas) {
     fishPhaseDuration: 2.8,
     lastReelTapAt: 0,
     hookedFish: null,
-    rarityProfile: RARITY_PROFILES.normal,
+    rarityProfile: getFishingBehavior(null),
+    catchData: null,
     reelingElapsed: 0,
     auraPulse: 0,
     lastTime: performance.now(),
@@ -213,9 +123,8 @@ if (root && canvas) {
       if (state.mode !== "waiting") return;
 
       // 입질이 시작되는 바로 이 순간 물고기가 결정됩니다.
-      state.hookedFish = chooseStage1Fish();
-      state.rarityProfile =
-        RARITY_PROFILES[state.hookedFish.rarity] ?? RARITY_PROFILES.normal;
+      state.hookedFish = chooseFishForStage(1);
+      state.rarityProfile = getFishingBehavior(state.hookedFish);
       state.biteActive = true;
 
       hookButton?.classList.add("is-biting");
@@ -257,7 +166,7 @@ if (root && canvas) {
         showToast("입질을 놓쳤습니다", "fail", 1100);
 
         state.hookedFish = null;
-        state.rarityProfile = RARITY_PROFILES.normal;
+        state.rarityProfile = getFishingBehavior(null);
         delete root.dataset.hookedRarity;
         scheduleBite();
       }, state.rarityProfile.hookWindowMs);
@@ -282,13 +191,23 @@ if (root && canvas) {
   }
 
   function setFishPhase(phase) {
+    const profile = state.rarityProfile;
+    const fish = state.hookedFish;
+
+    // 유니크/레전더리는 가끔 짧은 페이크 휴식 뒤 즉시 재폭주합니다.
+    if (
+      phase === "rest" &&
+      ["unique", "legendary"].includes(fish?.rarity) &&
+      Math.random() < profile.phaseBias
+    ) {
+      phase = "fake";
+    }
+
     state.fishPhase = phase;
     state.fishPhaseElapsed = 0;
 
-    const profile = state.rarityProfile;
-
     if (phase === "struggle") {
-      state.fishPhaseDuration = randomRange(profile.struggleDuration);
+      state.fishPhaseDuration = randomBehaviorRange(profile.struggleDuration);
 
       const messages = {
         normal: "물고기가 버틴다! 천천히!",
@@ -297,11 +216,23 @@ if (root && canvas) {
         legendary: "전설의 폭주! 릴을 멈춰라!"
       };
 
-      fishStateText.textContent =
-        messages[state.hookedFish?.rarity] ?? messages.normal;
+      if (profile.behaviorType === "bottom_hold") {
+        fishStateText.textContent = "바닥에 붙어 버틴다! 무리하지 마세요!";
+      } else if (profile.behaviorType === "heavy" || profile.behaviorType === "boss_heavy") {
+        fishStateText.textContent = "엄청난 무게다! 천천히 끌어올리세요!";
+      } else if (profile.behaviorType === "burst") {
+        fishStateText.textContent = "갑작스러운 돌진! 릴을 멈추세요!";
+      } else {
+        fishStateText.textContent = messages[fish?.rarity] ?? messages.normal;
+      }
+
       reelingArea.dataset.phase = "struggle";
+    } else if (phase === "fake") {
+      state.fishPhaseDuration = 0.42 + Math.random() * 0.42;
+      fishStateText.textContent = "힘이 빠진 것 같다...?";
+      reelingArea.dataset.phase = "fake";
     } else {
-      state.fishPhaseDuration = randomRange(profile.restDuration);
+      state.fishPhaseDuration = randomBehaviorRange(profile.restDuration);
 
       const messages = {
         normal: "힘이 빠졌다! 릴을 감으세요!",
@@ -310,8 +241,7 @@ if (root && canvas) {
         legendary: "전설의 기운이 잠잠해졌다! 지금이다!"
       };
 
-      fishStateText.textContent =
-        messages[state.hookedFish?.rarity] ?? messages.normal;
+      fishStateText.textContent = messages[fish?.rarity] ?? messages.normal;
       reelingArea.dataset.phase = "rest";
     }
   }
@@ -363,20 +293,12 @@ if (root && canvas) {
     state.mode = success ? "caught" : "line-broken";
     reelButton.disabled = true;
     reelingArea.dataset.phase = success ? "success" : "failed";
-    fishStateText.textContent = success
-      ? `${state.hookedFish?.name ?? "물고기"}를 끌어올렸다!`
-      : "낚싯줄이 끊어졌다!";
-    showToast(
-      success && state.hookedFish
-        ? `${state.hookedFish.name} 낚시 성공!`
-        : message,
-      success ? state.hookedFish?.rarity ?? "success" : "fail",
-      1600
-    );
 
-    window.dispatchEvent(new CustomEvent(
-      success ? "fishingworld:reeling-success" : "fishingworld:reeling-failed",
-      {
+    if (!success) {
+      fishStateText.textContent = "낚싯줄이 끊어졌다!";
+      showToast(message, "fail", 1500);
+
+      window.dispatchEvent(new CustomEvent("fishingworld:reeling-failed", {
         detail: {
           stageId: 1,
           distance: state.distance,
@@ -384,12 +306,69 @@ if (root && canvas) {
           fishId: state.hookedFish?.id ?? null,
           fish: state.hookedFish
         }
-      }
-    ));
+      }));
 
-    state.failureResetTimer = window.setTimeout(() => {
+      state.failureResetTimer = window.setTimeout(resetCasting, 1700);
+      return;
+    }
+
+    const fish = state.hookedFish;
+    state.catchData = createCatchResult(fish);
+
+    try {
+      window.FishingWorldFish?.catch(fish.id, {
+        size: state.catchData.size,
+        exp: state.catchData.exp,
+        caughtAt: state.catchData.caughtAt
+      });
+    } catch (error) {
+      console.error("물고기 저장 실패:", error);
+    }
+
+    fishStateText.textContent = `${fish.name}를 끌어올렸다!`;
+    showToast(`${fish.name} 낚시 성공!`, fish.rarity, 1050);
+
+    window.dispatchEvent(new CustomEvent("fishingworld:reeling-success", {
+      detail: {
+        stageId: 1,
+        distance: state.distance,
+        tension: state.tension,
+        fishId: fish.id,
+        fish,
+        catchData: state.catchData
+      }
+    }));
+
+    window.setTimeout(() => {
+      showCatchResult();
+    }, 650);
+  }
+
+  function showCatchResult() {
+    const fish = state.hookedFish;
+    const data = state.catchData;
+    if (!fish || !data) {
       resetCasting();
-    }, 1700);
+      return;
+    }
+
+    const rarityLabels = {
+      normal: "노말",
+      rare: "레어",
+      unique: "유니크",
+      legendary: "레전더리"
+    };
+
+    reelingArea.hidden = true;
+    catchResult.hidden = false;
+    catchResult.dataset.rarity = fish.rarity;
+    catchRarity.textContent = rarityLabels[fish.rarity] ?? fish.rarity;
+    catchImage.src = fish.image;
+    catchImage.alt = fish.name;
+    catchName.textContent = fish.name;
+    catchSize.textContent = `${data.size.toFixed(1)}cm`;
+    catchExp.textContent = `+${data.exp.toLocaleString("ko-KR")} EXP`;
+    catchGold.textContent = `${data.goldValue.toLocaleString("ko-KR")} G`;
   }
 
   function handleReelTap(event) {
@@ -400,7 +379,9 @@ if (root && canvas) {
     const tapGap = now - state.lastReelTapAt;
     state.lastReelTapAt = now;
 
-    const isStruggling = state.fishPhase === "struggle";
+    const isStruggling =
+      state.fishPhase === "struggle" ||
+      state.fishPhase === "fake";
     const profile = state.rarityProfile;
     const rapidTapBonus =
       !isStruggling && tapGap > 0 && tapGap < 230 ? 0.13 : 0;
@@ -447,7 +428,8 @@ if (root && canvas) {
     state.direction = 1;
     state.cast = null;
     state.hookedFish = null;
-    state.rarityProfile = RARITY_PROFILES.normal;
+    state.rarityProfile = getFishingBehavior(null);
+    state.catchData = null;
     state.reelingElapsed = 0;
     state.auraPulse = 0;
     state.bobber.visible = false;
@@ -459,9 +441,11 @@ if (root && canvas) {
     castButton.hidden = false;
     afterCastControls.hidden = true;
     reelingArea.hidden = true;
+    catchResult.hidden = true;
     reelingArea.dataset.phase = "";
     delete reelingArea.dataset.rarity;
     delete root.dataset.hookedRarity;
+    root.classList.remove("hooked-unique", "hooked-legendary");
     delete hookButton.dataset.rarity;
     reelButton.disabled = false;
     powerPanel.hidden = false;
@@ -488,17 +472,36 @@ if (root && canvas) {
   }
 
   function beginCast() {
+    const power = state.power;
+    const isSuccess =
+      power >= CASTING_CONFIG.successMinPower &&
+      power <= CASTING_CONFIG.successMaxPower;
+
+    if (!isSuccess) {
+      state.mode = "cast-failed";
+      castButton.hidden = true;
+      showToast("캐스팅 실패! 초록 구간에 맞추세요", "fail", 1150);
+
+      state.failureResetTimer = window.setTimeout(() => {
+        resetCasting();
+      }, 1200);
+      return;
+    }
+
     state.mode = "casting";
-    state.castQuality = 1 - Math.min(1, Math.abs(state.power - 0.73) / 0.73);
-    state.castQuality = clamp(state.castQuality, 0, 1);
+    state.castQuality =
+      power >= CASTING_CONFIG.perfectMinPower &&
+      power <= CASTING_CONFIG.perfectMaxPower
+        ? 1
+        : 0.72;
 
     state.cast = {
       elapsed: 0,
       duration: 0.78,
       startX: 0.50,
       startY: 0.91,
-      endX: 0.34 + state.power * 0.32,
-      endY: 0.42 - state.power * 0.07
+      endX: 0.34 + power * 0.32,
+      endY: 0.42 - power * 0.07
     };
 
     state.bobber.visible = true;
@@ -506,11 +509,11 @@ if (root && canvas) {
     state.bobber.y = state.cast.startY;
     castButton.hidden = true;
 
-    const qualityText =
-      state.castQuality >= 0.84 ? "PERFECT!" :
-      state.castQuality >= 0.58 ? "GOOD!" :
-      "캐스팅!";
-    showToast(qualityText, "cast", 800);
+    showToast(
+      state.castQuality >= 1 ? "PERFECT!" : "GOOD!",
+      "cast",
+      800
+    );
   }
 
   function finishCast() {
@@ -546,7 +549,7 @@ if (root && canvas) {
       clearBiteTimers();
       state.mode = "failed";
       state.hookedFish = null;
-      state.rarityProfile = RARITY_PROFILES.normal;
+      state.rarityProfile = getFishingBehavior(null);
       delete root.dataset.hookedRarity;
       hookButton.disabled = true;
       showToast("낚시 실패! 입질 타이밍이 아닙니다", "fail", 1050);
@@ -578,6 +581,7 @@ if (root && canvas) {
 
     hookButton.textContent = "후킹 성공";
     hookButton.disabled = true;
+    castingArea.hidden = true;
 
     window.dispatchEvent(new CustomEvent("fishingworld:hook-success", {
       detail: {
@@ -660,7 +664,9 @@ if (root && canvas) {
 
       if (state.fishPhaseElapsed >= state.fishPhaseDuration) {
         setFishPhase(
-          state.fishPhase === "struggle" ? "rest" : "struggle"
+          state.fishPhase === "struggle"
+            ? "rest"
+            : "struggle"
         );
       }
 
@@ -993,6 +999,7 @@ if (root && canvas) {
   resetButton?.addEventListener("click", resetCasting);
   hookButton?.addEventListener("click", handleHook);
   reelButton?.addEventListener("pointerdown", handleReelTap);
+  catchConfirmButton?.addEventListener("click", resetCasting);
   window.addEventListener("resize", resizeCanvas);
 
   const screenObserver = new MutationObserver(() => {
@@ -1006,7 +1013,7 @@ if (root && canvas) {
 
   screenObserver.observe(root, {
     attributes: true,
-    attributeFilter: ["aria-hidden", "class"]
+    attributeFilter: ["aria-hidden"]
   });
 
   resizeCanvas();

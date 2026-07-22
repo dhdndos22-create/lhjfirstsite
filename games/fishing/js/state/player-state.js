@@ -22,6 +22,35 @@ export function getPlayerStatusView() {
   };
 }
 
+export function addExp(value) {
+  let remaining = Math.max(0, Math.floor(Number(value) || 0));
+
+  while (
+    remaining > 0 &&
+    playerSave.profile.level < GAME_CONFIG.maxLevel
+  ) {
+    const required = getRequiredExp(playerSave.profile.level);
+    const needed = Math.max(1, required - playerSave.profile.exp);
+    const applied = Math.min(remaining, needed);
+
+    playerSave.profile.exp += applied;
+    remaining -= applied;
+
+    if (playerSave.profile.exp >= required) {
+      playerSave.profile.level += 1;
+      playerSave.profile.exp = 0;
+    }
+  }
+
+  if (playerSave.profile.level >= GAME_CONFIG.maxLevel) {
+    playerSave.profile.level = GAME_CONFIG.maxLevel;
+    playerSave.profile.exp = 0;
+  }
+
+  return playerSave.profile.level;
+}
+
+
 export function addGold(amount) {
   const value = Math.max(0, Math.floor(Number(amount) || 0));
   playerSave.currency.gold += value;
