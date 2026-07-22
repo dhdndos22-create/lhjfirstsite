@@ -161,6 +161,32 @@
           <button id="stage1HookButton" class="stage1-hook-button" type="button">후킹</button>
         </div>
 
+        <section id="stage1ReelingArea" class="stage1-reeling-area" aria-label="물고기 힘겨루기" hidden>
+          <div class="stage1-reeling-panel">
+            <div class="stage1-reeling-header">
+              <span id="stage1FishState" class="stage1-fish-state">물고기 힘을 살피세요</span>
+              <strong><span id="stage1DistanceText">30.0</span>m</strong>
+            </div>
+
+            <div class="stage1-distance-track" aria-label="남은 거리">
+              <span id="stage1DistanceFill" class="stage1-distance-fill"></span>
+            </div>
+
+            <div class="stage1-tension-heading">
+              <span>줄 장력</span>
+              <strong id="stage1TensionText">25%</strong>
+            </div>
+
+            <div id="stage1TensionTrack" class="stage1-tension-track" data-zone="safe" aria-label="낚싯줄 장력">
+              <span id="stage1TensionFill" class="stage1-tension-fill"></span>
+            </div>
+          </div>
+
+          <button id="stage1ReelButton" class="stage1-reel-button" type="button">
+            릴 감기!
+          </button>
+        </section>
+
         <div id="stage1EventToast" class="stage1-event-toast" role="status" aria-live="assertive" hidden></div>
       </div>
 
