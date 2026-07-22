@@ -2034,13 +2034,14 @@ button {
 
 
 /* =========================================================
-   STAGE 1 낚시 게임
+   STAGE 1 - 1차 구현: 배경 UI + 캐스팅
 ========================================================= */
 .fishing-stage-screen {
-  background: #123d42;
+  overflow: hidden;
+  background: #173f42;
 }
 
-.fishing-pond-background {
+.stage1-pond-background {
   object-position: center center;
 }
 
@@ -2051,249 +2052,176 @@ button {
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(2, 23, 28, 0.2) 0%, transparent 24%),
-    linear-gradient(0deg, rgba(2, 18, 25, 0.38) 0%, transparent 31%);
+    linear-gradient(180deg, rgba(2, 20, 25, 0.2), transparent 28%),
+    linear-gradient(0deg, rgba(2, 17, 22, 0.37), transparent 30%);
 }
 
-.fishing-canvas {
+.stage1-casting-canvas {
   position: absolute;
   inset: 0;
-  z-index: 4;
-  display: block;
+  z-index: 5;
   width: 100%;
   height: 100%;
   pointer-events: none;
 }
 
-.fishing-status-mount {
+.stage1-status-mount {
   position: relative;
-  z-index: 25;
+  z-index: 24;
 }
 
-.stage1-fishing-game {
+.stage1-casting-ui {
   position: absolute;
   inset: 0;
   z-index: 12;
   pointer-events: none;
 }
 
-.fishing-stage-labels {
+.stage1-location-badge {
   position: absolute;
-  top: max(9.6%, calc(env(safe-area-inset-top) + 58px));
+  top: max(10%, calc(env(safe-area-inset-top) + 58px));
   left: 4%;
   display: grid;
-  gap: 2px;
-  padding: 7px 12px;
-  border: 1px solid rgba(245, 226, 163, 0.65);
-  border-radius: 13px;
-  background: rgba(34, 46, 30, 0.73);
-  color: #fff6ce;
-  box-shadow: 0 4px 12px rgba(0, 16, 24, 0.26);
-  backdrop-filter: blur(3px);
+  gap: 1px;
+  max-width: 52%;
+  padding: 8px 12px;
+  border: 1px solid rgba(244, 225, 159, 0.68);
+  border-radius: 14px;
+  background: rgba(28, 45, 31, 0.73);
+  color: #fff4c6;
+  box-shadow: 0 5px 14px rgba(0, 13, 18, 0.25);
+  backdrop-filter: blur(4px);
 }
 
-.fishing-stage-number {
-  color: #b8f2ff;
-  font-size: clamp(10px, 2.6vw, 14px);
+.stage1-location-badge span {
+  color: #b8efff;
+  font-size: clamp(10px, 2.7vw, 14px);
   font-weight: 900;
   letter-spacing: 0.08em;
 }
 
-.fishing-stage-name {
-  font-size: clamp(15px, 4.1vw, 22px);
-  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.62);
+.stage1-location-badge strong {
+  overflow: hidden;
+  font-size: clamp(16px, 4.2vw, 22px);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.55);
 }
 
-.fishing-message-box {
+.stage1-location-badge p {
+  display: none;
+}
+
+.casting-guide {
   position: absolute;
-  top: max(17%, calc(env(safe-area-inset-top) + 112px));
+  top: max(18%, calc(env(safe-area-inset-top) + 118px));
   left: 50%;
   width: min(88%, 470px);
   display: grid;
   gap: 3px;
   transform: translateX(-50%);
   padding: 9px 15px;
-  border: 1px solid rgba(187, 233, 246, 0.55);
+  border: 1px solid rgba(191, 234, 247, 0.58);
   border-radius: 999px;
-  background: rgba(3, 29, 44, 0.76);
+  background: rgba(3, 28, 42, 0.76);
   color: white;
   text-align: center;
-  box-shadow: 0 5px 14px rgba(0, 12, 23, 0.3);
+  box-shadow: 0 5px 14px rgba(0, 10, 18, 0.27);
   backdrop-filter: blur(5px);
 }
 
-.fishing-message-box strong {
-  color: #fff1a8;
+.casting-guide strong {
+  color: #fff0a4;
   font-size: clamp(15px, 4vw, 21px);
 }
 
-.fishing-message-box span {
+.casting-guide span {
   overflow: hidden;
-  color: #d6f2fa;
+  color: #d9f2f9;
   font-size: clamp(10px, 2.7vw, 13px);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.bite-alert {
-  position: absolute;
-  top: 35%;
-  left: 50%;
-  display: grid;
-  place-items: center;
-  transform: translate(-50%, -50%);
-  color: #fff;
-  animation: bite-alert-pop 420ms ease-in-out infinite alternate;
-}
-
-.bite-alert strong {
-  display: grid;
-  place-items: center;
-  width: clamp(58px, 17vw, 88px);
-  aspect-ratio: 1;
-  border: 4px solid white;
-  border-radius: 50%;
-  background: #e93a2f;
-  font-size: clamp(34px, 10vw, 55px);
-  box-shadow: 0 0 0 9px rgba(233, 58, 47, 0.25);
-}
-
-.bite-alert span {
-  margin-top: 6px;
-  font-size: clamp(19px, 5.5vw, 29px);
-  font-weight: 1000;
-  text-shadow: 0 3px 4px rgba(0, 0, 0, 0.8);
-}
-
-@keyframes bite-alert-pop {
-  from { transform: translate(-50%, -50%) scale(0.92); }
-  to { transform: translate(-50%, -50%) scale(1.06); }
-}
-
-.fishing-meters {
+.casting-power-panel {
   position: absolute;
   left: 50%;
-  bottom: max(15.5%, calc(env(safe-area-inset-bottom) + 104px));
-  width: min(92%, 520px);
-  display: grid;
-  gap: 7px;
+  bottom: max(14.5%, calc(env(safe-area-inset-bottom) + 102px));
+  width: min(90%, 500px);
+  box-sizing: border-box;
   transform: translateX(-50%);
+  padding: 9px 12px 11px;
+  border: 1px solid rgba(220, 242, 250, 0.66);
+  border-radius: 16px;
+  background: rgba(3, 25, 38, 0.79);
+  box-shadow: 0 6px 15px rgba(0, 10, 18, 0.3);
+  backdrop-filter: blur(5px);
 }
 
-.fishing-meter-card {
-  padding: 8px 11px;
-  border: 1px solid rgba(221, 244, 252, 0.62);
-  border-radius: 15px;
-  background: rgba(3, 25, 39, 0.78);
-  box-shadow: 0 5px 14px rgba(0, 10, 20, 0.3);
-  backdrop-filter: blur(4px);
-}
-
-.fishing-meter-heading {
+.casting-power-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
   color: #fff;
-  font-size: clamp(11px, 2.8vw, 14px);
+  font-size: clamp(12px, 3vw, 15px);
   font-weight: 900;
 }
 
-.fishing-meter-heading small {
-  color: #9ed9ea;
-  font-size: clamp(8px, 2.2vw, 11px);
+.casting-power-heading strong {
+  color: #fff0a3;
 }
 
-.cast-power-track,
-.fishing-progress-track {
+.casting-power-track {
   position: relative;
-  height: clamp(12px, 3.4vw, 18px);
+  height: clamp(14px, 3.8vw, 19px);
   overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.75);
+  border: 2px solid rgba(255, 255, 255, 0.82);
   border-radius: 999px;
-  background: rgba(0, 8, 17, 0.82);
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.65);
+  background: rgba(0, 7, 15, 0.84);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.62);
 }
 
-.cast-good-zone {
+.casting-good-zone {
   position: absolute;
-  left: 64%;
-  top: 0;
+  inset: 0 auto 0 64%;
+  z-index: 2;
   width: 18%;
-  height: 100%;
-  background: rgba(88, 236, 110, 0.44);
-  box-shadow: 0 0 10px rgba(88, 236, 110, 0.7);
+  background: rgba(85, 235, 106, 0.43);
+  box-shadow: 0 0 12px rgba(85, 235, 106, 0.76);
 }
 
-.cast-power-fill,
-.fish-distance-fill,
-.line-tension-fill {
+.casting-power-fill {
   position: absolute;
   inset: 0 auto 0 0;
+  z-index: 1;
   width: 0;
   border-radius: inherit;
-  transition: width 60ms linear;
+  background:
+    linear-gradient(
+      90deg,
+      #3db5ff 0%,
+      #65df65 62%,
+      #ffe44e 82%,
+      #ef4545 100%
+    );
 }
 
-.cast-power-fill {
-  background: linear-gradient(90deg, #41b8ff 0%, #72e75f 68%, #ffe34f 84%, #ee4545 100%);
-}
-
-.cast-power-marker {
+.casting-power-marker {
   position: absolute;
   top: 50%;
+  left: 0;
+  z-index: 3;
   width: 4px;
-  height: 170%;
+  height: 180%;
   transform: translate(-50%, -50%);
   border-radius: 999px;
-  background: white;
-  box-shadow: 0 0 7px white;
+  background: #fff;
+  box-shadow: 0 0 8px #fff;
 }
 
-.fight-meter-card {
-  display: grid;
-  gap: 7px;
-}
-
-.fight-meter-row .fishing-meter-heading {
-  margin-bottom: 4px;
-}
-
-.fish-distance-fill {
-  background: linear-gradient(90deg, #43d8ff, #4ff08b);
-}
-
-.tension-safe-zone {
-  position: absolute;
-  left: 17%;
-  width: 47%;
-  height: 100%;
-  background: rgba(81, 225, 107, 0.16);
-}
-
-.line-tension-fill[data-level="safe"] {
-  background: linear-gradient(90deg, #42d96b, #8bea55);
-}
-
-.line-tension-fill[data-level="warning"] {
-  background: linear-gradient(90deg, #f3d146, #f09b2c);
-}
-
-.line-tension-fill[data-level="danger"] {
-  background: linear-gradient(90deg, #f08a35, #ef3434);
-  box-shadow: 0 0 12px rgba(255, 56, 50, 0.72);
-}
-
-.fish-behavior-text {
-  min-height: 19px;
-  color: #fff5a9;
-  font-size: clamp(11px, 3vw, 15px);
-  font-weight: 900;
-  text-align: center;
-}
-
-.fishing-controls {
+.casting-control-area {
   position: absolute;
   left: 50%;
   bottom: max(2%, env(safe-area-inset-bottom));
@@ -2302,157 +2230,70 @@ button {
   pointer-events: auto;
 }
 
-.fishing-main-button {
+.stage1-cast-button,
+.stage1-cast-reset-button {
   width: 100%;
-  min-height: clamp(58px, 15vw, 76px);
+  min-height: clamp(59px, 15vw, 76px);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  border: 3px solid #f7e2a0;
+  box-sizing: border-box;
+  border: 3px solid #f7e1a0;
   border-radius: 22px;
-  background: linear-gradient(180deg, #f2a839, #bd5e15);
-  color: white;
+  background: linear-gradient(180deg, #f1a73a, #bd5e16);
+  color: #fff;
   font-size: clamp(17px, 4.7vw, 24px);
   font-weight: 1000;
-  text-shadow: 0 2px 3px rgba(76, 29, 0, 0.72);
+  text-shadow: 0 2px 3px rgba(76, 28, 0, 0.7);
   box-shadow:
-    0 7px 0 #763810,
-    0 12px 18px rgba(0, 11, 18, 0.34);
-  -webkit-tap-highlight-color: transparent;
+    0 7px 0 #743810,
+    0 12px 18px rgba(0, 10, 17, 0.34);
   touch-action: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.fishing-main-button:active {
+.stage1-cast-button:active,
+.stage1-cast-reset-button:active {
   transform: translateY(5px);
   box-shadow:
-    0 2px 0 #763810,
-    0 6px 10px rgba(0, 11, 18, 0.3);
+    0 2px 0 #743810,
+    0 6px 10px rgba(0, 10, 17, 0.28);
 }
 
-.fishing-main-button .button-icon {
+.stage1-cast-icon {
   display: grid;
   place-items: center;
   width: 43px;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: rgba(82, 32, 2, 0.25);
+  background: rgba(78, 29, 2, 0.25);
 }
 
-.catch-button {
-  border-color: #fff0a4;
-  background: linear-gradient(180deg, #ff5a42, #c52220);
-  box-shadow: 0 7px 0 #7e1515, 0 12px 18px rgba(0, 11, 18, 0.34);
-  animation: catch-button-pulse 480ms ease-in-out infinite alternate;
+.stage1-cast-reset-button {
+  background: linear-gradient(180deg, #60b653, #2f7c38);
+  box-shadow:
+    0 7px 0 #1d5427,
+    0 12px 18px rgba(0, 10, 17, 0.34);
 }
 
-@keyframes catch-button-pulse {
-  from { filter: brightness(1); }
-  to { filter: brightness(1.18); }
-}
-
-.reel-button {
-  border-color: #c6f4ff;
-  background: linear-gradient(180deg, #23a8d9, #12608e);
-  box-shadow: 0 7px 0 #073e60, 0 12px 18px rgba(0, 11, 18, 0.34);
-}
-
-.reset-button {
-  background: linear-gradient(180deg, #64b552, #2e7b36);
-  box-shadow: 0 7px 0 #1c5526, 0 12px 18px rgba(0, 11, 18, 0.34);
-}
-
-.fishing-result-panel {
-  position: absolute;
-  top: 23%;
-  left: 50%;
-  z-index: 20;
-  width: min(78%, 380px);
-  display: grid;
-  justify-items: center;
-  transform: translateX(-50%);
-  padding: 13px 16px 16px;
-  border: 3px solid #86d9f5;
-  border-radius: 24px;
-  background: rgba(3, 29, 45, 0.9);
-  color: white;
-  box-shadow: 0 15px 35px rgba(0, 8, 15, 0.45);
-  backdrop-filter: blur(6px);
-  pointer-events: none;
-}
-
-.fishing-result-panel[data-rarity="unique"] {
-  border-color: #da8aff;
-}
-
-.fishing-result-panel[data-rarity="legendary"] {
-  border-color: #ffd457;
-  box-shadow: 0 0 30px rgba(255, 207, 69, 0.3), 0 15px 35px rgba(0, 8, 15, 0.45);
-}
-
-.fishing-result-rarity {
-  padding: 4px 13px;
-  border-radius: 999px;
-  background: rgba(0, 14, 28, 0.72);
-  color: #c7efff;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.fishing-result-image-area {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: clamp(130px, 34vw, 180px);
-  background: radial-gradient(circle, rgba(91, 217, 255, 0.25), transparent 65%);
-}
-
-.fishing-result-image-area img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 12px 9px rgba(0, 7, 15, 0.52));
-}
-
-.fishing-result-name {
-  color: #fff3ad;
-  font-size: clamp(23px, 6.3vw, 32px);
-}
-
-.fishing-result-size {
-  margin-top: 3px;
-  font-size: clamp(16px, 4.4vw, 22px);
-  font-weight: 900;
-}
-
-.fishing-result-reward {
-  margin-top: 3px;
-  color: #ffd665;
-  font-size: clamp(13px, 3.6vw, 18px);
-  font-weight: 900;
-}
-
-.fishing-screen-back-button {
+.stage1-fishing-back-button {
   z-index: 30;
-  top: max(9%, calc(env(safe-area-inset-top) + 55px));
+  top: max(10%, calc(env(safe-area-inset-top) + 58px));
   right: 3.5%;
   left: auto;
 }
 
 @media (max-height: 690px) {
-  .fishing-message-box {
-    top: 15.5%;
+  .casting-guide {
+    top: 16%;
   }
 
-  .fishing-meters {
+  .casting-power-panel {
     bottom: 16%;
   }
 
-  .fishing-result-panel {
-    top: 20%;
-  }
-
-  .fishing-stage-labels {
+  .stage1-location-badge {
     top: 9%;
   }
 }
