@@ -1077,6 +1077,11 @@ if (root && canvas) {
       ctx.translate(x, y);
       ctx.rotate((progress - 0.5) * Math.PI * 0.9);
       ctx.globalAlpha = Math.min(1, arc * 2.6);
+
+      // 포획 전 점프에서는 정체를 숨기기 위해 완전한 검은 실루엣만 표시합니다.
+      ctx.filter = "brightness(0)";
+      ctx.shadowColor = "rgba(0, 0, 0, 0.72)";
+      ctx.shadowBlur = 10;
       ctx.drawImage(
         image,
         -drawWidth / 2,
@@ -1084,6 +1089,7 @@ if (root && canvas) {
         drawWidth,
         drawHeight
       );
+
       ctx.restore();
     }
 

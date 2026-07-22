@@ -395,24 +395,58 @@ function renderCollectionPanel(tabId, panel) {
 
     rarityFish.forEach((fish) => {
       const count = getCollectionCount(fish.id);
+      const isDiscovered = count > 0;
       const card = document.createElement("article");
-      card.className = `collection-card rarity-${fish.rarity}`;
+
+      card.className =
+        `collection-card rarity-${fish.rarity}` +
+        (isDiscovered ? " is-discovered" : " is-undiscovered");
+
       card.dataset.fishId = fish.id;
+      card.dataset.discovered = String(isDiscovered);
 
       card.innerHTML = `
         <div class="collection-image-frame">
-          <img src="${fish.image}" alt="${fish.name}" draggable="false">
-          <span class="collection-count">${count > 0 ? `× ${count}` : "미획득"}</span>
+          <img
+            src="${fish.image}"
+            alt="${isDiscovered ? fish.name : "아직 발견하지 못한 생물"}"
+            draggable="false"
+          >
+          <span class="collection-count">
+            ${isDiscovered ? `× ${count}` : "미획득"}
+          </span>
         </div>
         <div class="collection-card-info">
-          <strong class="collection-fish-name">${fish.name}</strong>
-          <span class="collection-fish-size">${fish.minSize}~${fish.maxSize}cm</span>
+          <strong class="collection-fish-name">
+            ${isDiscovered ? fish.name : "???"}
+          </strong>
+          <span class="collection-fish-size">
+            ${isDiscovered ? `${fish.minSize}~${fish.maxSize}cm` : "크기 ???"}
+          </span>
         </div>
       `;
 
-      card.addEventListener("click", () => {
-        openFishDetailModal(fish, "collection");
-      });
+      if (isDiscovered) {
+        card.tabIndex = 0;
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-label", `${fish.name} 상세보기`);
+
+        card.addEventListener("click", () => {
+          openFishDetailModal(fish, "collection");
+        });
+
+        card.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openFishDetailModal(fish, "collection");
+          }
+        });
+      } else {
+        card.setAttribute(
+          "aria-label",
+          `${RARITY_LABELS[fish.rarity] ?? fish.rarity} 등급의 미발견 생물`
+        );
+      }
 
       grid.appendChild(card);
     });

@@ -2787,3 +2787,57 @@ button {
   from { transform: translateY(0) scale(1); }
   to { transform: translateY(-3px) scale(1.008); }
 }
+
+
+/* =========================================================
+   도감 미획득 생물 실루엣
+========================================================= */
+.collection-card.is-undiscovered {
+  cursor: default;
+}
+
+.collection-card.is-undiscovered .collection-image-frame {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255,255,255,.08), transparent 58%),
+    rgba(4, 20, 29, 0.46);
+}
+
+.collection-card.is-undiscovered .collection-image-frame img {
+  filter:
+    brightness(0)
+    drop-shadow(0 7px 5px rgba(0, 0, 0, 0.42));
+  opacity: 0.92;
+  user-select: none;
+}
+
+.collection-card.is-undiscovered .collection-image-frame::after {
+  content: "?";
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 2px solid rgba(255,255,255,.55);
+  border-radius: 50%;
+  background: rgba(0,0,0,.42);
+  color: rgba(255,255,255,.86);
+  font-size: 18px;
+  font-weight: 1000;
+  pointer-events: none;
+}
+
+.collection-card.is-undiscovered .collection-fish-name {
+  letter-spacing: 0.14em;
+}
+
+.collection-card.is-undiscovered .collection-fish-size {
+  color: rgba(255,255,255,.58);
+}
+
+.collection-card.is-undiscovered:active {
+  transform: none;
+}
