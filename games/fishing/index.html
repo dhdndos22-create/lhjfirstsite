@@ -136,29 +136,29 @@
           <p id="fishingStageDescription"></p>
         </div>
 
-        <section class="casting-power-panel" aria-label="캐스팅 파워">
-          <div class="casting-power-heading">
-            <span>캐스팅 파워</span>
-            <strong id="castingPowerPercent">0%</strong>
-          </div>
+        <div id="stage1CastingArea" class="stage1-casting-area">
+          <section class="casting-power-panel" aria-label="캐스팅 파워">
+            <div class="casting-power-heading">
+              <span>캐스팅 파워</span>
+              <strong id="castingPowerPercent">0%</strong>
+            </div>
 
-          <div class="casting-power-track">
-            <span class="casting-good-zone" aria-hidden="true"></span>
-            <span id="castingPowerFill" class="casting-power-fill" aria-hidden="true"></span>
-            <span id="castingPowerMarker" class="casting-power-marker" aria-hidden="true"></span>
-          </div>
-        </section>
+            <div class="casting-power-track">
+              <span class="casting-good-zone" aria-hidden="true"></span>
+              <span id="castingPowerFill" class="casting-power-fill" aria-hidden="true"></span>
+              <span id="castingPowerMarker" class="casting-power-marker" aria-hidden="true"></span>
+            </div>
+          </section>
 
-        <div class="casting-control-area">
           <button id="stage1CastButton" class="stage1-cast-button" type="button">
             <span class="stage1-cast-icon" aria-hidden="true">🎣</span>
             <span id="stage1CastButtonText">캐스팅</span>
           </button>
+        </div>
 
-          <div id="stage1AfterCastControls" class="stage1-after-cast-controls" hidden>
-            <button id="stage1CastResetButton" class="stage1-cast-reset-button" type="button">다시 캐스팅</button>
-            <button id="stage1HookButton" class="stage1-hook-button" type="button">후킹</button>
-          </div>
+        <div id="stage1AfterCastControls" class="stage1-after-cast-controls" hidden>
+          <button id="stage1CastResetButton" class="stage1-cast-reset-button" type="button">다시 캐스팅</button>
+          <button id="stage1HookButton" class="stage1-hook-button" type="button">후킹</button>
         </div>
 
         <div id="stage1EventToast" class="stage1-event-toast" role="status" aria-live="assertive" hidden></div>

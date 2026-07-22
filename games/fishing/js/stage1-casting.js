@@ -10,6 +10,7 @@ if (root && canvas) {
   const afterCastControls = document.getElementById("stage1AfterCastControls");
   const hookButton = document.getElementById("stage1HookButton");
   const eventToast = document.getElementById("stage1EventToast");
+  const castingArea = document.getElementById("stage1CastingArea");
   const powerPanel = document.querySelector(".casting-power-panel");
   const powerFill = document.getElementById("castingPowerFill");
   const powerMarker = document.getElementById("castingPowerMarker");
@@ -25,6 +26,7 @@ if (root && canvas) {
     biteWindowTimer: null,
     biteActive: false,
     toastTimer: null,
+    failureResetTimer: null,
     lastTime: performance.now(),
     frameId: 0,
     width: 0,
@@ -104,6 +106,8 @@ if (root && canvas) {
   }
 
   function resetCasting() {
+    window.clearTimeout(state.failureResetTimer);
+    state.failureResetTimer = null;
     state.mode = "ready";
     state.holding = false;
     state.power = 0;
@@ -114,6 +118,7 @@ if (root && canvas) {
     state.splashes.length = 0;
     clearBiteTimers();
 
+    castingArea.hidden = false;
     castButton.hidden = false;
     afterCastControls.hidden = true;
     powerPanel.hidden = false;
@@ -168,8 +173,7 @@ if (root && canvas) {
   function finishCast() {
     state.mode = "waiting";
     state.cast = null;
-    castButton.hidden = true;
-    powerPanel.hidden = true;
+    castingArea.hidden = true;
     afterCastControls.hidden = false;
 
     state.ripples.push({
@@ -198,7 +202,12 @@ if (root && canvas) {
     if (!state.biteActive) {
       clearBiteTimers();
       state.mode = "failed";
-      showToast("낚시 실패! 입질 타이밍이 아닙니다", "fail", 1600);
+      hookButton.disabled = true;
+      showToast("낚시 실패! 입질 타이밍이 아닙니다", "fail", 1050);
+
+      state.failureResetTimer = window.setTimeout(() => {
+        resetCasting();
+      }, 1100);
       return;
     }
     clearBiteTimers();
