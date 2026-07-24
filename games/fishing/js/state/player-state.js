@@ -100,7 +100,9 @@ export function addCaughtFish(fishId, {
     count: previousCount + amount,
     maxSize: Math.max(previousMaxSize, Number(size) || 0),
     firstCaughtAt: previous.firstCaughtAt || caughtAt,
-    lastCaughtAt: caughtAt
+    lastCaughtAt: caughtAt,
+    rewardClaimed: previous.rewardClaimed === true,
+    rewardClaimedAt: previous.rewardClaimedAt || null
   };
 
   playerSave.statistics.totalFishingCount += amount;
@@ -120,5 +122,23 @@ export function sellInventoryFish(fishId, quantity, unitPrice) {
   }
 
   addGold(amount * price);
+  return true;
+}
+
+export function claimFishCollectionReward(fishId, rubyAmount = 10) {
+  const record = playerSave.fishCollection?.[fishId];
+  const discoveredCount = Number(record?.count ?? record ?? 0) || 0;
+
+  if (discoveredCount < 1 || record?.rewardClaimed === true) {
+    return false;
+  }
+
+  playerSave.fishCollection[fishId] = {
+    ...(typeof record === "object" && record !== null ? record : { count: discoveredCount }),
+    rewardClaimed: true,
+    rewardClaimedAt: new Date().toISOString()
+  };
+
+  addRuby(rubyAmount);
   return true;
 }

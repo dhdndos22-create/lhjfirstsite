@@ -7,7 +7,13 @@ export function getRequiredExp(level) {
     return 0;
   }
 
-  return Math.floor(100 + safeLevel * 35 + Math.pow(safeLevel, 1.65) * 12);
+  const growthLevel = safeLevel - 1;
+
+  return Math.floor(
+    30 +
+    growthLevel * 20 +
+    Math.pow(growthLevel, 1.65) * 12
+  );
 }
 
 export const LEVEL_TABLE = Object.freeze(

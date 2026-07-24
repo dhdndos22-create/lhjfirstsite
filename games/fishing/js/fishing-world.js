@@ -21,6 +21,7 @@ import {
   addCaughtFish,
   addExp,
   sellInventoryFish,
+  claimFishCollectionReward,
   spendGold
 } from "./state/player-state.js";
 import {
@@ -97,7 +98,7 @@ const commonPanel = new CommonPanelUI({
 export const playerState = {
   level: GAME_CONFIG.initialLevel,
   currentExp: GAME_CONFIG.initialExp,
-  requiredExp: 100,
+  requiredExp: 30,
   gold: GAME_CONFIG.initialGold,
   ruby: GAME_CONFIG.initialRuby
 };
@@ -125,7 +126,7 @@ function createStatusBarMarkup(scope) {
         <span class="level-progress-area" aria-hidden="true">
           <span class="level-progress-fill" data-level-progress></span>
         </span>
-        <span class="level-experience" data-level-experience>0 / 100</span>
+        <span class="level-experience" data-level-experience>0%</span>
       </button>
 
       <button class="status-button gold-status" type="button" data-status-action="gold" aria-label="보유 골드">
@@ -177,12 +178,20 @@ export function savePlayerState() {
 
 export function updatePlayerStatus() {
   const levelText = `Lv. ${playerState.level}`;
-  const expText = playerState.level >= 100
-    ? "MAX"
-    : `${playerState.currentExp} / ${playerState.requiredExp}`;
-  const progress = playerState.level >= 100
+  const progress = playerState.level >= GAME_CONFIG.maxLevel
     ? 100
-    : Math.min(100, playerState.currentExp / playerState.requiredExp * 100);
+    : Math.max(
+        0,
+        Math.min(
+          100,
+          playerState.requiredExp > 0
+            ? (playerState.currentExp / playerState.requiredExp) * 100
+            : 0
+        )
+      );
+  const expText = playerState.level >= GAME_CONFIG.maxLevel
+    ? "MAX"
+    : `${Math.floor(progress)}%`;
 
   document.querySelectorAll("[data-player-level]").forEach((node) => {
     node.textContent = levelText;
@@ -283,6 +292,7 @@ function openFishDetailModal(fish, mode = "collection") {
   fishDetailCollectionCount.textContent = `${collectionCount.toLocaleString("ko-KR")}회`;
   fishDetailInventoryCount.textContent = `${inventoryCount.toLocaleString("ko-KR")}마리`;
 
+  // 도감에서는 판매 기능을 숨기고, 인벤토리에서만 판매할 수 있습니다.
   fishSellArea.hidden = mode !== "inventory" || inventoryCount < 1;
   updateFishSellView();
 
@@ -419,6 +429,18 @@ function renderCollectionPanel(tabId, panel) {
             ${isDiscovered ? `× ${count}` : "미획득"}
           </span>
         </div>
+        <button
+          type="button"
+          class="collection-reward-button"
+          data-collection-reward="${fish.id}"
+          ${!isDiscovered || playerSave.fishCollection?.[fish.id]?.rewardClaimed === true ? "disabled" : ""}
+        >
+          ${!isDiscovered
+            ? "미발견"
+            : playerSave.fishCollection?.[fish.id]?.rewardClaimed === true
+              ? "보상 수령완료"
+              : "보상받기 +10 루비"}
+        </button>
         <div class="collection-card-info">
           <strong class="collection-fish-name">
             ${isDiscovered ? fish.name : "???"}
@@ -429,12 +451,29 @@ function renderCollectionPanel(tabId, panel) {
         </div>
       `;
 
+      const rewardButton = card.querySelector("[data-collection-reward]");
+      rewardButton?.addEventListener("keydown", (event) => {
+        event.stopPropagation();
+      });
+
+      rewardButton?.addEventListener("click", (event) => {
+        event.stopPropagation();
+
+        const claimed = claimFishCollectionReward(fish.id, 10);
+        if (!claimed) return;
+
+        savePlayerState();
+        updatePlayerStatus();
+        renderCollectionPanel(`stage-${stageId}`, panel);
+      });
+
       if (isDiscovered) {
         card.tabIndex = 0;
         card.setAttribute("role", "button");
         card.setAttribute("aria-label", `${fish.name} 상세보기`);
 
-        card.addEventListener("click", () => {
+        card.addEventListener("click", (event) => {
+          if (event.target.closest("[data-collection-reward]")) return;
           openFishDetailModal(fish, "collection");
         });
 
@@ -899,6 +938,7 @@ function bindEvents() {
   });
   fishDetailCloseButton.addEventListener("click", closeFishDetailModal);
 
+
   fishSellMinusButton.addEventListener("click", () => {
     fishDetailState.quantity -= 1;
     updateFishSellView();
@@ -917,7 +957,7 @@ function bindEvents() {
 
   fishSellButton.addEventListener("click", () => {
     const fish = fishDetailState.fish;
-    if (!fish) return;
+    if (!fish || fishDetailState.mode !== "inventory") return;
 
     const sold = sellInventoryFish(
       fish.id,

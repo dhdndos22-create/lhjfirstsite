@@ -29,9 +29,9 @@ export const SHOP_PRODUCT_DATA = Object.freeze({
     id: "good_rod_product",
     category: "equipment",
     name: "좋은 낚싯대",
-    description: "유니크 물고기를 안정적으로 상대할 수 있는 테스트용 낚싯대입니다.",
+    description: "낡은 낚싯대보다 성능이 향상된 레어 등급 낚싯대입니다.",
     image: null,
-    price: Object.freeze({ type: "gold", amount: 0 }),
+    price: Object.freeze({ type: "gold", amount: 1000 }),
     rewards: Object.freeze([
       Object.freeze({ type: "equipment", equipmentId: "good_rod", amount: 1 })
     ]),
@@ -42,9 +42,9 @@ export const SHOP_PRODUCT_DATA = Object.freeze({
     id: "great_rod_product",
     category: "equipment",
     name: "대단한 낚싯대",
-    description: "레전더리 물고기까지 상대할 수 있는 테스트용 낚싯대입니다.",
+    description: "좋은 낚싯대보다 성능이 높은 레어 등급 낚싯대입니다.",
     image: null,
-    price: Object.freeze({ type: "gold", amount: 0 }),
+    price: Object.freeze({ type: "gold", amount: 3000 }),
     rewards: Object.freeze([
       Object.freeze({ type: "equipment", equipmentId: "great_rod", amount: 1 })
     ]),
