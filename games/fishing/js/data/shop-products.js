@@ -1,17 +1,4 @@
 export const SHOP_PRODUCT_DATA = Object.freeze({
-  energy_5: Object.freeze({
-    id: "energy_5",
-    category: "currency",
-    name: "에너지 5개",
-    description: "에너지 5를 즉시 획득합니다.",
-    image: null,
-    price: Object.freeze({ type: "gold", amount: 500 }),
-    rewards: Object.freeze([
-      Object.freeze({ type: "energy", amount: 5 })
-    ]),
-    purchaseLimit: null
-  }),
-
   basic_worm_10: Object.freeze({
     id: "basic_worm_10",
     category: "consumable",

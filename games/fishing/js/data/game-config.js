@@ -1,11 +1,10 @@
 export const GAME_CONFIG = Object.freeze({
-  saveVersion: 1,
+  saveVersion: 2,
   maxLevel: 100,
   initialLevel: 1,
   initialExp: 0,
   initialGold: 0,
-  initialEnergy: 10,
-  fishingEnergyCost: 1
+  initialRuby: 0
 });
 
 export const ITEM_CATEGORIES = Object.freeze({

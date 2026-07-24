@@ -14,6 +14,6 @@ export const ACHIEVEMENT_DATA = Object.freeze({
     description: "물고기를 총 100마리 잡으세요.",
     metric: "totalFishCaught",
     target: 100,
-    reward: Object.freeze({ type: "energy", amount: 20 })
+    reward: Object.freeze({ type: "ruby", amount: 20 })
   })
 });

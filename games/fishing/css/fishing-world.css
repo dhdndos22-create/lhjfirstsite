@@ -253,9 +253,9 @@ button {
     1px 1px 0 #07172d;
 }
 
-/* 새 골드/에너지 UI 숫자 */
+/* 새 골드/루비 UI 숫자 */
 .gold-number,
-.energy-number {
+.ruby-number {
   position: absolute;
   top: 50%;
   z-index: 4;
@@ -279,7 +279,7 @@ button {
   width: 47%;
 }
 
-.energy-number {
+.ruby-number {
   left: 54%;
   width: 45%;
 }
@@ -1877,6 +1877,10 @@ button {
   font-weight: 900;
   white-space: nowrap;
   box-shadow: 0 7px 15px rgba(0,0,0,0.25);
+}
+
+.stage-lock-overlay[hidden] {
+  display: none;
 }
 
 .stage-lock-icon {

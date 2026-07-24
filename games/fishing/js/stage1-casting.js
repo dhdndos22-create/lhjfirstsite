@@ -535,14 +535,16 @@ if (root && canvas) {
       ? profile.struggleTapTension
       : profile.restTapTension) / equipment.rodControl;
 
-    const jumpPenalty = state.jumpActive ? 1.6 : 1;
+    const jumpReelPenalty = state.jumpActive ? 1.6 : 1;
+    // 물고기가 물 밖으로 튀어오른 동안의 텐션 증가는 기존의 절반만 적용합니다.
+    const jumpTensionMultiplier = state.jumpActive ? 1.5 : 1;
     state.distance = Math.max(
       0,
-      state.distance - distancePull / jumpPenalty
+      state.distance - distancePull / jumpReelPenalty
     );
     state.tension = Math.min(
       110,
-      state.tension + tensionGain * jumpPenalty
+      state.tension + tensionGain * jumpTensionMultiplier
     );
     state.reelKick = Math.min(1, state.reelKick + 0.72);
     spawnReelRipple(
@@ -814,7 +816,9 @@ if (root && canvas) {
       state.escapeRippleElapsed += delta * (0.7 + escapeSpeed);
 
       if (isStruggling) {
-        state.tension += profile.struggleTensionRise * delta;
+        const airborneTensionMultiplier = state.jumpActive ? 0.5 : 1;
+        state.tension +=
+          profile.struggleTensionRise * delta * airborneTensionMultiplier;
 
         // 등급이 높을수록 수면과 찌가 더 격하게 흔들립니다.
         const splashChance =

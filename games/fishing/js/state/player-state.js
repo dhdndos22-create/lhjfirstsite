@@ -18,7 +18,7 @@ export function getPlayerStatusView() {
       ? 0
       : getRequiredExp(playerSave.profile.level),
     gold: playerSave.currency.gold,
-    energy: playerSave.currency.energy
+    ruby: playerSave.currency.ruby
   };
 }
 
@@ -65,19 +65,19 @@ export function spendGold(amount) {
   return true;
 }
 
-export function addEnergy(amount) {
+export function addRuby(amount) {
   const value = Math.max(0, Math.floor(Number(amount) || 0));
-  playerSave.currency.energy += value;
+  playerSave.currency.ruby += value;
+  playerSave.statistics.totalRubyEarned += value;
 }
 
-export function spendEnergy(amount = GAME_CONFIG.fishingEnergyCost) {
+export function spendRuby(amount) {
   const value = Math.max(0, Math.floor(Number(amount) || 0));
-  if (playerSave.currency.energy < value) return false;
-  playerSave.currency.energy -= value;
-  playerSave.statistics.totalEnergySpent += value;
+  if (playerSave.currency.ruby < value) return false;
+  playerSave.currency.ruby -= value;
+  playerSave.statistics.totalRubySpent += value;
   return true;
 }
-
 
 export function addCaughtFish(fishId, {
   count = 1,

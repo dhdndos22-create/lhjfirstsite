@@ -54,7 +54,7 @@ function migrateLegacySave(legacy) {
     ? 0
     : getRequiredExp(level);
   save.currency.gold = toInteger(legacy?.gold, GAME_CONFIG.initialGold);
-  save.currency.energy = toInteger(legacy?.energy, GAME_CONFIG.initialEnergy);
+  save.currency.ruby = toInteger(legacy?.ruby, GAME_CONFIG.initialRuby);
   return save;
 }
 
@@ -88,7 +88,7 @@ export function normalizePlayerSave(rawSave) {
 
     currency: {
       gold: toInteger(rawSave.currency?.gold, fallback.currency.gold),
-      energy: toInteger(rawSave.currency?.energy, fallback.currency.energy)
+      ruby: toInteger(rawSave.currency?.ruby, fallback.currency.ruby)
     },
 
     inventory: {
@@ -124,7 +124,8 @@ export function normalizePlayerSave(rawSave) {
       totalFishCaught: toInteger(rawSave.statistics?.totalFishCaught, 0),
       totalGoldEarned: toInteger(rawSave.statistics?.totalGoldEarned, 0),
       totalGoldSpent: toInteger(rawSave.statistics?.totalGoldSpent, 0),
-      totalEnergySpent: toInteger(rawSave.statistics?.totalEnergySpent, 0)
+      totalRubyEarned: toInteger(rawSave.statistics?.totalRubyEarned, 0),
+      totalRubySpent: toInteger(rawSave.statistics?.totalRubySpent, 0)
     },
 
     timestamps: {

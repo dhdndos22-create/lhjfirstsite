@@ -12,7 +12,7 @@ export const DEFAULT_PLAYER_SAVE = Object.freeze({
 
   currency: Object.freeze({
     gold: GAME_CONFIG.initialGold,
-    energy: GAME_CONFIG.initialEnergy
+    ruby: GAME_CONFIG.initialRuby
   }),
 
   inventory: Object.freeze({
@@ -48,7 +48,8 @@ export const DEFAULT_PLAYER_SAVE = Object.freeze({
     totalFishCaught: 0,
     totalGoldEarned: 0,
     totalGoldSpent: 0,
-    totalEnergySpent: 0
+    totalRubyEarned: 0,
+    totalRubySpent: 0
   }),
 
   timestamps: Object.freeze({

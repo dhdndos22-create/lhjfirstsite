@@ -7,7 +7,7 @@
 공통 화면에 포함되는 항목:
 
 - 상점 배경 이미지
-- 상단 레벨 / 골드 / 에너지 UI
+- 상단 레벨 / 골드 / 루비 UI
 - 반투명 남색 패널 이미지
 - 화면 제목
 - 선택형 카테고리 탭
@@ -45,7 +45,7 @@
 
 ```text
 js/data/
-├─ game-config.js       # 최대 레벨, 초기 골드/에너지 등
+├─ game-config.js       # 최대 레벨, 초기 골드/루비 등
 ├─ level-data.js        # 레벨별 필요 경험치
 ├─ items.js             # 소모품·미끼 정의
 ├─ equipment.js         # 장비 정의
@@ -74,7 +74,7 @@ js/services/
 레벨 1
 경험치 0
 골드 0
-에너지 10
+루비 10
 기본 낚싯대 1개 보유 및 장착
 ```
 
@@ -96,7 +96,7 @@ fishingWorldSave:<username>
 ## 이미지형 스테이지 선택 UI
 
 - 로비의 `낚시하기` 버튼에서 스테이지 선택 화면으로 이동합니다.
-- 상단 레벨·골드·에너지 상태 UI는 선택 화면에서도 유지됩니다.
+- 상단 레벨·골드·루비 상태 UI는 선택 화면에서도 유지됩니다.
 - 좌우 화살표, 하단 점, 섬 영역 좌우 스와이프로 5개 스테이지를 선택할 수 있습니다.
 - 스테이지 선택 배경: `images/stages/stage-select-background.png`
 - 스테이지 섬 이미지: `images/stages/stage-1-island.png` ~ `stage-5-island.png`

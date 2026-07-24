@@ -99,7 +99,7 @@ export const playerState = {
   currentExp: GAME_CONFIG.initialExp,
   requiredExp: 100,
   gold: GAME_CONFIG.initialGold,
-  energy: GAME_CONFIG.initialEnergy
+  ruby: GAME_CONFIG.initialRuby
 };
 
 function syncLegacyStatusView() {
@@ -133,9 +133,9 @@ function createStatusBarMarkup(scope) {
         <span class="gold-number" data-player-gold>0</span>
       </button>
 
-      <button class="status-button energy-status" type="button" data-status-action="energy" aria-label="에너지 정보">
-        <img src="./images/energy-status-ui-new.png" class="status-ui-image" alt="" draggable="false">
-        <span class="energy-number" data-player-energy>10</span>
+      <button class="status-button ruby-status" type="button" data-status-action="ruby" aria-label="보유 루비">
+        <img src="./images/ruby-status-ui-new.png" class="status-ui-image" alt="" draggable="false">
+        <span class="ruby-number" data-player-ruby>0</span>
       </button>
     </div>
   `;
@@ -153,7 +153,7 @@ function mountSharedStatusBars() {
       const labels = {
         level: `현재 레벨은 ${playerState.level}입니다.`,
         gold: `현재 골드는 ${playerState.gold.toLocaleString("ko-KR")}입니다.`,
-        energy: `현재 에너지는 ${playerState.energy.toLocaleString("ko-KR")}입니다.`
+        ruby: `현재 루비는 ${playerState.ruby.toLocaleString("ko-KR")}개입니다.`
       };
       alert(labels[type]);
     });
@@ -196,8 +196,8 @@ export function updatePlayerStatus() {
   document.querySelectorAll("[data-player-gold]").forEach((node) => {
     node.textContent = playerState.gold.toLocaleString("ko-KR");
   });
-  document.querySelectorAll("[data-player-energy]").forEach((node) => {
-    node.textContent = playerState.energy.toLocaleString("ko-KR");
+  document.querySelectorAll("[data-player-ruby]").forEach((node) => {
+    node.textContent = playerState.ruby.toLocaleString("ko-KR");
   });
 }
 
@@ -489,8 +489,9 @@ function purchaseShopProduct(product) {
   for (const reward of product.rewards ?? []) {
     if (reward.type === "equipment") {
       playerSave.equipment.owned[reward.equipmentId] = 1;
-    } else if (reward.type === "energy") {
-      playerSave.currency.energy += Math.max(0, Number(reward.amount) || 0);
+    } else if (reward.type === "ruby") {
+      playerSave.currency.ruby += Math.max(0, Number(reward.amount) || 0);
+      playerSave.statistics.totalRubyEarned += Math.max(0, Number(reward.amount) || 0);
     } else if (reward.type === "item") {
       const itemId = reward.itemId;
       playerSave.inventory.items[itemId] =
