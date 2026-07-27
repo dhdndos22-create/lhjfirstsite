@@ -11,6 +11,8 @@
 
 html,
 body {
+  position: fixed;
+  inset: 0;
   width: 100%;
   height: 100%;
   margin: 0;
@@ -35,25 +37,29 @@ button {
 }
 
 #heroRushApp {
+  position: fixed;
+  inset: 0;
   display: grid;
-  width: 100%;
-  height: 100dvh;
+  width: 100vw;
+  height: var(--app-height, 100svh);
+  overflow: hidden;
   place-items: center;
   background: #070510;
 }
 
 /*
-  시작 이미지와 로비 이미지가 모두 853 x 1844 비율이다.
-  이 프레임 자체를 화면 안에 contain 방식으로 맞춰 이미지가 잘리지 않게 한다.
+  iPhone Safari/Chrome의 주소창·하단 도구막대를 제외한 실제 표시 영역에
+  853 x 1844 게임 화면 전체를 contain 방식으로 맞춘다.
+  화면 비율이 이미지와 다르면 좌우 또는 위아래에 검은 여백이 생길 수 있지만,
+  이미지와 버튼은 절대로 잘리지 않는다.
 */
 .mobile-frame {
   position: relative;
-  width: min(100vw, calc(100dvh * 853 / 1844));
-  height: min(100dvh, calc(100vw * 1844 / 853));
-  max-width: 100vw;
-  max-height: 100dvh;
+  width: min(100vw, calc(var(--app-height, 100svh) * 853 / 1844));
+  height: min(var(--app-height, 100svh), calc(100vw * 1844 / 853));
   overflow: hidden;
   background: #070510;
+  contain: layout paint size;
 }
 
 .screen {
@@ -80,7 +86,7 @@ button {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: fill;
   object-position: center;
   user-select: none;
   pointer-events: none;

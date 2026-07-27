@@ -1,3 +1,24 @@
+function updateMobileViewport() {
+  const viewportHeight = window.visualViewport
+    ? window.visualViewport.height
+    : window.innerHeight;
+
+  document.documentElement.style.setProperty(
+    "--app-height",
+    `${Math.round(viewportHeight)}px`
+  );
+}
+
+updateMobileViewport();
+
+window.addEventListener("resize", updateMobileViewport, { passive: true });
+window.addEventListener("orientationchange", updateMobileViewport, { passive: true });
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", updateMobileViewport, { passive: true });
+  window.visualViewport.addEventListener("scroll", updateMobileViewport, { passive: true });
+}
+
 const screens = {
   start: document.getElementById("startScreen"),
   lobby: document.getElementById("lobbyScreen"),
