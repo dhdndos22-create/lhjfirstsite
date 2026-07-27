@@ -3,80 +3,86 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#090612" />
+  <meta name="theme-color" content="#070510" />
   <title>히어로러시 - 효종월드</title>
   <link rel="stylesheet" href="./hero-rush.css" />
 </head>
 <body>
-  <main id="heroRushApp" aria-live="polite">
-    <section id="startScreen" class="screen start-screen active" aria-label="히어로러시 시작 화면">
-      <img class="screen-image" src="./images/hero-rush-start.png" alt="히어로러시 시작 화면" draggable="false" />
-      <button id="gameStartBtn" class="hotspot start-hotspot" type="button" aria-label="게임 시작"></button>
-    </section>
-
-    <section id="lobbyScreen" class="screen lobby-screen" aria-label="히어로러시 로비 화면">
-      <img class="screen-image" src="./images/hero-rush-lobby.png" alt="현재 선택된 검사 챔피언이 표시된 히어로러시 로비" draggable="false" />
-
-      <a class="hotspot home-hotspot" href="../../index.html" aria-label="효종월드 메인으로 돌아가기"></a>
-      <button id="settingsBtn" class="hotspot settings-hotspot" type="button" aria-label="설정"></button>
-
-      <button class="hotspot achievement-hotspot menu-action" data-menu="업적" type="button" aria-label="업적"></button>
-      <button class="hotspot inventory-hotspot menu-action" data-menu="인벤토리" type="button" aria-label="인벤토리"></button>
-      <button class="hotspot mail-hotspot menu-action" data-menu="우편" type="button" aria-label="우편"></button>
-      <button class="hotspot champion-hotspot menu-action" data-menu="챔피언" type="button" aria-label="챔피언"></button>
-      <button class="hotspot equipment-hotspot menu-action" data-menu="장비" type="button" aria-label="장비"></button>
-      <button id="integratedMenuBtn" class="hotspot integrated-menu-hotspot" type="button" aria-label="통합 메뉴"></button>
-
-      <button id="previousChampionBtn" class="hotspot previous-champion-hotspot" type="button" aria-label="이전 챔피언"></button>
-      <button id="nextChampionBtn" class="hotspot next-champion-hotspot" type="button" aria-label="다음 챔피언"></button>
-      <button id="enterStageBtn" class="hotspot enter-hotspot" type="button" aria-label="입장하기"></button>
-
-      <div id="lobbyToast" class="toast" role="status"></div>
-    </section>
-
-    <section id="stageScreen" class="screen stage-screen" aria-label="스테이지 선택 화면">
-      <div class="stage-bg"></div>
-      <header class="stage-header safe-top">
-        <button id="stageBackBtn" class="icon-button" type="button" aria-label="로비로 돌아가기">‹</button>
-        <div>
-          <p class="eyebrow">HERO RUSH</p>
-          <h1>스테이지 선택</h1>
-        </div>
-      </header>
-
-      <div class="stage-list">
-        <button class="stage-card selected" type="button" data-stage="1">
-          <span class="stage-number">01</span>
-          <span class="stage-copy"><strong>푸른 초원</strong><small>권장 전투력 1,000</small></span>
-          <span class="stage-status">선택됨</span>
+  <main id="heroRushApp" aria-label="히어로러시">
+    <div class="mobile-frame">
+      <section id="startScreen" class="screen active" aria-label="히어로러시 게임 시작 화면">
+        <img class="screen-image" src="./images/hero-rush-start.png" alt="히어로러시 게임 시작 화면" draggable="false" />
+        <button id="gameStartBtn" class="image-hitbox start-button-hitbox" type="button" aria-label="게임 시작">
+          <span class="sr-only">게임 시작</span>
         </button>
-        <button class="stage-card locked" type="button" disabled>
-          <span class="stage-number">02</span>
-          <span class="stage-copy"><strong>그림자 숲</strong><small>스테이지 1 클리어 필요</small></span>
-          <span class="stage-status">잠금</span>
-        </button>
-        <button class="stage-card locked" type="button" disabled>
-          <span class="stage-number">03</span>
-          <span class="stage-copy"><strong>붉은 협곡</strong><small>스테이지 2 클리어 필요</small></span>
-          <span class="stage-status">잠금</span>
-        </button>
-      </div>
-
-      <div class="stage-footer safe-bottom">
-        <p><strong>1. 푸른 초원</strong><span>선택한 챔피언: 검사</span></p>
-        <button id="stagePlayBtn" type="button">전투 시작</button>
-      </div>
-    </section>
-
-    <div id="settingsModal" class="modal" aria-hidden="true">
-      <div class="modal-backdrop" data-close-modal></div>
-      <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
-        <h2 id="settingsTitle">설정</h2>
-        <label class="setting-row"><span>배경음</span><input type="checkbox" checked /></label>
-        <label class="setting-row"><span>효과음</span><input type="checkbox" checked /></label>
-        <label class="setting-row"><span>자동 공격</span><input type="checkbox" /></label>
-        <button class="modal-close" type="button" data-close-modal>닫기</button>
       </section>
+
+      <section id="lobbyScreen" class="screen" aria-label="히어로러시 로비 화면" hidden>
+        <img class="screen-image" src="./images/hero-rush-lobby.png" alt="선택된 검사 챔피언이 보이는 히어로러시 로비" draggable="false" />
+
+        <button id="homeBtn" class="image-hitbox lobby-home-hitbox" type="button" aria-label="효종월드 메인으로 돌아가기"></button>
+        <button id="settingsBtn" class="image-hitbox lobby-settings-hitbox" type="button" aria-label="설정 열기"></button>
+        <button id="menuBtn" class="image-hitbox lobby-menu-hitbox" type="button" aria-label="통합 메뉴 열기"></button>
+        <button id="enterBtn" class="image-hitbox lobby-enter-hitbox" type="button" aria-label="스테이지 선택 화면으로 이동"></button>
+
+        <nav id="integratedMenu" class="integrated-menu" aria-label="통합 메뉴">
+          <button type="button" data-menu="업적">🏆 <span>업적</span></button>
+          <button type="button" data-menu="인벤토리">🎒 <span>인벤토리</span></button>
+          <button type="button" data-menu="우편">✉️ <span>우편</span></button>
+          <button type="button" data-menu="챔피언">🛡️ <span>챔피언</span></button>
+          <button type="button" data-menu="장비">⚔️ <span>장비</span></button>
+        </nav>
+      </section>
+
+      <section id="stageScreen" class="screen stage-screen" aria-label="스테이지 선택 화면" hidden>
+        <div class="stage-header">
+          <button id="stageBackBtn" type="button" class="round-button" aria-label="로비로 돌아가기">←</button>
+          <h1>스테이지 선택</h1>
+          <span class="header-spacer"></span>
+        </div>
+
+        <div class="stage-content">
+          <button type="button" class="stage-card selected">
+            <span class="stage-number">STAGE 1</span>
+            <strong>푸른 초원</strong>
+            <span>권장 전투력 1,000</span>
+          </button>
+          <button type="button" class="stage-card locked" disabled>
+            <span class="stage-number">STAGE 2</span>
+            <strong>잊힌 숲</strong>
+            <span>잠김</span>
+          </button>
+          <button type="button" class="stage-card locked" disabled>
+            <span class="stage-number">STAGE 3</span>
+            <strong>붉은 협곡</strong>
+            <span>잠김</span>
+          </button>
+        </div>
+
+        <button id="battleStartBtn" type="button" class="battle-start-button">전투 시작</button>
+      </section>
+
+      <div id="modalBackdrop" class="modal-backdrop" hidden>
+        <section id="settingsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
+          <div class="modal-title-row">
+            <h2 id="settingsTitle">설정</h2>
+            <button class="modal-close" type="button" aria-label="설정 닫기">✕</button>
+          </div>
+          <label class="setting-row"><span>배경음</span><input id="bgmToggle" type="checkbox" checked /></label>
+          <label class="setting-row"><span>효과음</span><input id="sfxToggle" type="checkbox" checked /></label>
+          <label class="setting-row"><span>자동 공격</span><input id="autoAttackToggle" type="checkbox" /></label>
+        </section>
+
+        <section id="infoModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="infoTitle" hidden>
+          <div class="modal-title-row">
+            <h2 id="infoTitle">메뉴</h2>
+            <button class="modal-close" type="button" aria-label="메뉴 닫기">✕</button>
+          </div>
+          <p id="infoText">준비 중인 메뉴입니다.</p>
+        </section>
+      </div>
+
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
     </div>
   </main>
 

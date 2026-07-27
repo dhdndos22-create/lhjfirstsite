@@ -4,49 +4,103 @@ const screens = {
   stage: document.getElementById("stageScreen")
 };
 
-const toast = document.getElementById("lobbyToast");
+const gameStartBtn = document.getElementById("gameStartBtn");
+const homeBtn = document.getElementById("homeBtn");
+const settingsBtn = document.getElementById("settingsBtn");
+const menuBtn = document.getElementById("menuBtn");
+const enterBtn = document.getElementById("enterBtn");
+const integratedMenu = document.getElementById("integratedMenu");
+const stageBackBtn = document.getElementById("stageBackBtn");
+const battleStartBtn = document.getElementById("battleStartBtn");
+
+const modalBackdrop = document.getElementById("modalBackdrop");
 const settingsModal = document.getElementById("settingsModal");
-let toastTimer;
+const infoModal = document.getElementById("infoModal");
+const infoTitle = document.getElementById("infoTitle");
+const infoText = document.getElementById("infoText");
+const toast = document.getElementById("toast");
+
+let toastTimer = null;
 
 function showScreen(name) {
-  Object.values(screens).forEach((screen) => screen.classList.remove("active"));
-  screens[name].classList.add("active");
+  Object.entries(screens).forEach(([key, screen]) => {
+    const isActive = key === name;
+    screen.hidden = !isActive;
+    screen.classList.toggle("active", isActive);
+  });
+
+  integratedMenu.classList.remove("open");
+  closeModal();
 }
 
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add("show");
   window.clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => toast.classList.remove("show"), 1500);
+  toastTimer = window.setTimeout(() => toast.classList.remove("show"), 1700);
 }
 
-function openSettings() {
-  settingsModal.classList.add("open");
-  settingsModal.setAttribute("aria-hidden", "false");
+function openModal(modal) {
+  modalBackdrop.hidden = false;
+  settingsModal.hidden = modal !== settingsModal;
+  infoModal.hidden = modal !== infoModal;
 }
 
-function closeSettings() {
-  settingsModal.classList.remove("open");
-  settingsModal.setAttribute("aria-hidden", "true");
+function closeModal() {
+  modalBackdrop.hidden = true;
+  settingsModal.hidden = true;
+  infoModal.hidden = true;
 }
 
-document.getElementById("gameStartBtn").addEventListener("click", () => showScreen("lobby"));
-document.getElementById("enterStageBtn").addEventListener("click", () => showScreen("stage"));
-document.getElementById("stageBackBtn").addEventListener("click", () => showScreen("lobby"));
-document.getElementById("settingsBtn").addEventListener("click", openSettings);
+gameStartBtn.addEventListener("click", () => showScreen("lobby"));
 
-document.querySelectorAll("[data-close-modal]").forEach((element) => {
-  element.addEventListener("click", closeSettings);
+homeBtn.addEventListener("click", () => {
+  window.location.href = "../../index.html";
 });
 
-document.querySelectorAll(".menu-action").forEach((button) => {
-  button.addEventListener("click", () => showToast(`${button.dataset.menu} 화면은 다음 단계에서 연결됩니다.`));
+settingsBtn.addEventListener("click", () => openModal(settingsModal));
+
+menuBtn.addEventListener("click", () => {
+  integratedMenu.classList.toggle("open");
 });
 
-document.getElementById("integratedMenuBtn").addEventListener("click", () => {
-  showToast("통합 메뉴: 업적 · 인벤토리 · 우편 · 챔피언 · 장비");
+integratedMenu.addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-menu]");
+  if (!button) return;
+
+  const menuName = button.dataset.menu;
+  infoTitle.textContent = menuName;
+  infoText.textContent = `${menuName} 화면은 다음 개발 단계에서 연결됩니다.`;
+  integratedMenu.classList.remove("open");
+  openModal(infoModal);
 });
 
-document.getElementById("previousChampionBtn").addEventListener("click", () => showToast("이전 챔피언은 아직 잠겨 있습니다."));
-document.getElementById("nextChampionBtn").addEventListener("click", () => showToast("다음 챔피언은 아직 잠겨 있습니다."));
-document.getElementById("stagePlayBtn").addEventListener("click", () => alert("스테이지 1 전투 화면은 다음 단계에서 구현합니다."));
+enterBtn.addEventListener("click", () => showScreen("stage"));
+stageBackBtn.addEventListener("click", () => showScreen("lobby"));
+
+battleStartBtn.addEventListener("click", () => {
+  showToast("푸른 초원 전투 화면은 다음 단계에서 연결됩니다.");
+});
+
+document.querySelectorAll(".modal-close").forEach((button) => {
+  button.addEventListener("click", closeModal);
+});
+
+modalBackdrop.addEventListener("click", (event) => {
+  if (event.target === modalBackdrop) closeModal();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    if (!modalBackdrop.hidden) {
+      closeModal();
+      return;
+    }
+
+    if (screens.stage.classList.contains("active")) {
+      showScreen("lobby");
+    }
+  }
+});
+
+showScreen("start");
