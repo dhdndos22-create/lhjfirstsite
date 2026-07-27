@@ -13,7 +13,7 @@
       <section id="startScreen" class="screen active" aria-label="히어로러시 게임 시작 화면">
         <img class="screen-image" src="./images/hero-rush-start.png" alt="히어로러시 게임 시작 화면" draggable="false" />
         <button id="gameStartBtn" class="image-hitbox start-button-hitbox" type="button" aria-label="게임 시작">
-          <span class="sr-only">게임 시작</span>
+          게임 시작
         </button>
       </section>
 
@@ -60,6 +60,79 @@
         </div>
 
         <button id="battleStartBtn" type="button" class="battle-start-button">전투 시작</button>
+      </section>
+
+
+      <section id="battleScreen" class="screen battle-screen" aria-label="1 스테이지 푸른 초원" hidden>
+        <div id="battleViewport" class="battle-viewport">
+          <div id="battleWorld" class="battle-world" aria-hidden="true">
+            <div class="world-path path-one"></div>
+            <div class="world-path path-two"></div>
+            <div class="world-rock rock-one"></div>
+            <div class="world-rock rock-two"></div>
+            <div class="world-rock rock-three"></div>
+            <div class="world-bush bush-one"></div>
+            <div class="world-bush bush-two"></div>
+            <div class="world-bush bush-three"></div>
+            <div class="world-flower flower-one">✿</div>
+            <div class="world-flower flower-two">✿</div>
+            <div class="world-flower flower-three">✿</div>
+          </div>
+
+          <div id="battlePlayer" class="battle-player idle" aria-label="검사 챔피언">
+            <div class="player-shadow"></div>
+            <div class="player-body">
+              <div class="player-hair">
+                <i></i><i></i><i></i><i></i><i></i>
+              </div>
+              <div class="player-head">
+                <span class="player-brow left"></span>
+                <span class="player-brow right"></span>
+                <span class="player-eye left"></span>
+                <span class="player-eye right"></span>
+              </div>
+              <div class="player-scarf"></div>
+              <div class="player-torso"></div>
+              <div class="player-arm arm-left"></div>
+              <div class="player-arm arm-right"></div>
+              <div class="player-leg leg-left"></div>
+              <div class="player-leg leg-right"></div>
+              <div class="player-sword">
+                <span class="sword-blade"></span>
+                <span class="sword-guard"></span>
+              </div>
+              <div class="player-shield">✦</div>
+            </div>
+          </div>
+
+          <header class="battle-hud">
+            <div>
+              <strong>1 - 푸른 초원</strong>
+              <span id="battlePosition">1250, 1250</span>
+            </div>
+            <button id="battleExitBtn" type="button" aria-label="스테이지 나가기">나가기</button>
+          </header>
+
+          <div class="battle-status">
+            <div class="hp-track"><span></span></div>
+            <small>검사 · Lv. 1</small>
+          </div>
+
+          <div id="joystickArea" class="joystick-area" aria-label="이동 조이스틱">
+            <div id="joystickBase" class="joystick-base">
+              <div id="joystickKnob" class="joystick-knob"></div>
+            </div>
+          </div>
+
+          <button id="attackButton" class="attack-button" type="button" aria-label="기본 공격 준비 중">
+            <span>⚔</span>
+          </button>
+
+          <div id="countdownOverlay" class="countdown-overlay" aria-live="assertive">
+            <strong id="countdownTitle">1 - 푸른 초원</strong>
+            <span id="countdownText">READY</span>
+          </div>
+        </div>
       </section>
 
       <div id="modalBackdrop" class="modal-backdrop" hidden>

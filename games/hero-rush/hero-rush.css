@@ -1,3 +1,8 @@
+
+[hidden] {
+  display: none !important;
+}
+
 :root {
   color-scheme: dark;
   --design-width: 853;
@@ -38,28 +43,22 @@ button {
 
 #heroRushApp {
   position: fixed;
-  inset: 0;
-  display: grid;
-  width: 100vw;
-  height: var(--app-height, 100svh);
+  left: 0;
+  right: 0;
+  top: var(--app-top, 0px);
+  width: 100%;
+  height: var(--app-height, 100dvh);
   overflow: hidden;
-  place-items: center;
   background: #070510;
 }
 
-/*
-  iPhone Safari/Chrome의 주소창·하단 도구막대를 제외한 실제 표시 영역에
-  853 x 1844 게임 화면 전체를 contain 방식으로 맞춘다.
-  화면 비율이 이미지와 다르면 좌우 또는 위아래에 검은 여백이 생길 수 있지만,
-  이미지와 버튼은 절대로 잘리지 않는다.
-*/
 .mobile-frame {
-  position: relative;
-  width: min(100vw, calc(var(--app-height, 100svh) * 853 / 1844));
-  height: min(var(--app-height, 100svh), calc(100vw * 1844 / 853));
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   background: #070510;
-  contain: layout paint size;
 }
 
 .screen {
@@ -86,8 +85,8 @@ button {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: fill;
-  object-position: center;
+  object-fit: cover;
+  object-position: center top;
   user-select: none;
   pointer-events: none;
 }
@@ -103,7 +102,8 @@ button {
 }
 
 .image-hitbox:active {
-  background: rgba(255, 255, 255, 0.12);
+  transform: scale(.97);
+  filter: brightness(1.08);
 }
 
 .image-hitbox:focus-visible {
@@ -111,13 +111,25 @@ button {
   outline-offset: 2px;
 }
 
-/* 새 시작 이미지의 실제 게임 시작 버튼 위치 */
+/* 시작 화면의 실제 게임 시작 버튼 */
 .start-button-hitbox {
-  left: 17.5%;
-  top: 72.1%;
-  width: 65%;
-  height: 8.9%;
+  left: 12%;
+  bottom: calc(env(safe-area-inset-bottom) + 9%);
+  width: 76%;
+  height: clamp(66px, 9.5vh, 96px);
+  border: 3px solid #ffe59a;
   border-radius: 22px;
+  color: #ffffff;
+  background:
+    linear-gradient(180deg, rgba(53,156,255,.98), rgba(7,88,207,.98));
+  box-shadow:
+    inset 0 0 0 3px rgba(255,255,255,.18),
+    0 7px 0 #7b4b00,
+    0 12px 25px rgba(0,0,0,.45);
+  font-size: clamp(28px, 7vw, 42px);
+  font-weight: 1000;
+  letter-spacing: -1px;
+  text-shadow: 0 3px 3px rgba(0,0,0,.45);
 }
 
 /* 로비 이미지 속 버튼 위치 */
@@ -365,4 +377,523 @@ button {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+
+/* =========================================================
+   STAGE 1 - 푸른 초원: 단순 모바일 액션 배경
+   ========================================================= */
+
+.battle-screen {
+  background: #83c95d;
+}
+
+.battle-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  background: #83c95d;
+}
+
+.battle-world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2500px;
+  height: 2500px;
+  will-change: transform;
+  background:
+    radial-gradient(circle, rgba(255,255,255,.35) 0 2px, transparent 3px)
+      40px 60px / 170px 170px,
+    radial-gradient(circle, rgba(67,139,58,.22) 0 4px, transparent 5px)
+      10px 20px / 120px 120px,
+    linear-gradient(135deg, #91d56c, #78c357);
+}
+
+.battle-world::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 124px,
+      rgba(44,112,50,.08) 125px 127px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 124px,
+      rgba(44,112,50,.08) 125px 127px
+    );
+}
+
+.battle-world::after {
+  content: "";
+  position: absolute;
+  left: 930px;
+  top: 0;
+  width: 640px;
+  height: 2500px;
+  border-radius: 45%;
+  transform: rotate(7deg);
+  background: rgba(221,201,139,.34);
+}
+
+.world-path,
+.world-rock,
+.world-bush,
+.world-flower {
+  display: none;
+}
+
+.battle-player {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 92px;
+  height: 118px;
+  transform: translate(-50%, -62%);
+  transform-origin: 50% 85%;
+  z-index: 12;
+  pointer-events: none;
+}
+
+.player-shadow {
+  position: absolute;
+  left: 14px;
+  bottom: 1px;
+  width: 66px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(14,38,20,.35);
+  filter: blur(3px);
+}
+
+.player-body {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 82%;
+}
+
+.player-head {
+  position: absolute;
+  left: 23px;
+  top: 18px;
+  width: 53px;
+  height: 52px;
+  border: 3px solid #34221c;
+  border-radius: 50%;
+  background: #f5eee2;
+  z-index: 4;
+}
+
+.player-hair {
+  position: absolute;
+  left: 20px;
+  top: 5px;
+  width: 59px;
+  height: 39px;
+  z-index: 7;
+}
+
+.player-hair i {
+  position: absolute;
+  width: 24px;
+  height: 25px;
+  background: #6d351d;
+  border: 3px solid #2d1b16;
+  border-radius: 60% 20% 55% 25%;
+}
+
+.player-hair i:nth-child(1) { left: 0; top: 15px; transform: rotate(-38deg); }
+.player-hair i:nth-child(2) { left: 10px; top: 2px; transform: rotate(-18deg); }
+.player-hair i:nth-child(3) { left: 26px; top: 0; transform: rotate(6deg); }
+.player-hair i:nth-child(4) { left: 42px; top: 8px; transform: rotate(28deg); }
+.player-hair i:nth-child(5) { left: 20px; top: 14px; transform: rotate(3deg); }
+
+.player-brow {
+  position: absolute;
+  top: 16px;
+  width: 15px;
+  height: 3px;
+  border-radius: 8px;
+  background: #2b201c;
+}
+
+.player-brow.left { left: 7px; transform: rotate(16deg); }
+.player-brow.right { right: 7px; transform: rotate(-16deg); }
+
+.player-eye {
+  position: absolute;
+  top: 26px;
+  width: 4px;
+  height: 10px;
+  border-radius: 50%;
+  background: #201915;
+}
+
+.player-eye.left { left: 15px; }
+.player-eye.right { right: 15px; }
+
+.player-scarf {
+  position: absolute;
+  left: 14px;
+  top: 61px;
+  width: 70px;
+  height: 19px;
+  border: 3px solid #4b1717;
+  border-radius: 50%;
+  background: #a72a26;
+  z-index: 5;
+}
+
+.player-scarf::after {
+  content: "";
+  position: absolute;
+  right: -22px;
+  top: 5px;
+  width: 34px;
+  height: 12px;
+  border: 3px solid #4b1717;
+  border-left: 0;
+  border-radius: 0 70% 70% 0;
+  background: #b8322d;
+  transform: rotate(10deg);
+}
+
+.player-torso {
+  position: absolute;
+  left: 25px;
+  top: 68px;
+  width: 48px;
+  height: 35px;
+  border: 3px solid #241d1c;
+  border-radius: 16px 16px 12px 12px;
+  background:
+    linear-gradient(90deg, transparent 46%, #d3a333 47% 53%, transparent 54%),
+    #382f32;
+  z-index: 3;
+}
+
+.player-arm,
+.player-leg {
+  position: absolute;
+  border: 3px solid #241d1c;
+  background: #49393a;
+}
+
+.player-arm {
+  top: 73px;
+  width: 19px;
+  height: 29px;
+  border-radius: 12px;
+  z-index: 2;
+}
+
+.arm-left { left: 15px; transform: rotate(14deg); }
+.arm-right { right: 12px; transform: rotate(-14deg); }
+
+.player-leg {
+  top: 96px;
+  width: 21px;
+  height: 18px;
+  border-radius: 7px 7px 11px 11px;
+}
+
+.leg-left { left: 27px; }
+.leg-right { right: 24px; }
+
+.player-sword {
+  position: absolute;
+  left: 3px;
+  top: 54px;
+  width: 18px;
+  height: 60px;
+  transform: rotate(-34deg);
+  transform-origin: 50% 85%;
+  z-index: 1;
+}
+
+.sword-blade {
+  position: absolute;
+  left: 4px;
+  top: 0;
+  width: 10px;
+  height: 46px;
+  border: 2px solid #34363b;
+  clip-path: polygon(50% 0, 100% 18%, 85% 100%, 15% 100%, 0 18%);
+  background: linear-gradient(90deg, #dfe8f0, #fff, #8e9baa);
+}
+
+.sword-guard {
+  position: absolute;
+  left: -2px;
+  bottom: 8px;
+  width: 22px;
+  height: 7px;
+  border-radius: 4px;
+  background: #d5a12b;
+  border: 2px solid #574014;
+}
+
+.player-shield {
+  position: absolute;
+  right: 2px;
+  top: 72px;
+  width: 29px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  border: 3px solid #543817;
+  border-radius: 9px 9px 15px 15px;
+  color: #f4d16b;
+  background: #2760a5;
+  z-index: 6;
+}
+
+.battle-player.idle .player-body {
+  animation: heroIdle 1.3s ease-in-out infinite;
+}
+
+.battle-player.walking .player-body {
+  animation: heroWalkBob .24s ease-in-out infinite alternate;
+}
+
+.battle-player.walking .leg-left {
+  animation: heroLegLeft .24s ease-in-out infinite alternate;
+}
+
+.battle-player.walking .leg-right {
+  animation: heroLegRight .24s ease-in-out infinite alternate;
+}
+
+.battle-player.walking .player-sword {
+  animation: swordWalk .35s ease-in-out infinite alternate;
+}
+
+.battle-player.face-left .player-body {
+  transform: scaleX(-1);
+}
+
+@keyframes heroIdle {
+  0%, 100% { transform: translateY(0) rotate(-.5deg); }
+  50% { transform: translateY(-3px) rotate(.5deg); }
+}
+
+@keyframes heroWalkBob {
+  from { transform: translateY(0) rotate(-2deg); }
+  to { transform: translateY(-5px) rotate(2deg); }
+}
+
+@keyframes heroLegLeft {
+  from { transform: translateX(-3px) rotate(14deg); }
+  to { transform: translateX(3px) rotate(-14deg); }
+}
+
+@keyframes heroLegRight {
+  from { transform: translateX(3px) rotate(-14deg); }
+  to { transform: translateX(-3px) rotate(14deg); }
+}
+
+@keyframes swordWalk {
+  from { transform: rotate(-40deg); }
+  to { transform: rotate(-28deg); }
+}
+
+.battle-hud {
+  position: absolute;
+  z-index: 30;
+  top: max(16px, env(safe-area-inset-top));
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.battle-hud > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 13px;
+  border: 1px solid rgba(244,211,123,.65);
+  border-radius: 13px;
+  color: white;
+  background: rgba(12,25,18,.68);
+  box-shadow: 0 4px 14px rgba(0,0,0,.28);
+  backdrop-filter: blur(5px);
+}
+
+.battle-hud strong {
+  font-size: clamp(15px, 4vw, 20px);
+}
+
+.battle-hud span {
+  color: #d9e8d0;
+  font-size: 11px;
+}
+
+.battle-hud button {
+  pointer-events: auto;
+  min-width: 62px;
+  min-height: 42px;
+  border: 1px solid rgba(244,211,123,.7);
+  border-radius: 12px;
+  color: white;
+  font-weight: 800;
+  background: rgba(12,25,18,.72);
+}
+
+.battle-status {
+  position: absolute;
+  z-index: 22;
+  left: 50%;
+  top: calc(50% - 82px);
+  width: 105px;
+  transform: translateX(-50%);
+  text-align: center;
+  color: white;
+  text-shadow: 0 2px 3px #162;
+  pointer-events: none;
+}
+
+.hp-track {
+  height: 8px;
+  overflow: hidden;
+  border: 2px solid rgba(30,41,25,.85);
+  border-radius: 6px;
+  background: #4b312e;
+}
+
+.hp-track span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #54e069, #9af06b);
+}
+
+.battle-status small {
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.joystick-area {
+  position: absolute;
+  z-index: 40;
+  left: 0;
+  bottom: 0;
+  width: 54%;
+  height: 39%;
+  touch-action: none;
+}
+
+.joystick-base {
+  position: absolute;
+  left: max(28px, env(safe-area-inset-left));
+  bottom: max(30px, calc(env(safe-area-inset-bottom) + 18px));
+  width: 128px;
+  height: 128px;
+  border: 3px solid rgba(255,255,255,.28);
+  border-radius: 50%;
+  background: rgba(20,31,35,.27);
+  box-shadow:
+    inset 0 0 24px rgba(0,0,0,.4),
+    0 5px 20px rgba(0,0,0,.22);
+  backdrop-filter: blur(2px);
+}
+
+.joystick-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 58px;
+  height: 58px;
+  border: 2px solid rgba(255,255,255,.5);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255,255,255,.4), transparent 30%),
+    rgba(35,56,70,.76);
+  box-shadow: 0 4px 12px rgba(0,0,0,.38);
+  will-change: transform;
+}
+
+.attack-button {
+  position: absolute;
+  z-index: 40;
+  right: max(30px, env(safe-area-inset-right));
+  bottom: max(34px, calc(env(safe-area-inset-bottom) + 22px));
+  width: 96px;
+  height: 96px;
+  border: 4px solid rgba(239,190,77,.85);
+  border-radius: 50%;
+  color: white;
+  font-size: 44px;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255,255,255,.26), transparent 28%),
+    rgba(77,42,22,.78);
+  box-shadow: inset 0 0 20px #20140f, 0 5px 18px rgba(0,0,0,.35);
+  opacity: .75;
+}
+
+.attack-button:active {
+  transform: scale(.94);
+}
+
+.countdown-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 14px;
+  color: #ffe39a;
+  text-align: center;
+  text-shadow:
+    0 4px 0 #67400e,
+    0 0 22px rgba(255,198,61,.85);
+  background: rgba(4,16,10,.16);
+  pointer-events: none;
+  transition: opacity .28s ease;
+}
+
+.countdown-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.countdown-overlay strong {
+  padding: 8px 24px;
+  border: 2px solid rgba(255,220,131,.75);
+  border-radius: 17px;
+  color: white;
+  font-size: clamp(18px, 5vw, 28px);
+  background: rgba(11,24,16,.78);
+  box-shadow: 0 5px 18px rgba(0,0,0,.28);
+}
+
+.countdown-overlay span {
+  font-size: clamp(66px, 20vw, 122px);
+  font-weight: 1000;
+  letter-spacing: -4px;
+}
+
+@media (max-width: 380px) {
+  .joystick-base {
+    width: 112px;
+    height: 112px;
+  }
+
+  .joystick-knob {
+    width: 52px;
+    height: 52px;
+  }
+
+  .attack-button {
+    width: 84px;
+    height: 84px;
+  }
 }
