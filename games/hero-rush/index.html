@@ -8,21 +8,76 @@
   <link rel="stylesheet" href="./hero-rush.css" />
 </head>
 <body>
-  <main id="heroRushApp">
-    <section id="startScreen" class="start-screen" aria-label="히어로러시 시작 화면">
-      <img
-        class="start-background"
-        src="./images/hero-rush-start.png"
-        alt="히어로러시 영웅들이 몬스터 군단과 대치하는 시작 화면"
-        draggable="false"
-      />
-
-      <button id="gameStartBtn" class="game-start-hitbox" type="button" aria-label="게임 시작">
-        <span class="screen-reader-only">게임 시작</span>
-      </button>
-
-      <div id="startMessage" class="start-message" role="status" aria-live="polite"></div>
+  <main id="heroRushApp" aria-live="polite">
+    <section id="startScreen" class="screen start-screen active" aria-label="히어로러시 시작 화면">
+      <img class="screen-image" src="./images/hero-rush-start.png" alt="히어로러시 시작 화면" draggable="false" />
+      <button id="gameStartBtn" class="hotspot start-hotspot" type="button" aria-label="게임 시작"></button>
     </section>
+
+    <section id="lobbyScreen" class="screen lobby-screen" aria-label="히어로러시 로비 화면">
+      <img class="screen-image" src="./images/hero-rush-lobby.png" alt="현재 선택된 검사 챔피언이 표시된 히어로러시 로비" draggable="false" />
+
+      <a class="hotspot home-hotspot" href="../../index.html" aria-label="효종월드 메인으로 돌아가기"></a>
+      <button id="settingsBtn" class="hotspot settings-hotspot" type="button" aria-label="설정"></button>
+
+      <button class="hotspot achievement-hotspot menu-action" data-menu="업적" type="button" aria-label="업적"></button>
+      <button class="hotspot inventory-hotspot menu-action" data-menu="인벤토리" type="button" aria-label="인벤토리"></button>
+      <button class="hotspot mail-hotspot menu-action" data-menu="우편" type="button" aria-label="우편"></button>
+      <button class="hotspot champion-hotspot menu-action" data-menu="챔피언" type="button" aria-label="챔피언"></button>
+      <button class="hotspot equipment-hotspot menu-action" data-menu="장비" type="button" aria-label="장비"></button>
+      <button id="integratedMenuBtn" class="hotspot integrated-menu-hotspot" type="button" aria-label="통합 메뉴"></button>
+
+      <button id="previousChampionBtn" class="hotspot previous-champion-hotspot" type="button" aria-label="이전 챔피언"></button>
+      <button id="nextChampionBtn" class="hotspot next-champion-hotspot" type="button" aria-label="다음 챔피언"></button>
+      <button id="enterStageBtn" class="hotspot enter-hotspot" type="button" aria-label="입장하기"></button>
+
+      <div id="lobbyToast" class="toast" role="status"></div>
+    </section>
+
+    <section id="stageScreen" class="screen stage-screen" aria-label="스테이지 선택 화면">
+      <div class="stage-bg"></div>
+      <header class="stage-header safe-top">
+        <button id="stageBackBtn" class="icon-button" type="button" aria-label="로비로 돌아가기">‹</button>
+        <div>
+          <p class="eyebrow">HERO RUSH</p>
+          <h1>스테이지 선택</h1>
+        </div>
+      </header>
+
+      <div class="stage-list">
+        <button class="stage-card selected" type="button" data-stage="1">
+          <span class="stage-number">01</span>
+          <span class="stage-copy"><strong>푸른 초원</strong><small>권장 전투력 1,000</small></span>
+          <span class="stage-status">선택됨</span>
+        </button>
+        <button class="stage-card locked" type="button" disabled>
+          <span class="stage-number">02</span>
+          <span class="stage-copy"><strong>그림자 숲</strong><small>스테이지 1 클리어 필요</small></span>
+          <span class="stage-status">잠금</span>
+        </button>
+        <button class="stage-card locked" type="button" disabled>
+          <span class="stage-number">03</span>
+          <span class="stage-copy"><strong>붉은 협곡</strong><small>스테이지 2 클리어 필요</small></span>
+          <span class="stage-status">잠금</span>
+        </button>
+      </div>
+
+      <div class="stage-footer safe-bottom">
+        <p><strong>1. 푸른 초원</strong><span>선택한 챔피언: 검사</span></p>
+        <button id="stagePlayBtn" type="button">전투 시작</button>
+      </div>
+    </section>
+
+    <div id="settingsModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal></div>
+      <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <h2 id="settingsTitle">설정</h2>
+        <label class="setting-row"><span>배경음</span><input type="checkbox" checked /></label>
+        <label class="setting-row"><span>효과음</span><input type="checkbox" checked /></label>
+        <label class="setting-row"><span>자동 공격</span><input type="checkbox" /></label>
+        <button class="modal-close" type="button" data-close-modal>닫기</button>
+      </section>
+    </div>
   </main>
 
   <script src="./hero-rush.js"></script>
