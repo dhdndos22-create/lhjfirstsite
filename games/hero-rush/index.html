@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#090612" />
+  <title>히어로러시 - 효종월드</title>
+  <link rel="stylesheet" href="./hero-rush.css" />
+</head>
+<body>
+  <main id="heroRushApp">
+    <section id="startScreen" class="start-screen" aria-label="히어로러시 시작 화면">
+      <img
+        class="start-background"
+        src="./images/hero-rush-start.png"
+        alt="히어로러시 영웅들이 몬스터 군단과 대치하는 시작 화면"
+        draggable="false"
+      />
+
+      <button id="gameStartBtn" class="game-start-hitbox" type="button" aria-label="게임 시작">
+        <span class="screen-reader-only">게임 시작</span>
+      </button>
+
+      <div id="startMessage" class="start-message" role="status" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script src="./hero-rush.js"></script>
+</body>
+</html>
