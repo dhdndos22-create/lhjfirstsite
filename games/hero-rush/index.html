@@ -12,8 +12,11 @@
     <div class="mobile-frame">
       <section id="startScreen" class="screen active" aria-label="히어로러시 게임 시작 화면">
         <img class="screen-image" src="./images/hero-rush-start.png" alt="히어로러시 게임 시작 화면" draggable="false" />
-        <button id="gameStartBtn" class="image-hitbox start-button-hitbox" type="button" aria-label="게임 시작">
-          게임 시작
+        <button id="gameStartBtn"
+          class="image-hitbox start-button-hitbox"
+          type="button"
+          aria-label="게임 시작">
+          <span class="sr-only">게임 시작</span>
         </button>
       </section>
 
@@ -82,26 +85,33 @@
           <div id="battlePlayer" class="battle-player idle" aria-label="검사 챔피언">
             <div class="player-shadow"></div>
             <div class="player-body">
-              <div class="player-hair">
-                <i></i><i></i><i></i><i></i><i></i>
+              <div class="hero-hair">
+                <i></i><i></i><i></i><i></i><i></i><i></i>
               </div>
-              <div class="player-head">
-                <span class="player-brow left"></span>
-                <span class="player-brow right"></span>
-                <span class="player-eye left"></span>
-                <span class="player-eye right"></span>
+              <div class="hero-face">
+                <span class="hero-brow left"></span>
+                <span class="hero-brow right"></span>
+                <span class="hero-eye left"></span>
+                <span class="hero-eye right"></span>
+                <span class="hero-mouth"></span>
               </div>
-              <div class="player-scarf"></div>
-              <div class="player-torso"></div>
-              <div class="player-arm arm-left"></div>
-              <div class="player-arm arm-right"></div>
-              <div class="player-leg leg-left"></div>
-              <div class="player-leg leg-right"></div>
-              <div class="player-sword">
+              <div class="hero-scarf"></div>
+              <div class="hero-armor">
+                <span class="armor-gold-line"></span>
+                <span class="armor-belt"></span>
+              </div>
+              <div class="hero-arm arm-left"></div>
+              <div class="hero-arm arm-right"></div>
+              <div class="hero-leg leg-left"></div>
+              <div class="hero-leg leg-right"></div>
+              <div class="hero-sword">
                 <span class="sword-blade"></span>
                 <span class="sword-guard"></span>
+                <span class="sword-handle"></span>
               </div>
-              <div class="player-shield">✦</div>
+              <div class="hero-shield">
+                <span>✦</span>
+              </div>
             </div>
           </div>
 

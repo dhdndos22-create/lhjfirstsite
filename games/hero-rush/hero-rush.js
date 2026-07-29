@@ -32,6 +32,7 @@ const screens = {
 };
 
 const gameStartBtn = document.getElementById("gameStartBtn");
+const startBackgroundImage = document.getElementById("startBackgroundImage");
 const homeBtn = document.getElementById("homeBtn");
 const settingsBtn = document.getElementById("settingsBtn");
 const menuBtn = document.getElementById("menuBtn");
@@ -392,5 +393,61 @@ window.addEventListener("resize", () => {
 });
 
 
+
+function positionStartButtonHitbox() {
+  if (!startBackgroundImage || !gameStartBtn || !screens.start) return;
+
+  const naturalWidth = startBackgroundImage.naturalWidth || 853;
+  const naturalHeight = startBackgroundImage.naturalHeight || 1844;
+  const screenRect = screens.start.getBoundingClientRect();
+
+  if (!screenRect.width || !screenRect.height) return;
+
+  /*
+    hero-rush-start.png 원본 좌표 기준.
+    배경 이미지에 그려진 파란색 '게임 시작' 버튼 영역만 클릭되게 한다.
+  */
+  const sourceButton = {
+    x: 145,
+    y: 1320,
+    width: 565,
+    height: 150
+  };
+
+  const scale = Math.max(
+    screenRect.width / naturalWidth,
+    screenRect.height / naturalHeight
+  );
+
+  const renderedWidth = naturalWidth * scale;
+  const renderedHeight = naturalHeight * scale;
+
+  // CSS: object-position: center top
+  const offsetX = (screenRect.width - renderedWidth) / 2;
+  const offsetY = 0;
+
+  gameStartBtn.style.left = `${offsetX + sourceButton.x * scale}px`;
+  gameStartBtn.style.top = `${offsetY + sourceButton.y * scale}px`;
+  gameStartBtn.style.width = `${sourceButton.width * scale}px`;
+  gameStartBtn.style.height = `${sourceButton.height * scale}px`;
+  gameStartBtn.style.bottom = "auto";
+}
+
+if (startBackgroundImage) {
+  if (startBackgroundImage.complete) {
+    positionStartButtonHitbox();
+  } else {
+    startBackgroundImage.addEventListener("load", positionStartButtonHitbox, { once: true });
+  }
+}
+
+window.addEventListener("resize", positionStartButtonHitbox, { passive: true });
+window.addEventListener("orientationchange", positionStartButtonHitbox, { passive: true });
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", positionStartButtonHitbox, { passive: true });
+}
+
 closeModal();
 showScreen("start");
+requestAnimationFrame(positionStartButtonHitbox);

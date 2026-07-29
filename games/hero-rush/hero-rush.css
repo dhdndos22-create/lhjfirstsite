@@ -102,8 +102,7 @@ button {
 }
 
 .image-hitbox:active {
-  transform: scale(.97);
-  filter: brightness(1.08);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .image-hitbox:focus-visible {
@@ -111,25 +110,17 @@ button {
   outline-offset: 2px;
 }
 
-/* 시작 화면의 실제 게임 시작 버튼 */
+/* 배경 이미지에 그려진 게임 시작 버튼 위의 투명 클릭 영역 */
 .start-button-hitbox {
-  left: 12%;
-  bottom: calc(env(safe-area-inset-bottom) + 9%);
-  width: 76%;
-  height: clamp(66px, 9.5vh, 96px);
-  border: 3px solid #ffe59a;
-  border-radius: 22px;
-  color: #ffffff;
-  background:
-    linear-gradient(180deg, rgba(53,156,255,.98), rgba(7,88,207,.98));
-  box-shadow:
-    inset 0 0 0 3px rgba(255,255,255,.18),
-    0 7px 0 #7b4b00,
-    0 12px 25px rgba(0,0,0,.45);
-  font-size: clamp(28px, 7vw, 42px);
-  font-weight: 1000;
-  letter-spacing: -1px;
-  text-shadow: 0 3px 3px rgba(0,0,0,.45);
+  position: absolute;
+  z-index: 20;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  box-shadow: none;
+  color: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
 /* 로비 이미지 속 버튼 위치 */
@@ -447,13 +438,14 @@ button {
   display: none;
 }
 
+
 .battle-player {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 92px;
-  height: 118px;
-  transform: translate(-50%, -62%);
+  width: 58px;
+  height: 74px;
+  transform: translate(-50%, -58%);
   transform-origin: 50% 85%;
   z-index: 12;
   pointer-events: none;
@@ -461,13 +453,13 @@ button {
 
 .player-shadow {
   position: absolute;
-  left: 14px;
-  bottom: 1px;
-  width: 66px;
-  height: 18px;
+  left: 10px;
+  bottom: 0;
+  width: 40px;
+  height: 10px;
   border-radius: 50%;
-  background: rgba(14,38,20,.35);
-  filter: blur(3px);
+  background: rgba(20, 42, 22, .32);
+  filter: blur(2px);
 }
 
 .player-body {
@@ -476,200 +468,240 @@ button {
   transform-origin: 50% 82%;
 }
 
-.player-head {
+.hero-face {
   position: absolute;
-  left: 23px;
-  top: 18px;
-  width: 53px;
-  height: 52px;
-  border: 3px solid #34221c;
-  border-radius: 50%;
-  background: #f5eee2;
-  z-index: 4;
-}
-
-.player-hair {
-  position: absolute;
-  left: 20px;
-  top: 5px;
-  width: 59px;
-  height: 39px;
-  z-index: 7;
-}
-
-.player-hair i {
-  position: absolute;
-  width: 24px;
-  height: 25px;
-  background: #6d351d;
-  border: 3px solid #2d1b16;
-  border-radius: 60% 20% 55% 25%;
-}
-
-.player-hair i:nth-child(1) { left: 0; top: 15px; transform: rotate(-38deg); }
-.player-hair i:nth-child(2) { left: 10px; top: 2px; transform: rotate(-18deg); }
-.player-hair i:nth-child(3) { left: 26px; top: 0; transform: rotate(6deg); }
-.player-hair i:nth-child(4) { left: 42px; top: 8px; transform: rotate(28deg); }
-.player-hair i:nth-child(5) { left: 20px; top: 14px; transform: rotate(3deg); }
-
-.player-brow {
-  position: absolute;
-  top: 16px;
-  width: 15px;
-  height: 3px;
-  border-radius: 8px;
-  background: #2b201c;
-}
-
-.player-brow.left { left: 7px; transform: rotate(16deg); }
-.player-brow.right { right: 7px; transform: rotate(-16deg); }
-
-.player-eye {
-  position: absolute;
-  top: 26px;
-  width: 4px;
-  height: 10px;
-  border-radius: 50%;
-  background: #201915;
-}
-
-.player-eye.left { left: 15px; }
-.player-eye.right { right: 15px; }
-
-.player-scarf {
-  position: absolute;
-  left: 14px;
-  top: 61px;
-  width: 70px;
-  height: 19px;
-  border: 3px solid #4b1717;
-  border-radius: 50%;
-  background: #a72a26;
+  left: 15px;
+  top: 12px;
+  width: 34px;
+  height: 34px;
+  border: 2px solid #33231e;
+  border-radius: 48% 48% 46% 46%;
+  background: #f4ede1;
   z-index: 5;
 }
 
-.player-scarf::after {
-  content: "";
+.hero-hair {
   position: absolute;
-  right: -22px;
-  top: 5px;
-  width: 34px;
-  height: 12px;
-  border: 3px solid #4b1717;
-  border-left: 0;
-  border-radius: 0 70% 70% 0;
-  background: #b8322d;
-  transform: rotate(10deg);
+  left: 11px;
+  top: 2px;
+  width: 43px;
+  height: 26px;
+  z-index: 8;
 }
 
-.player-torso {
+.hero-hair i {
   position: absolute;
-  left: 25px;
-  top: 68px;
-  width: 48px;
-  height: 35px;
-  border: 3px solid #241d1c;
-  border-radius: 16px 16px 12px 12px;
-  background:
-    linear-gradient(90deg, transparent 46%, #d3a333 47% 53%, transparent 54%),
-    #382f32;
-  z-index: 3;
-}
-
-.player-arm,
-.player-leg {
-  position: absolute;
-  border: 3px solid #241d1c;
-  background: #49393a;
-}
-
-.player-arm {
-  top: 73px;
-  width: 19px;
-  height: 29px;
-  border-radius: 12px;
-  z-index: 2;
-}
-
-.arm-left { left: 15px; transform: rotate(14deg); }
-.arm-right { right: 12px; transform: rotate(-14deg); }
-
-.player-leg {
-  top: 96px;
-  width: 21px;
+  width: 17px;
   height: 18px;
-  border-radius: 7px 7px 11px 11px;
+  border: 2px solid #2b1a15;
+  border-radius: 62% 22% 58% 24%;
+  background: #6f351d;
 }
 
-.leg-left { left: 27px; }
-.leg-right { right: 24px; }
+.hero-hair i:nth-child(1) { left: 0; top: 10px; transform: rotate(-42deg); }
+.hero-hair i:nth-child(2) { left: 7px; top: 1px; transform: rotate(-22deg); }
+.hero-hair i:nth-child(3) { left: 17px; top: 0; transform: rotate(-5deg); }
+.hero-hair i:nth-child(4) { left: 27px; top: 2px; transform: rotate(18deg); }
+.hero-hair i:nth-child(5) { left: 34px; top: 10px; transform: rotate(40deg); }
+.hero-hair i:nth-child(6) { left: 15px; top: 9px; transform: rotate(4deg); }
 
-.player-sword {
+.hero-brow {
   position: absolute;
-  left: 3px;
-  top: 54px;
-  width: 18px;
-  height: 60px;
-  transform: rotate(-34deg);
-  transform-origin: 50% 85%;
-  z-index: 1;
-}
-
-.sword-blade {
-  position: absolute;
-  left: 4px;
-  top: 0;
+  top: 10px;
   width: 10px;
-  height: 46px;
-  border: 2px solid #34363b;
-  clip-path: polygon(50% 0, 100% 18%, 85% 100%, 15% 100%, 0 18%);
-  background: linear-gradient(90deg, #dfe8f0, #fff, #8e9baa);
-}
-
-.sword-guard {
-  position: absolute;
-  left: -2px;
-  bottom: 8px;
-  width: 22px;
-  height: 7px;
+  height: 2px;
   border-radius: 4px;
-  background: #d5a12b;
-  border: 2px solid #574014;
+  background: #251a17;
 }
 
-.player-shield {
+.hero-brow.left { left: 5px; transform: rotate(18deg); }
+.hero-brow.right { right: 5px; transform: rotate(-18deg); }
+
+.hero-eye {
   position: absolute;
-  right: 2px;
-  top: 72px;
-  width: 29px;
-  height: 37px;
-  display: grid;
-  place-items: center;
-  border: 3px solid #543817;
-  border-radius: 9px 9px 15px 15px;
-  color: #f4d16b;
-  background: #2760a5;
+  top: 17px;
+  width: 3px;
+  height: 7px;
+  border-radius: 50%;
+  background: #1d1715;
+}
+
+.hero-eye.left { left: 10px; }
+.hero-eye.right { right: 10px; }
+
+.hero-mouth {
+  position: absolute;
+  left: 15px;
+  top: 26px;
+  width: 5px;
+  height: 1px;
+  background: #6d3a31;
+}
+
+.hero-scarf {
+  position: absolute;
+  left: 8px;
+  top: 39px;
+  width: 44px;
+  height: 12px;
+  border: 2px solid #4b1717;
+  border-radius: 50%;
+  background: #b52f2b;
   z-index: 6;
 }
 
+.hero-scarf::after {
+  content: "";
+  position: absolute;
+  right: -16px;
+  top: 3px;
+  width: 22px;
+  height: 8px;
+  border: 2px solid #4b1717;
+  border-left: 0;
+  border-radius: 0 70% 70% 0;
+  background: #c13a32;
+  transform: rotate(10deg);
+}
+
+.hero-armor {
+  position: absolute;
+  left: 16px;
+  top: 44px;
+  width: 32px;
+  height: 23px;
+  border: 2px solid #211a19;
+  border-radius: 9px 9px 8px 8px;
+  background: linear-gradient(180deg, #40363a, #292327);
+  z-index: 4;
+}
+
+.armor-gold-line {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 5px;
+  height: 2px;
+  background: #d1a13d;
+  box-shadow: 0 7px 0 #d1a13d;
+}
+
+.armor-belt {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  bottom: 3px;
+  height: 4px;
+  border-radius: 3px;
+  background: #5b391d;
+}
+
+.hero-arm,
+.hero-leg {
+  position: absolute;
+  border: 2px solid #241d1c;
+  background: #44383a;
+}
+
+.hero-arm {
+  top: 48px;
+  width: 13px;
+  height: 19px;
+  border-radius: 8px;
+  z-index: 3;
+}
+
+.hero-arm.arm-left { left: 8px; transform: rotate(16deg); }
+.hero-arm.arm-right { right: 7px; transform: rotate(-16deg); }
+
+.hero-leg {
+  top: 64px;
+  width: 13px;
+  height: 11px;
+  border-radius: 5px 5px 8px 8px;
+}
+
+.hero-leg.leg-left { left: 18px; }
+.hero-leg.leg-right { right: 16px; }
+
+.hero-sword {
+  position: absolute;
+  left: 0;
+  top: 35px;
+  width: 13px;
+  height: 42px;
+  transform: rotate(-34deg);
+  transform-origin: 50% 88%;
+  z-index: 2;
+}
+
+.hero-sword .sword-blade {
+  position: absolute;
+  left: 3px;
+  top: 0;
+  width: 8px;
+  height: 31px;
+  border: 1.5px solid #3d4248;
+  clip-path: polygon(50% 0, 100% 18%, 84% 100%, 16% 100%, 0 18%);
+  background: linear-gradient(90deg, #aab4bf, #fff, #8c98a5);
+}
+
+.hero-sword .sword-guard {
+  position: absolute;
+  left: -1px;
+  bottom: 8px;
+  width: 16px;
+  height: 5px;
+  border: 1.5px solid #5b4215;
+  border-radius: 3px;
+  background: #d2a02c;
+}
+
+.hero-sword .sword-handle {
+  position: absolute;
+  left: 5px;
+  bottom: 0;
+  width: 4px;
+  height: 10px;
+  background: #4b2b1f;
+}
+
+.hero-shield {
+  position: absolute;
+  right: -1px;
+  top: 47px;
+  width: 21px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border: 2px solid #5a3d18;
+  border-radius: 7px 7px 11px 11px;
+  color: #f2ce61;
+  font-size: 12px;
+  background:
+    linear-gradient(90deg, transparent 45%, #e0b43e 46% 54%, transparent 55%),
+    #2b65ad;
+  z-index: 7;
+}
+
 .battle-player.idle .player-body {
-  animation: heroIdle 1.3s ease-in-out infinite;
+  animation: heroIdle 1.2s ease-in-out infinite;
 }
 
 .battle-player.walking .player-body {
-  animation: heroWalkBob .24s ease-in-out infinite alternate;
+  animation: heroWalkBob .22s ease-in-out infinite alternate;
 }
 
-.battle-player.walking .leg-left {
-  animation: heroLegLeft .24s ease-in-out infinite alternate;
+.battle-player.walking .hero-leg.leg-left {
+  animation: heroLegLeft .22s ease-in-out infinite alternate;
 }
 
-.battle-player.walking .leg-right {
-  animation: heroLegRight .24s ease-in-out infinite alternate;
+.battle-player.walking .hero-leg.leg-right {
+  animation: heroLegRight .22s ease-in-out infinite alternate;
 }
 
-.battle-player.walking .player-sword {
-  animation: swordWalk .35s ease-in-out infinite alternate;
+.battle-player.walking .hero-sword {
+  animation: swordWalk .3s ease-in-out infinite alternate;
 }
 
 .battle-player.face-left .player-body {
@@ -678,27 +710,27 @@ button {
 
 @keyframes heroIdle {
   0%, 100% { transform: translateY(0) rotate(-.5deg); }
-  50% { transform: translateY(-3px) rotate(.5deg); }
+  50% { transform: translateY(-2px) rotate(.5deg); }
 }
 
 @keyframes heroWalkBob {
   from { transform: translateY(0) rotate(-2deg); }
-  to { transform: translateY(-5px) rotate(2deg); }
+  to { transform: translateY(-3px) rotate(2deg); }
 }
 
 @keyframes heroLegLeft {
-  from { transform: translateX(-3px) rotate(14deg); }
-  to { transform: translateX(3px) rotate(-14deg); }
+  from { transform: translateX(-2px) rotate(14deg); }
+  to { transform: translateX(2px) rotate(-14deg); }
 }
 
 @keyframes heroLegRight {
-  from { transform: translateX(3px) rotate(-14deg); }
-  to { transform: translateX(-3px) rotate(14deg); }
+  from { transform: translateX(2px) rotate(-14deg); }
+  to { transform: translateX(-2px) rotate(14deg); }
 }
 
 @keyframes swordWalk {
-  from { transform: rotate(-40deg); }
-  to { transform: rotate(-28deg); }
+  from { transform: rotate(-39deg); }
+  to { transform: rotate(-29deg); }
 }
 
 .battle-hud {
@@ -750,8 +782,8 @@ button {
   position: absolute;
   z-index: 22;
   left: 50%;
-  top: calc(50% - 82px);
-  width: 105px;
+  top: calc(50% - 57px);
+  width: 78px;
   transform: translateX(-50%);
   text-align: center;
   color: white;
