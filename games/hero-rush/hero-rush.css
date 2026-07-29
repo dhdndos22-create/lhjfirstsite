@@ -110,17 +110,28 @@ button {
   outline-offset: 2px;
 }
 
-/* 배경 이미지에 그려진 게임 시작 버튼 위의 투명 클릭 영역 */
+/* 배경 이미지에 그려진 게임 시작 버튼 위의 투명 터치 영역 */
 .start-button-hitbox {
   position: absolute;
-  z-index: 20;
+  z-index: 999;
+  display: block;
+  margin: 0;
+  padding: 0;
   border: 0;
-  border-radius: 18px;
+  border-radius: 20px;
   background: transparent;
   box-shadow: none;
-  color: transparent;
-  cursor: pointer;
+  opacity: 1;
+  pointer-events: auto;
   touch-action: manipulation;
+  -webkit-appearance: none;
+  appearance: none;
+
+  /* JS 계산 전에도 작동하는 모바일 fallback */
+  left: 12%;
+  top: 72%;
+  width: 76%;
+  height: 12%;
 }
 
 /* 로비 이미지 속 버튼 위치 */
@@ -928,4 +939,12 @@ button {
     width: 84px;
     height: 84px;
   }
+}
+
+.start-button-hitbox:focus,
+.start-button-hitbox:focus-visible,
+.start-button-hitbox:active {
+  outline: none;
+  background: transparent;
+  box-shadow: none;
 }
