@@ -24,6 +24,9 @@ if (window.visualViewport) {
   window.visualViewport.addEventListener("scroll", updateMobileViewport, { passive: true });
 }
 
+window.addEventListener("resize", scheduleImageLayout, { passive: true });
+window.addEventListener("orientationchange", scheduleImageLayout, { passive: true });
+
 const screens = {
   start: document.getElementById("startScreen"),
   lobby: document.getElementById("lobbyScreen"),
@@ -33,6 +36,7 @@ const screens = {
 
 const gameStartBtn = document.getElementById("gameStartBtn");
 const startBackgroundImage = document.getElementById("startBackgroundImage");
+const lobbyBackgroundImage = document.getElementById("lobbyBackgroundImage");
 const homeBtn = document.getElementById("homeBtn");
 const settingsBtn = document.getElementById("settingsBtn");
 const menuBtn = document.getElementById("menuBtn");
@@ -63,6 +67,58 @@ const toast = document.getElementById("toast");
 
 let toastTimer = null;
 
+const DESIGN_WIDTH = 853;
+const DESIGN_HEIGHT = 1844;
+
+const imageHitboxLayout = [
+  { element: gameStartBtn, screen: screens.start, x: 145, y: 1321, width: 563, height: 151 },
+  { element: homeBtn, screen: screens.lobby, x: 570, y: 22, width: 112, height: 123 },
+  { element: settingsBtn, screen: screens.lobby, x: 699, y: 22, width: 116, height: 123 },
+  { element: menuBtn, screen: screens.lobby, x: 16, y: 1634, width: 139, height: 164 },
+  { element: enterBtn, screen: screens.lobby, x: 401, y: 1537, width: 395, height: 194 }
+];
+
+function getContainedImageRect(screen) {
+  const screenWidth = screen.clientWidth;
+  const screenHeight = screen.clientHeight;
+  const scale = Math.min(screenWidth / DESIGN_WIDTH, screenHeight / DESIGN_HEIGHT);
+  const width = DESIGN_WIDTH * scale;
+  const height = DESIGN_HEIGHT * scale;
+
+  return {
+    left: (screenWidth - width) / 2,
+    top: (screenHeight - height) / 2,
+    scale
+  };
+}
+
+function layoutImageHitboxes() {
+  imageHitboxLayout.forEach(({ element, screen, x, y, width, height }) => {
+    const rect = getContainedImageRect(screen);
+    element.style.left = `${rect.left + x * rect.scale}px`;
+    element.style.top = `${rect.top + y * rect.scale}px`;
+    element.style.width = `${width * rect.scale}px`;
+    element.style.height = `${height * rect.scale}px`;
+    element.style.right = "auto";
+    element.style.bottom = "auto";
+  });
+}
+
+function scheduleImageLayout() {
+  window.requestAnimationFrame(() => {
+    layoutImageHitboxes();
+    window.requestAnimationFrame(layoutImageHitboxes);
+  });
+}
+
+[startBackgroundImage, lobbyBackgroundImage].forEach((image) => {
+  if (!image) return;
+  if (image.complete) scheduleImageLayout();
+  image.addEventListener("load", scheduleImageLayout, { once: true });
+});
+
+scheduleImageLayout();
+
 function showScreen(name) {
   Object.entries(screens).forEach(([key, screen]) => {
     const isActive = key === name;
@@ -72,6 +128,7 @@ function showScreen(name) {
 
   integratedMenu.classList.remove("open");
   closeModal();
+  scheduleImageLayout();
 }
 
 function showToast(message) {
