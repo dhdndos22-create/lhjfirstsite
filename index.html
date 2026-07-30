@@ -1,112 +1,167 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f5f8ff" />
   <title>효종월드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css" />
 </head>
-
 <body>
-
-  <div class="sky">
-
-    <div class="cloud cloud1"></div>
-    <div class="cloud cloud2"></div>
-    <div class="cloud cloud3"></div>
-
-    <!-- 로그인 -->
-    <div id="loginBox" class="login-box">
-      <div class="login-card">
-        <h2>효종월드 로그인</h2>
-        <p>로그인하지 않으면 guest로 이용됩니다.</p>
-
-        <input id="loginUsername" type="text" placeholder="유저명" />
-        <input id="loginPassword" type="password" placeholder="비밀번호" />
-
-        <button id="loginBtn">로그인</button>
-        <button id="guestBtn">guest로 시작</button>
-      </div>
-    </div>
-
-    <!-- 로그인 상태 -->
-    <div id="userBadge" class="user-badge">
-      👤 <span id="currentUserText">guest</span>
-      <button id="logoutBtn">로그아웃</button>
-    </div>
-
-    <main class="main-wrap">
-
-      <div class="title-wrap">
-        <div class="title-rainbow"></div>
-        <div class="title-cloud title-cloud-left"></div>
-        <div class="title-cloud title-cloud-right"></div>
-
-        <h1 class="title">효종랜드</h1>
-      </div>
-
-      <img src="images/mascot.png" alt="효종월드 캐릭터" class="mascot" />
-
-      <button class="menu-main-btn" onclick="toggleMenu()">
-        MENU
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="icon-button" id="menuBtn" type="button" aria-label="메뉴 열기">
+        <span></span><span></span><span></span>
       </button>
-
-      <!-- 메인 메뉴 -->
-      <div id="mainMenu" class="menu-box">
-        <button class="menu-card" onclick="openGameMenu()">🎮 게임</button>
-
-        <a href="gallery.html" class="menu-card">
-          📷 효종갤러리
-        </a>
-
-        <a href="#" class="menu-card preparing">
-          📝 준비중
-        </a>
-
-        <a href="#" class="menu-card preparing">
-          👤 준비중
-        </a>
+      <div class="brand">
+        <strong>효종월드</strong>
+        <small>오늘도 즐거운 하루 되세요!</small>
       </div>
+      <button class="profile-button" id="profileBtn" type="button" aria-label="프로필 열기">
+        <span class="profile-avatar">H</span>
+        <span class="profile-dot"></span>
+      </button>
+    </header>
 
-      <!-- 게임 메뉴 -->
-      <div id="gameMenu" class="menu-box">
+    <main class="content">
+      <section class="hero" aria-label="효종월드 소개">
+        <div class="hero-copy">
+          <span class="eyebrow">WELCOME</span>
+          <h1><span id="welcomeName">guest</span>님,<br>무엇을 플레이할까요?</h1>
+          <p>좋아하는 게임을 골라 바로 시작해보세요.</p>
+        </div>
+        <div class="mascot-wrap" aria-hidden="true">
+          <span class="shape shape-circle"></span>
+          <span class="shape shape-cross">×</span>
+          <img src="images/mascot.png" alt="" class="mascot" />
+        </div>
+      </section>
 
-        <a href="games/avoid/avoid.html" class="menu-card">
-          🎮 장애물 피하기
+      <section class="recent-section" id="recentSection" hidden>
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker">RECENT</span>
+            <h2>최근 플레이</h2>
+          </div>
+        </div>
+        <a class="recent-card" id="recentCard" href="#">
+          <div class="recent-icon" id="recentIcon">🎮</div>
+          <div class="recent-info">
+            <strong id="recentTitle">게임</strong>
+            <span>이어서 플레이하기</span>
+          </div>
+          <span class="play-circle small" aria-hidden="true">▶</span>
         </a>
+      </section>
 
-        <a href="games/omok/omok.html" class="menu-card">
-          ⚫ 오목게임
-        </a>
+      <section class="games-section" id="games">
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker">GAMES</span>
+            <h2>게임 목록</h2>
+          </div>
+          <span class="game-count">5개의 게임</span>
+        </div>
 
-        <a href="games/billionaire/billionaire.html" class="menu-card">
-          💰 억만장자
-        </a>
+        <div class="game-list">
+          <a class="game-card" href="games/fishing/" data-game="fishing" data-title="피싱월드" data-icon="🎣">
+            <div class="game-thumb image-thumb fishing-thumb" role="img" aria-label="피싱월드"></div>
+            <div class="game-info">
+              <div class="game-title-row"><h3>피싱월드</h3></div>
+              <p>낚시로 돈을 벌고 도감을 완성하세요!</p>
+            </div>
+            <span class="play-circle" aria-hidden="true">▶</span>
+          </a>
 
-        <a href="games/fishing/" class="menu-card">
-          🎣 피싱월드
-        </a>
+          <a class="game-card" href="games/hero-rush/" data-game="hero-rush" data-title="히어로러시" data-icon="⚔️">
+            <div class="game-thumb image-thumb hero-thumb" role="img" aria-label="히어로러시"></div>
+            <div class="game-info">
+              <div class="game-title-row"><h3>히어로러시</h3><span class="new-badge">NEW</span></div>
+              <p>끝없이 몰려오는 몬스터를 처치하세요!</p>
+            </div>
+            <span class="play-circle" aria-hidden="true">▶</span>
+          </a>
 
-        <a href="games/hero-rush/" class="menu-card">
-          ⚔️ 히어로러시
-        </a>
+          <a class="game-card" href="games/billionaire/billionaire.html" data-game="billionaire" data-title="억만장자" data-icon="💰">
+            <div class="game-thumb emoji-thumb billionaire-thumb" aria-hidden="true"><span>💸</span></div>
+            <div class="game-info">
+              <div class="game-title-row"><h3>억만장자</h3></div>
+              <p>사업을 키워 최고의 억만장자가 되어보세요!</p>
+            </div>
+            <span class="play-circle" aria-hidden="true">▶</span>
+          </a>
 
-        <button class="menu-card back-card" onclick="backToMainMenu()">
-          ◀ 뒤로가기
-        </button>
+          <a class="game-card" href="games/omok/omok.html" data-game="omok" data-title="오목게임" data-icon="⚫">
+            <div class="game-thumb emoji-thumb omok-thumb" aria-hidden="true"><span>⚫</span><i></i></div>
+            <div class="game-info">
+              <div class="game-title-row"><h3>오목게임</h3></div>
+              <p>친구 또는 CPU와 오목을 즐겨보세요!</p>
+            </div>
+            <span class="play-circle" aria-hidden="true">▶</span>
+          </a>
 
-      </div>
+          <a class="game-card" href="games/avoid/avoid.html" data-game="avoid" data-title="장애물 피하기" data-icon="🏃">
+            <div class="game-thumb emoji-thumb avoid-thumb" aria-hidden="true"><span>🏃</span></div>
+            <div class="game-info">
+              <div class="game-title-row"><h3>장애물 피하기</h3></div>
+              <p>점프하며 장애물을 피해 기록을 세워보세요!</p>
+            </div>
+            <span class="play-circle" aria-hidden="true">▶</span>
+          </a>
+        </div>
 
+        <div class="coming-card">
+          <span class="coming-icon">🎮</span>
+          <div><strong>새로운 게임을 준비 중이에요!</strong><p>효종월드는 계속 업데이트됩니다.</p></div>
+        </div>
+      </section>
     </main>
 
-    <div class="grass"></div>
-
+    <nav class="bottom-nav" aria-label="하단 메뉴">
+      <button class="nav-item active" type="button" data-action="home"><span>⌂</span><b>홈</b></button>
+      <button class="nav-item" type="button" data-action="achievement"><span>🏆</span><b>업적</b></button>
+      <a class="nav-item" href="gallery.html"><span>▣</span><b>갤러리</b></a>
+      <button class="nav-item" type="button" data-action="settings"><span>⚙</span><b>설정</b></button>
+    </nav>
   </div>
+
+  <div class="overlay" id="loginBox" aria-hidden="true">
+    <div class="modal login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+      <button class="modal-close" id="loginCloseBtn" type="button" aria-label="닫기">×</button>
+      <div class="modal-logo">H</div>
+      <h2 id="loginTitle">효종월드 로그인</h2>
+      <p>로그인하면 사용자 이름으로 이용할 수 있어요.</p>
+      <label>유저명<input id="loginUsername" type="text" autocomplete="username" placeholder="유저명을 입력하세요" /></label>
+      <label>비밀번호<input id="loginPassword" type="password" autocomplete="current-password" placeholder="비밀번호를 입력하세요" /></label>
+      <button class="primary-button" id="loginBtn" type="button">로그인</button>
+      <button class="secondary-button" id="guestBtn" type="button">guest로 시작</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="settingsBox" aria-hidden="true">
+    <div class="modal settings-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <button class="modal-close" data-close="settings" type="button" aria-label="닫기">×</button>
+      <h2 id="settingsTitle">설정</h2>
+      <div class="setting-row"><div><strong>화면 애니메이션</strong><span>마스코트 움직임을 사용합니다.</span></div><button class="toggle active" id="motionToggle" type="button" aria-pressed="true"><i></i></button></div>
+      <button class="setting-button" id="clearRecentBtn" type="button">최근 플레이 기록 지우기</button>
+      <button class="setting-button danger" id="logoutBtn" type="button">로그아웃</button>
+    </div>
+  </div>
+
+  <aside class="side-menu" id="sideMenu" aria-hidden="true">
+    <div class="side-menu-head"><strong>효종월드</strong><button id="menuCloseBtn" type="button">×</button></div>
+    <button type="button" data-side-action="profile">👤 <span id="currentUserText">guest</span></button>
+    <a href="#games">🎮 게임 목록</a>
+    <a href="gallery.html">🖼️ 효종갤러리</a>
+    <button type="button" data-side-action="settings">⚙️ 설정</button>
+  </aside>
+  <div class="menu-dim" id="menuDim"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="https://lhjfirstsite.onrender.com/socket.io/socket.io.js"></script>
   <script src="js/main.js"></script>
-
 </body>
-
 </html>
