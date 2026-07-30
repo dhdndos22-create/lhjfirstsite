@@ -93,7 +93,47 @@ function closeModal() {
   infoModal.hidden = true;
 }
 
+/* =========================================================
+   START SCREEN
+   배경 이미지 속 "게임 시작" 영역을 실제 버튼으로 연결한다.
+   pointerup + click을 모두 지원하되, 중복 실행은 잠금으로 방지한다.
+   ========================================================= */
+let startTransitionLocked = false;
 
+function enterLobby() {
+  if (startTransitionLocked || !screens.start.classList.contains("active")) return;
+
+  startTransitionLocked = true;
+  gameStartBtn.classList.add("pressed");
+
+  window.setTimeout(() => {
+    showScreen("lobby");
+    gameStartBtn.classList.remove("pressed");
+    startTransitionLocked = false;
+  }, 90);
+}
+
+gameStartBtn.addEventListener("pointerdown", () => {
+  gameStartBtn.classList.add("pressed");
+});
+
+gameStartBtn.addEventListener("pointercancel", () => {
+  gameStartBtn.classList.remove("pressed");
+});
+
+gameStartBtn.addEventListener("pointerleave", () => {
+  gameStartBtn.classList.remove("pressed");
+});
+
+gameStartBtn.addEventListener("pointerup", (event) => {
+  event.preventDefault();
+  enterLobby();
+});
+
+gameStartBtn.addEventListener("click", (event) => {
+  event.preventDefault();
+  enterLobby();
+});
 
 homeBtn.addEventListener("click", () => {
   window.location.href = "../../index.html";

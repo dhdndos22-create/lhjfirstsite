@@ -128,10 +128,21 @@ button {
   appearance: none;
 
   /* JS 계산 전에도 작동하는 모바일 fallback */
-  left: 12%;
-  top: 72%;
-  width: 76%;
-  height: 12%;
+  left: 15.5%;
+  top: 73.1%;
+  width: 69%;
+  height: 8.7%;
+}
+
+.start-button-hitbox.pressed,
+.start-button-hitbox:active {
+  background: rgba(255, 255, 255, 0.08);
+  transform: scale(0.985);
+}
+
+.start-button-hitbox:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
 }
 
 /* 로비 이미지 속 버튼 위치 */
